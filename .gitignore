@@ -56,5 +56,5 @@ gf2d
 
 #logs
 *.log
-
+.vs/
 makefile.dep
