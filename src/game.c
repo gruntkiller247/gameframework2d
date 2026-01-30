@@ -1,8 +1,11 @@
 #include <SDL.h>
 #include "simple_logger.h"
 
+
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "entity.h"
+#include "player.h"
 
 int main(int argc, char * argv[])
 {
@@ -29,12 +32,17 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+
+    //need to do something with initing entities
+
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
+
+
     /*main game loop*/
     while(!done)
     {
@@ -44,6 +52,8 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
+
+        //entityManagerDrawAll();
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
