@@ -33,7 +33,16 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
 
-    //need to do something with initing entities
+    //need to do something with initing entities, could not catch what he did
+    entityManagerInit(4);
+
+    Entity* thing = entityNew();
+    thing->position.x = 0;
+    thing->position.y = 0;
+    thing->frame = 0;
+    thing->rotation = 0;
+    thing->sprite= gf2d_sprite_load_image("images/ed210.png");
+    //No entity on the screen :(
 
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -77,6 +86,9 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     slog("---==== END ====---");
+
+    
+
     return 0;
 }
 /*eol@eof*/

@@ -25,7 +25,7 @@ void entityManagerInit(Uint32 max);
 
 /*
 	@brief get a pointer to a new free entity
-	@return Null if aout of entities, a pointer to a blank entity otherwise
+	@return Null if out of entities, a pointer to a blank entity otherwise
 */
 Entity* entityNew();
 
