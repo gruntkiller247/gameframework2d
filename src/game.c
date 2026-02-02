@@ -34,15 +34,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
 
     //need to do something with initing entities, could not catch what he did
-    entityManagerInit(4);
-
-    Entity* thing = entityNew();
-    thing->position.x = 0;
-    thing->position.y = 0;
-    thing->frame = 0;
-    thing->rotation = 0;
-    thing->sprite= gf2d_sprite_load_image("images/ed210.png");
-    //No entity on the screen :(
+    entityManagerInit(1024);
 
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -51,6 +43,12 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
+
+    Entity* player;
+    player = playerEntityNew(gfc_vector2d(0, 0));
+
+    Sprite* test;
+    test = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 
     /*main game loop*/
     while(!done)
@@ -62,6 +60,9 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
 
+        entityThinkSystem();
+        entityUpdateSystem();
+
         //entityManagerDrawAll();
         
         gf2d_graphics_clear_screen();// clears drawing buffers
@@ -69,6 +70,12 @@ int main(int argc, char * argv[])
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
             
+
+            //entityManagerDrawAll();
+            //entityDraw(player);
+
+            gf2d_sprite_draw(test, gfc_vector2d(0, 0), 1, NULL, NULL, NULL, NULL, 1);
+
             //UI elements last
             gf2d_sprite_draw(
                 mouse,
@@ -80,11 +87,14 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
+            
+
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    entityFree(player);
     slog("---==== END ====---");
 
     

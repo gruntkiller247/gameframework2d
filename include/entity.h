@@ -37,8 +37,12 @@ Entity* entityNew();
 */
 void entityFree(Entity* self);
 
+void entityDraw(Entity* self);
 
+void entityUpdateSystem();
 
+void entityThinkSystem();
 
+void entityManagerDrawAll();
 
 #endif

@@ -79,7 +79,24 @@ void entityFree(Entity* self)
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
+
+	/*if (self->free)
+		self->free(self->data);*/
+
+
 	memset(self, 0, sizeof(Entity));
+}
+
+void entityFreeAll()
+{
+	int c;
+	for (c = 0;c < entityManager.entityMax;c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		entityFree(&entityManager.entityList[c]);
+	}
 }
 
 void entityDraw(Entity* self)
@@ -89,9 +106,14 @@ void entityDraw(Entity* self)
 		slog("Trying to draw an entity that is NULL!");
 		return;
 	}
+
+	if (self->sprite)
+	{
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+	}
 		
 
-	gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+	
 }
 
 void entityManagerDrawAll()
@@ -112,6 +134,52 @@ void entityManagerDrawAll()
 	}
 		
 	
+}
+
+void entityThink(Entity* self)
+{
+	if (!self)
+		return NULL;
+
+	//Thinky
+	 
+	/*if (self->think())
+		self->think(self);*/
+}
+
+void entityThinkSystem()
+{
+	int c;
+	for (c = 0;c < entityManager.entityMax;c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		entityThink(&entityManager.entityList[c]);
+	}
+}
+
+void entityUpdate(Entity* self)
+{
+	if (!self)
+		return NULL;
+
+	//Update
+
+	/*if (self->update())
+		self->update(self);*/
+}
+
+void entityUpdateSystem()
+{
+	int c;
+	for (c = 0;c < entityManager.entityMax;c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		entityUpdate(&entityManager.entityList[c]);
+	}
 }
 
 //endLine
