@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "simple_logger.h"
 
-
+#include "gfc_input.h"
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "entity.h"
@@ -33,8 +33,11 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
 
-    //need to do something with initing entities, could not catch what he did
+    
     entityManagerInit(1024);
+
+    //Not Working?
+    gfc_input_init("config/input.gfc");
 
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -53,14 +56,19 @@ int main(int argc, char * argv[])
     /*main game loop*/
     while(!done)
     {
-        SDL_PumpEvents();   // update SDL's internal event structures
+       
+        gfc_input_update();
+        //SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
 
-        entityThinkSystem();
+        
+        //update Thinking Here
+
+        
         entityUpdateSystem();
 
         //entityManagerDrawAll();
@@ -72,9 +80,10 @@ int main(int argc, char * argv[])
             
 
             //entityManagerDrawAll();
-            //entityDraw(player);
+            entityManagerDrawAll();
 
-            gf2d_sprite_draw(test, gfc_vector2d(0, 0), 1, NULL, NULL, NULL, NULL, 1);
+            
+
 
             //UI elements last
             gf2d_sprite_draw(

@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "entity.h"
+#include "gfc_input.h"
 
 typedef struct
 {
@@ -62,8 +63,8 @@ Entity* entityNew()
 			
 		entityManager.entityList[c]._inUse = 1;
 		//set defaults
-		entityManager.entityList[c].scale.x = 0;
-		entityManager.entityList[c].scale.y = 0;
+		entityManager.entityList[c].scale.x = 1;
+		entityManager.entityList[c].scale.y = 1;
 		return &entityManager.entityList[c];
 	}
 
@@ -111,15 +112,15 @@ void entityDraw(Entity* self)
 	{
 		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 	}
-		
 
-	
+
+
 }
 
 void entityManagerDrawAll()
 {
 	int c;
-	
+
 
 	if (!entityManager.entityList)
 	{
@@ -130,29 +131,44 @@ void entityManagerDrawAll()
 	{
 		//I think I am supposed to draw the sprites somehow?
 		//I think this is correct?
-		gf2d_sprite_draw(entityManager.entityList[c].sprite, entityManager.entityList[c].position, &entityManager.entityList[c].scale,NULL,&entityManager.entityList[c].rotation,NULL,NULL,(Uint32)entityManager.entityList[c].frame);
+
+		entityDraw(&entityManager.entityList[c]);
+		//gf2d_sprite_draw(entityManager.entityList[c].sprite, entityManager.entityList[c].position, &entityManager.entityList[c].scale,NULL,&entityManager.entityList[c].rotation,NULL,NULL,(Uint32)entityManager.entityList[c].frame);
 	}
-		
-	
+
+
 }
 
 void entityThink(Entity* self)
 {
 	if (!self)
-		return NULL;
+		return;
 
-	//Thinky
-	 
-	/*if (self->think())
-		self->think(self);*/
+	//Tricking rocks into thinking!
+	if (gfc_input_key_down("d"))
+	{
+		self->position.x += 1;
+
+	}
+
+
 }
 
-void entityThinkSystem()
+void entityThinkAll()
 {
 	int c;
+
+	if (!entityManager.entityList)
+	{
+		return;
+	}
+
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
 		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		if (!entityManager.entityList[c].think)
 			continue;
 
 		entityThink(&entityManager.entityList[c]);
@@ -162,17 +178,30 @@ void entityThinkSystem()
 void entityUpdate(Entity* self)
 {
 	if (!self)
-		return NULL;
+		return;
 
 	//Update
+	//I have no fucking clue
 
-	/*if (self->update())
-		self->update(self);*/
+	gfc_vector2d_add(self->position, self->position, self->velocity);
+	gfc_vector2d_scale(self->velocity, self->velocity, 0.5);
+
+	if(gfc_vector2d_magnitude(self->velocity) > GFC_EPSILON)
+	{
+
+	}
+
+
+
 }
 
-void entityUpdateSystem()
+void entityUpdateAll(Entity* self)
 {
 	int c;
+
+	if (!self)
+		return;
+
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
 		if (!entityManager.entityList[c]._inUse)

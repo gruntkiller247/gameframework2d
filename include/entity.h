@@ -5,7 +5,7 @@
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
 
-typedef struct
+typedef struct Entity_S
 {
 	Uint8 _inUse; //No Touch
 	GFC_TextLine name; //Name of the entity
@@ -13,7 +13,11 @@ typedef struct
 	GFC_Vector2D scale;
 	float rotation;
 	Sprite* sprite;
-	float* frame;
+	float frame;
+	GFC_Vector2D topSpeed;
+	GFC_Vector2D velocity;
+	void	(*think)(struct Entity_S *self);	//Called every frame if defined for the entity
+	void	(*update)(struct Entity_S* self);	//Called every frame if defined for the entity
 }Entity;
 
 /*
@@ -39,9 +43,9 @@ void entityFree(Entity* self);
 
 void entityDraw(Entity* self);
 
-void entityUpdateSystem();
+void entityUpdateAll(Entity* self);
 
-void entityThinkSystem();
+void entityThinkAll();
 
 void entityManagerDrawAll();
 
