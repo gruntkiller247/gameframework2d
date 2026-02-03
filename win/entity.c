@@ -11,6 +11,8 @@ typedef struct
 
 static EntityManager entityManager = { 0 };
 
+static Entity* thePlayer = NULL;
+
 void entityManagerClose();
 
 void entityManagerInit(Uint32 max)
@@ -81,6 +83,11 @@ void entityFree(Entity* self)
 		gf2d_sprite_free(self->sprite);
 
 
+	//IDK if this is correct
+	if (self->free)
+		self->free(self);
+
+
 	/*if (self->free)
 		self->free(self->data);*/
 
@@ -99,6 +106,8 @@ void entityFreeAll()
 		entityFree(&entityManager.entityList[c]);
 	}
 }
+
+
 
 void entityDraw(Entity* self)
 {
@@ -179,14 +188,12 @@ void entityUpdate(Entity* self)
 	//Update
 	//I have no fucking clue
 
-	gfc_vector2d_add(self->position, self->position, self->velocity);
-	gfc_vector2d_scale(self->velocity, self->velocity, 0.5);
+		if (!self)
+			return;
 
-	if(gfc_vector2d_magnitude(self->velocity) > GFC_EPSILON)
-	{
-
-	}
-
+		if (self->update)
+			self->update(self);
+	
 
 
 }
@@ -205,6 +212,13 @@ void entityUpdateAll(Entity* self)
 
 		entityUpdate(&entityManager.entityList[c]);
 	}
+}
+
+
+
+Entity* playerGetter()
+{
+	return thePlayer;
 }
 
 //endLine

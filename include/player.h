@@ -10,4 +10,6 @@ Entity* playerEntityNew(GFC_Vector2D position);
 
 void playerThink(Entity* self);
 
+void playerGet();
+
 #endif

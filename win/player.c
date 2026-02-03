@@ -21,6 +21,10 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	self->think = playerThink;
 	self->velocity = gfc_vector2d(0,0);
 	self->topSpeed = gfc_vector2d(100, 100);
+	self->rotation = 0;
+
+	//Entity thePlayer = self;
+	//I have no fucking clue
 
 	//self->think = playerThink();
 	//self->free = playerFree();
@@ -61,8 +65,7 @@ void playerThink(Entity* self)
 	}
 
 	if (self->velocity.y || self->velocity.x)
-	{
-		//I don't know
+	{		
 		gfc_vector2d_normalize(&self->velocity);
 		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
 	}

@@ -6,6 +6,7 @@
 #include "gf2d_sprite.h"
 #include "entity.h"
 #include "player.h"
+#include "monster.h" //This fucking problem again
 
 int main(int argc, char * argv[])
 {
@@ -78,8 +79,7 @@ int main(int argc, char * argv[])
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
             
-
-            //entityManagerDrawAll();
+            
             entityManagerDrawAll();
 
             
