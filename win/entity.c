@@ -145,11 +145,7 @@ void entityThink(Entity* self)
 		return;
 
 	//Tricking rocks into thinking!
-	if (gfc_input_key_down("d"))
-	{
-		self->position.x += 1;
-
-	}
+	self->think(self);
 
 
 }

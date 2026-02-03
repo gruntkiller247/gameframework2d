@@ -67,9 +67,9 @@ int main(int argc, char * argv[])
 
         
         //update Thinking Here
-
+        entityThinkAll();
         
-        entityUpdateSystem();
+        entityUpdateAll();
 
         //entityManagerDrawAll();
         

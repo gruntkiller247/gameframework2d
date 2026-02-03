@@ -43,7 +43,7 @@ void entityFree(Entity* self);
 
 void entityDraw(Entity* self);
 
-void entityUpdateAll(Entity* self);
+void entityUpdateAll();
 
 void entityThinkAll();
 

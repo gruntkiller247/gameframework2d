@@ -42,19 +42,19 @@ void playerThink(Entity* self)
 
 	}
 
-	if (gfc_input_key_down("l"))
+	if (gfc_input_key_down("a"))
 	{
 		self->position.x -= 1;
 
 	}
 
-	if (gfc_input_key_down("z"))
+	if (gfc_input_key_down("s"))
 	{
 		self->position.y += 1;
 
 	}
 
-	if (gfc_input_key_down("x"))
+	if (gfc_input_key_down("w"))
 	{
 		self->position.y -= 1;
 
@@ -64,7 +64,7 @@ void playerThink(Entity* self)
 	{
 		//I don't know
 		gfc_vector2d_normalize(&self->velocity);
-		gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
+		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
 	}
 
 }
