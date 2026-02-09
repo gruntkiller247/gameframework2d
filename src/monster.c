@@ -2,7 +2,7 @@
 #include "entity.h"
 #include "player.h"
 #include "gfc_input.h"
-#include "player.h"
+
 
 typedef enum
 {
@@ -20,11 +20,13 @@ typedef struct
 	MonsterStates state;
 }MonsterData;
 
+void monsterThink(Entity* self);
+
 void monsterFree(Entity* self)
 {
 	MonsterData* data;
 
-	if (!self || !data)
+	if (!self)
 		return;
 
 	data = self->data;
@@ -53,10 +55,10 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 	self->velocity = gfc_vector2d(0, 0);
 	self->topSpeed = gfc_vector2d(100, 100);
 	self->rotation = 0;
-	//self->free = monsterFree;
+	self->free = monsterFree;
 
 	//self->data = gfc_allocate_array(sizeOf(MonsterData), 1);
-	if (data)
+	//if (data)
 	{
 
 	}
@@ -72,5 +74,14 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 void monsterThink(Entity* self)
 {
+	//GFC_Vector2D toPlayer = { 0 };
+	//MonsterData *data;
 
+	if (!self || !self->data)
+		return;
+
+	slog("Monster is thinking!");
+
+	//I have no fucking clue
+	//gfc_vector2d_sub(toPlayer)
 }

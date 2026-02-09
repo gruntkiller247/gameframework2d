@@ -7,9 +7,9 @@
 
 typedef struct Entity_S
 {
-	Uint8 _inUse; //No Touch
-	GFC_TextLine name; //Name of the entity
-	GFC_Vector2D position; //Coordinates in 2d space
+	Uint8 _inUse;								//No Touch
+	GFC_TextLine name;							//Name of the entity
+	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
 	float rotation;
 	Sprite* sprite;
@@ -18,8 +18,8 @@ typedef struct Entity_S
 	GFC_Vector2D velocity;
 	void	(*think)(struct Entity_S *self);	//Called every frame if defined for the entity
 	void	(*update)(struct Entity_S* self);	//Called every frame if defined for the entity
-	void	(*free)(struct Entity_S* self);	//Called every frame if defined for the entity
-	//data?
+	void	(*free)(struct Entity_S* self);		//Called every frame if defined for the entity
+	void	(*data) (struct data);
 }Entity;
 
 /*
