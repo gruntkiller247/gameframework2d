@@ -17,8 +17,8 @@ typedef struct Entity_S
 	GFC_Vector2D topSpeed;
 	GFC_Vector2D velocity;
 	void	(*think)(struct Entity_S *self);	//Called every frame if defined for the entity
-	void	(*update)(struct Entity_S* self);	//Called every frame if defined for the entity
-	void	(*free)(struct Entity_S* self);		//Called every frame if defined for the entity
+	void	(*update)(struct Entity_S* self);	
+	void	(*free)(struct Entity_S* self);		
 	void	(*data) (struct data);
 }Entity;
 

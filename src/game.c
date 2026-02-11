@@ -6,7 +6,8 @@
 #include "gf2d_sprite.h"
 #include "entity.h"
 #include "player.h"
-#include "monster.h" //This fucking problem again
+#include "monster.h" 
+#include "world.h"
 
 int main(int argc, char * argv[])
 {
@@ -18,7 +19,7 @@ int main(int argc, char * argv[])
     int mx,my;
     float mf = 0;
     Sprite *mouse;
-    GFC_Color mouseGFC_Color = gfc_color8(255,100,255,200);
+    GFC_Color mouseGFC_Color = gfc_color(1, 1, 1, 100);//= gfc_color8(255,100,255,200);
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -43,7 +44,7 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    sprite = gf2d_sprite_load_image("images/backgrounds/cat.jpg");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
