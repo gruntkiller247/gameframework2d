@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Levels">
+      <UniqueIdentifier>{2d3f7a26-a876-4388-9894-c6114cd36eb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c">
@@ -121,6 +124,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\world.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\camera.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\level.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tiledef.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -236,5 +248,19 @@
     <ClInclude Include="..\include\world.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\tiledef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testLevel.level">
+      <Filter>Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>
