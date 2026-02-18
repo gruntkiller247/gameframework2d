@@ -44,10 +44,25 @@ void projectileThink(Entity* self)
 
 void projectileTouch(Entity* self, Entity* toucher)
 {
-	if (!self)
+	if (!self || !toucher)
 		return;
 
 	
+	float selfLeft = self->position.x + self->bounds.x;
+	float selfRight = selfLeft + self->bounds.w;
+	float selfTop = self->position.y + self->bounds.y;
+	float selfBottom = selfTop + self->bounds.h;
+
+	float toucherLeft = toucher->position.x + toucher->bounds.x;
+	float toucherRight = toucherLeft + toucher->bounds.w;
+	float toucherTop = toucher->position.y + toucher->bounds.y;
+	float toucherBottom = toucherTop + toucher->bounds.h;
+
+	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
+	{
+		slog("Projectile is touching something!");
+	}
+
 
 	
 }

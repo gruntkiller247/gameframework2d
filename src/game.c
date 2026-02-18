@@ -108,6 +108,7 @@ int main(int argc, char * argv[])
 
             //gf2d_draw_line(gfc_vector2d(0,0), gfc_vector2d(100,100), GFC_COLOR_RED);
             entityUpdateAll();
+            entityTouchAll();
 
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame

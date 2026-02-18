@@ -56,7 +56,7 @@ typedef struct MD
 void monsterThink(Entity* self);
 void monsterFree(Entity* self);
 void monsterUpdate(Entity* self);
-void monsterTouch(Entity* self);
+void monsterTouch(Entity* self,Entity* toucher);
 
 
 Entity* monsterEntityNew(GFC_Vector2D position)
@@ -85,6 +85,8 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
+	self->team = 2;
+
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
 	{
@@ -99,8 +101,23 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 void monsterTouch(Entity* self, Entity* toucher)
 {
-	if (!self)
+	if (!self || !toucher)
 		return;
+
+	float selfLeft = self->position.x + self->bounds.x;
+	float selfRight = selfLeft + self->bounds.w;
+	float selfTop = self->position.y + self->bounds.y;
+	float selfBottom = selfTop + self->bounds.h;
+
+	float toucherLeft = toucher->position.x + toucher->bounds.x;
+	float toucherRight = toucherLeft + toucher->bounds.w;
+	float toucherTop = toucher->position.y + toucher->bounds.y;
+	float toucherBottom = toucherTop + toucher->bounds.h;
+
+	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
+	{
+		slog("Player is touching something!");
+	}
 }
 
 void monsterUpdate(Entity* self)

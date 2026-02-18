@@ -224,6 +224,41 @@ void entityUpdateAll()
 }
 
 
+//IDK If these are needed?
+void entityTouch(Entity* self, Entity* toucher)
+{
+	if (!self || !toucher)
+		return;
+
+	if (self->touch)
+	{
+		self->touch(self);
+		//slog("Self has an touch!");
+	}
+
+	else
+		slog("Entity has no touch!");
+}
+
+
+void entityTouchAll()
+{
+	int c,d;
+
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		for (d = c+1; d < entityManager.entityMax; d++)
+		{
+			//slog("Touching all entities: ");
+			entityTouch(&entityManager.entityList[c], &entityManager.entityList[d]);
+		}
+		
+	}
+}
+
 
 Entity* playerGetter()
 {
