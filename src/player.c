@@ -94,7 +94,7 @@ void playerUpdate(Entity* self)
 	if (self->frame >= 16)
 		self->frame = 0;
 
-	//SDL_RenderDrawLine(self->position.x,position.y,position.x+bounds,position.y+bounds);
+	
 }
 
 void playerFree(Entity* self)

@@ -4,6 +4,9 @@
 #include "gfc_shape.h"
 #include "gf2d_draw.h"
 
+#include "gf2d_graphics.h"
+
+
 typedef struct
 {
 	Entity* entityList;
@@ -195,6 +198,9 @@ void entityUpdate(Entity* self)
 		self->update(self);
 	else
 		slog("Entity has no update!");
+
+
+	gf2d_draw_line(GFC_Vector2D(0,0), GFC_Vector2D(10,10)), GFC_COLOR_RED);
 	
 
 
