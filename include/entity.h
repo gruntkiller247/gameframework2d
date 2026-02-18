@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
+#include "gfc_shape.h"
 
 typedef struct Entity_S
 {
@@ -11,6 +12,7 @@ typedef struct Entity_S
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
+	GFC_Rect bounds;
 	float rotation;
 	Sprite* sprite;
 	float frame;
@@ -20,6 +22,7 @@ typedef struct Entity_S
 	void	(*update)(struct Entity_S* self);	
 	void	(*free)(struct Entity_S* self);		
 	void	(*data) (struct data);
+	Uint8	(*touch)(struct Entity_S);
 }Entity;
 
 /*
@@ -50,5 +53,7 @@ void entityUpdateAll();
 void entityThinkAll();
 
 void entityManagerDrawAll();
+
+void entityTouch();
 
 #endif

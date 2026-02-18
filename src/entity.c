@@ -1,6 +1,8 @@
 #include "simple_logger.h"
 #include "entity.h"
 #include "gfc_input.h"
+#include "gfc_shape.h"
+#include "gf2d_draw.h"
 
 typedef struct
 {
@@ -120,6 +122,9 @@ void entityDraw(Entity* self)
 	if (self->sprite)
 	{
 		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		//
+		//
+		//gf2d_draw_rect(self->bounds, GFC_COLOR_RED); IDK if this is working
 	}
 
 
@@ -185,14 +190,11 @@ void entityUpdate(Entity* self)
 	if (!self)
 		return;
 
-	//Update
-	//I have no fucking clue
 
-		if (!self)
-			return;
-
-		if (self->update)
-			self->update(self);
+	if (self->update)
+		self->update(self);
+	else
+		slog("Entity has no update!");
 	
 
 

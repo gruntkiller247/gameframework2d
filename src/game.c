@@ -9,6 +9,8 @@
 #include "monster.h" 
 #include "world.h"
 
+//128 x 128 grid for GIMP + snap to grid
+
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
@@ -52,8 +54,8 @@ int main(int argc, char * argv[])
     Entity* player;
     player = playerEntityNew(gfc_vector2d(0, 0));
 
-    Sprite* test;
-    test = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
+    Entity* enemy;
+    enemy = monsterEntityNew(gfc_vector2d(10, 10));
 
     /*main game loop*/
     while(!done)

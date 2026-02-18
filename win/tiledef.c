@@ -1,7 +1,7 @@
 #include "simple_logger.h"
 #include "tiledef.h"
 #include "simple_json.h"
-#include <cstddef>
+//#include <cstddef>
 
 TileDef* tiledefNew()
 {

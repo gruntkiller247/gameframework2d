@@ -5,11 +5,18 @@
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
 #include "entity.h"
+#include "gfc_shape.h"
 
 Entity* playerEntityNew(GFC_Vector2D position);
 
 void playerThink(Entity* self);
 
-void playerGet();
+void playerFree(Entity* self);
+
+void playerUpdate(Entity* self);
+
+void playerTouch(Entity* self);
+
+//Entity* playerGet(Entity* self);
 
 #endif

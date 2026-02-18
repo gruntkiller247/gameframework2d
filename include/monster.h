@@ -7,4 +7,13 @@
 #include "entity.h"
 
 void monsterThink(Entity* self);
+
+void monsterFree(Entity* self);
+
+void monsterUpdate(Entity* self);
+
+void monsterTouch(Entity* self);
+
+Entity* monsterEntityNew(GFC_Vector2D position);
+
 #endif
