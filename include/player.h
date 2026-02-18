@@ -15,7 +15,9 @@ void playerFree(Entity* self);
 
 void playerUpdate(Entity* self);
 
-void playerTouch(Entity* self);
+void playerTouch(Entity* self, Entity* toucher);
+
+void playerUpdate(Entity* self);
 
 //Entity* playerGet(Entity* self);
 

@@ -23,6 +23,7 @@ typedef struct Entity_S
 	void	(*free)(struct Entity_S* self);		
 	void	(*data) (struct data);
 	Uint8	(*touch)(struct Entity_S);
+	Uint8 team; //Magic number for now 0: none  1: Player  2: Enemy
 }Entity;
 
 /*
@@ -54,6 +55,6 @@ void entityThinkAll();
 
 void entityManagerDrawAll();
 
-void entityTouch();
+void entityManagerClose();
 
 #endif

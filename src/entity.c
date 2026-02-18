@@ -195,29 +195,30 @@ void entityUpdate(Entity* self)
 
 
 	if (self->update)
+	{
 		self->update(self);
+		//slog("Self has an update!");
+	}
+		
 	else
 		slog("Entity has no update!");
 
-
-	gf2d_draw_line(GFC_Vector2D(0,0), GFC_Vector2D(10,10)), GFC_COLOR_RED);
+	
 	
 
 
 }
 
-void entityUpdateAll(Entity* self)
+void entityUpdateAll()
 {
 	int c;
-
-	if (!self)
-		return;
 
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
 		if (!entityManager.entityList[c]._inUse)
 			continue;
 
+		//slog("Updating an entity: ");
 		entityUpdate(&entityManager.entityList[c]);
 	}
 }

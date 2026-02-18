@@ -6,13 +6,17 @@
 #include "gf2d_sprite.h"
 #include "entity.h"
 
+//void monsterManagerInit(Uint32 max);
+
+//void monsterManagerClose();
+
 void monsterThink(Entity* self);
 
 void monsterFree(Entity* self);
 
 void monsterUpdate(Entity* self);
 
-void monsterTouch(Entity* self);
+void monsterTouch(Entity* self, Entity* toucher);
 
 Entity* monsterEntityNew(GFC_Vector2D position);
 

@@ -33,6 +33,7 @@ C:\Users\Matthew\git\gameframework2d\src\gf2d_draw.c;C:\Users\Matthew\git\gamefr
 C:\Users\Matthew\git\gameframework2d\src\gf2d_graphics.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\gf2d_graphics.obj
 C:\Users\Matthew\git\gameframework2d\src\gf2d_sprite.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\gf2d_sprite.obj
 C:\Users\Matthew\git\gameframework2d\src\level.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\level.obj
+C:\Users\Matthew\git\gameframework2d\src\MattHelper.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\MattHelper.obj
 C:\Users\Matthew\git\gameframework2d\src\monster.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\monster.obj
 C:\Users\Matthew\git\gameframework2d\src\player.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\player.obj
 C:\Users\Matthew\git\gameframework2d\src\projectiles.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\projectiles.obj

@@ -8,6 +8,8 @@
 #include "player.h"
 #include "monster.h" 
 #include "world.h"
+#include "gf2d_draw.h"
+#include "projectiles.h"
 
 //128 x 128 grid for GIMP + snap to grid
 
@@ -39,6 +41,7 @@ int main(int argc, char * argv[])
 
     
     entityManagerInit(1024);
+    //monsterManagerInit(1024);
 
     //Not Working?
     gfc_input_init("config/input.gfc");
@@ -54,8 +57,11 @@ int main(int argc, char * argv[])
     Entity* player;
     player = playerEntityNew(gfc_vector2d(0, 0));
 
+    Entity* projectile;
+    projectile = projectileEntityNew(gfc_vector2d(300, 0),0,2);
+
     Entity* enemy;
-    enemy = monsterEntityNew(gfc_vector2d(10, 10));
+    enemy = monsterEntityNew(gfc_vector2d(100, 100));
 
     /*main game loop*/
     while(!done)
@@ -73,9 +79,12 @@ int main(int argc, char * argv[])
         //update Thinking Here
         entityThinkAll();
         
-        entityUpdateAll();
+        
 
-        //entityManagerDrawAll();
+        
+
+
+        
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
@@ -84,9 +93,7 @@ int main(int argc, char * argv[])
             
             
             entityManagerDrawAll();
-
             
-
 
             //UI elements last
             gf2d_sprite_draw(
@@ -99,7 +106,9 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-            
+            //gf2d_draw_line(gfc_vector2d(0,0), gfc_vector2d(100,100), GFC_COLOR_RED);
+            entityUpdateAll();
+
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
@@ -107,10 +116,14 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entityFree(player);
+    entityFree(projectile);
+    entityFree(enemy);
+
+    entityManagerClose();
+    //monsterManagerClose();
     slog("---==== END ====---");
 
     
 
     return 0;
 }
-/*eol@eof*/
