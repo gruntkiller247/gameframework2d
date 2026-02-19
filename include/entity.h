@@ -2,6 +2,8 @@
 #define __ENTITY_H__
 
 #include <SDL.h>
+#include <stdio.h>
+#include <time.h>
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
@@ -10,9 +12,6 @@ typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
 	GFC_TextLine name;							//Name of the entity
-
-	char* name2;
-
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
 	GFC_Rect bounds;
@@ -26,7 +25,14 @@ typedef struct Entity_S
 	void	(*free)(struct Entity_S* self);		
 	void	(*data) (struct data);
 	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
-	Uint8 team; //Magic number for now 0: none  1: Player  2: Enemy
+
+
+	Uint8 team;						//ENUM For what team entity is on
+	int		timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+	int		timeTillAttack;			//Time untill an attack can be made
+	int lastShotRotation;
+
+	
 }Entity;
 
 

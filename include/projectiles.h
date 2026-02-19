@@ -9,7 +9,7 @@
 #include "gfc_shape.h"
 
 
-Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team);
+Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, int timeToLive);
 
 void projectileThink(Entity* self);
 

@@ -127,7 +127,9 @@ void entityDraw(Entity* self)
 
 	if (self->sprite)
 	{
-		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		//GFC_Vector2D thing = gfc_vector2d(self->bounds.x / 2, self->bounds.y);
+
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 		//
 		//
 		//gf2d_draw_rect(self->bounds, GFC_COLOR_RED); IDK if this is working

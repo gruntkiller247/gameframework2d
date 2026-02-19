@@ -8,6 +8,8 @@
 #include "gf2d_graphics.h"
 #include "projectiles.h"
 
+
+
 Entity* playerEntityNew(GFC_Vector2D position)
 {
 	Entity* self;
@@ -20,8 +22,7 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	}
 
 
-	//self->name = "Matt";
-	self->name2 = "Matt";
+	strcpy(self->name,"Matt");
 
 	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 	self->position = position;
@@ -40,6 +41,10 @@ Entity* playerEntityNew(GFC_Vector2D position)
 
 	self->team = 1;
 
+	self->timeTillAttack = 5;
+	
+	self->lastShotRotation = 0;
+
 	return self;
 
 }
@@ -52,16 +57,20 @@ void playerThink(Entity* self)
 	if (!self)
 		return;
 
+
+
 	if (gfc_input_key_down("z"))
 	{
-		slog("Should be shooting a thing!");
+		//slog("Should be shooting a thing!");
 		playerShoot(self);
+		
 	}
 
 	if (gfc_input_key_down("d"))
 	{
 		self->position.x += 1;
-		//self->rotation = 0;
+		//self->rotation = 180;
+		self->lastShotRotation = 180;
 
 	}
 
@@ -69,6 +78,7 @@ void playerThink(Entity* self)
 	{
 		self->position.x -= 1;
 		//self->rotation = 0;
+		self->lastShotRotation = 0;
 
 	}
 
@@ -76,6 +86,7 @@ void playerThink(Entity* self)
 	{
 		self->position.y += 1;
 		//self->rotation = 270;
+		self->lastShotRotation = 270;
 
 	}
 
@@ -83,6 +94,7 @@ void playerThink(Entity* self)
 	{
 		self->position.y -= 1;
 		//self->rotation = 90;
+		self->lastShotRotation = 90;
 
 	}
 
@@ -91,6 +103,8 @@ void playerThink(Entity* self)
 		gfc_vector2d_normalize(&self->velocity);
 		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
 	}
+
+	//slog("Last shot rotation: %i", self->lastShotRotation);
 
 }
 
@@ -112,7 +126,7 @@ void playerTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("%s is touching something!",self->name2);
+		//slog("%s is touching something!",self->name);
 	}
 
 }
@@ -171,9 +185,38 @@ void playerShoot(Entity* self)
 	if (!self)
 		return;
 
-	//This hard coded 0 needs to be the direction the player is pointing
-	//The hard coded 1 is the player's team
-	Entity* thing = projectileEntityNew(self->position,0,TEAM_PLAYER);
+	//To DO fix the aiming
+	Entity* thing = projectileEntityNew(self->position, self->lastShotRotation,TEAM_PLAYER, NULL);
 
+	slog("INSIDER! Last shot rotation: %i", self->lastShotRotation);
+	
+	if (self->lastShotRotation = 180)
+	{
+		thing->velocity.x += 10;
+		//180: right - d
+		slog("Fireing Right!");
+	}
+	else if(self->lastShotRotation = 0)
+	{
+		thing->velocity.x -= 10;
+		//0: left - a
+		slog("Fireing Left!");
+	}
+	else if(self->lastShotRotation = 270)
+	{
+		thing->velocity.y -= 10;
+		//270 down - s
+		slog("Fireing down!");
+	}
+	else if (self->lastShotRotation = 90)
+	{
+		thing->velocity.y += 10;
+		//90 up
+		slog("Fireing Up!");
+	}
+	else
+	{
+		slog("Fireing No where!");
+	}
 
 }

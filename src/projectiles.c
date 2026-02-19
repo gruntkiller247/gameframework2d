@@ -4,7 +4,9 @@
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
 
-Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team)
+
+
+Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, int timeToLive)
 {
 	Entity* self;
 	self = entityNew();
@@ -31,6 +33,11 @@ Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team)
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
 	self->team = team;
+
+	if (!timeToLive)
+		self->timeToLive = 5;
+	else
+		self->timeToLive = timeToLive;
 }
 
 
@@ -38,6 +45,24 @@ void projectileThink(Entity* self)
 {
 	if (!self)
 		return;
+
+	/*if (self->timeToLive + getTime() >= getTime())
+		projectileFree(self);*/
+
+	if (self->velocity.y)
+	{
+		self->position.y += self->velocity.y;
+	}
+
+	if (self->velocity.x)
+	{
+		self->position.x+=self->velocity.x;
+	}
+
+	if (self->velocity.y || self->velocity.x)
+	{
+		gfc_vector2d_normalize(&self->velocity);
+	}
 
 
 }
@@ -60,7 +85,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("Projectile is touching something!");
+		//slog("Projectile is touching something!");
 	}
 
 
@@ -94,6 +119,8 @@ void projectileFree(Entity* self)
 {
 	if (!self)
 		return;
+
+	slog("Projectile is being killed!");
 
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);

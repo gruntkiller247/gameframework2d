@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "simple_logger.h"
-
+#include <stdio.h>
+#include <time.h>
 #include "gfc_input.h"
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
@@ -10,6 +11,7 @@
 #include "world.h"
 #include "gf2d_draw.h"
 #include "projectiles.h"
+#include "MattHelper.h"
 
 //128 x 128 grid for GIMP + snap to grid
 
@@ -24,6 +26,9 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color(1, 1, 1, 100);//= gfc_color8(255,100,255,200);
+
+    //setTime(time(NULL));
+    //getTime();
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -58,7 +63,7 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0));
 
     Entity* projectile;
-    projectile = projectileEntityNew(gfc_vector2d(300, 0),0,2);
+    projectile = projectileEntityNew(gfc_vector2d(300, 0),0,TEAM_ENEMY,NULL);
 
     Entity* enemy;
     enemy = monsterEntityNew(gfc_vector2d(100, 100));
