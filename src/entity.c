@@ -14,6 +14,8 @@ typedef struct
 
 }EntityManager;
 
+
+
 static EntityManager entityManager = { 0 };
 
 static Entity* thePlayer = NULL;
@@ -72,6 +74,7 @@ Entity* entityNew()
 		//set defaults
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
+
 		return &entityManager.entityList[c];
 	}
 
@@ -232,12 +235,25 @@ void entityTouch(Entity* self, Entity* toucher)
 
 	if (self->touch)
 	{
-		self->touch(self);
+		self->touch(self, toucher);
 		//slog("Self has an touch!");
 	}
-
 	else
+	{
 		slog("Entity has no touch!");
+	}
+
+	if (toucher->touch)
+	{
+		toucher->touch(toucher,self);
+	}
+	else
+	{
+		slog("Entity has no touch!");
+	}
+
+	
+	//slog("Entity has no touch!");
 }
 
 
@@ -252,6 +268,8 @@ void entityTouchAll()
 
 		for (d = c+1; d < entityManager.entityMax; d++)
 		{
+			if (!entityManager.entityList[d]._inUse)
+				continue;
 			//slog("Touching all entities: ");
 			entityTouch(&entityManager.entityList[c], &entityManager.entityList[d]);
 		}

@@ -116,7 +116,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("Player is touching something!");
+		slog("Monster is touching something!");
 	}
 }
 

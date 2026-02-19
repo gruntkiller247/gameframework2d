@@ -6,9 +6,9 @@
 #include "gfc_input.h"|
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
-#include "MattHelper.h"
+#include "projectiles.h"
 
-Entity* playerEntityNew(GFC_Vector2D position) 
+Entity* playerEntityNew(GFC_Vector2D position)
 {
 	Entity* self;
 	self = entityNew();
@@ -19,6 +19,9 @@ Entity* playerEntityNew(GFC_Vector2D position)
 		slog("Failed to spawn a player!");
 	}
 
+
+	//self->name = "Matt";
+	self->name2 = "Matt";
 
 	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 	self->position = position;
@@ -48,6 +51,12 @@ void playerThink(Entity* self)
 	
 	if (!self)
 		return;
+
+	if (gfc_input_key_down("z"))
+	{
+		slog("Should be shooting a thing!");
+		playerShoot(self);
+	}
 
 	if (gfc_input_key_down("d"))
 	{
@@ -103,7 +112,7 @@ void playerTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("Player is touching something!");
+		slog("%s is touching something!",self->name2);
 	}
 
 }
@@ -152,4 +161,19 @@ void playerFree(Entity* self)
 		gf2d_sprite_free(self->sprite);
 
 	free(self);
+}
+
+/*
+	To be called in think during state fire
+*/
+void playerShoot(Entity* self)
+{
+	if (!self)
+		return;
+
+	//This hard coded 0 needs to be the direction the player is pointing
+	//The hard coded 1 is the player's team
+	Entity* thing = projectileEntityNew(self->position,0,TEAM_PLAYER);
+
+
 }

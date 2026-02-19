@@ -19,6 +19,8 @@ void playerTouch(Entity* self, Entity* toucher);
 
 void playerUpdate(Entity* self);
 
+void playerShoot(Entity* self);
+
 //Entity* playerGet(Entity* self);
 
 #endif

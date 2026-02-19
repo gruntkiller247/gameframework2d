@@ -10,6 +10,9 @@ typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
 	GFC_TextLine name;							//Name of the entity
+
+	char* name2;
+
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
 	GFC_Rect bounds;
@@ -22,9 +25,19 @@ typedef struct Entity_S
 	void	(*update)(struct Entity_S* self);	
 	void	(*free)(struct Entity_S* self);		
 	void	(*data) (struct data);
-	Uint8	(*touch)(struct Entity_S* self);
+	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 	Uint8 team; //Magic number for now 0: none  1: Player  2: Enemy
 }Entity;
+
+
+typedef enum
+{
+	TEAM_NONE,
+	TEAM_PLAYER,
+	TEAM_ENEMY,
+
+}Teams;
+
 
 /*
 	@brief initialize the entity sub system
