@@ -147,6 +147,9 @@
     <ClCompile Include="..\gfc\simple_logger\src\simple_logger.c">
       <Filter>Helper Sources</Filter>
     </ClCompile>
+    <ClCompile Include="class.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\entity.h">
@@ -274,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="..\gfc\include\gfc_types.h">
       <Filter>Helper Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="class.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -116,7 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -182,6 +182,7 @@
     <ClCompile Include="..\src\player.c" />
     <ClCompile Include="..\src\projectiles.c" />
     <ClCompile Include="..\src\world.c" />
+    <ClCompile Include="class.c" />
     <ClCompile Include="tiledef.c" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +228,7 @@
     <ClInclude Include="..\include\projectiles.h" />
     <ClInclude Include="..\include\tiledef.h" />
     <ClInclude Include="..\include\world.h" />
+    <ClInclude Include="class.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="testLevel.level" />

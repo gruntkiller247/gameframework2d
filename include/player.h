@@ -19,7 +19,7 @@ void playerTouch(Entity* self, Entity* toucher);
 
 void playerUpdate(Entity* self);
 
-void playerShoot(Entity* self);
+void _playerShoot(Entity* self, int direction);
 
 //Entity* playerGet(Entity* self);
 

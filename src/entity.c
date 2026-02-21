@@ -166,6 +166,12 @@ void entityThink(Entity* self)
 	if (!self)
 		return;
 
+	/*if (self->name && strcmp(self->name, "Matt") != 0 && strcmp(self->name, "") != 0)
+	{
+		slog("Making %s Think!", self->name);
+	}*/
+		
+
 	//Tricking rocks into thinking!
 	self->think(self);
 

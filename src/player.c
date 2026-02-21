@@ -1,4 +1,7 @@
 
+#include <stdio.h>
+#include <time.h>
+
 #include "simple_logger.h"
 #include "entity.h"
 #include "player.h"
@@ -7,6 +10,7 @@
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
 #include "projectiles.h"
+
 
 
 
@@ -41,7 +45,8 @@ Entity* playerEntityNew(GFC_Vector2D position)
 
 	self->team = 1;
 
-	self->timeTillAttack = 5;
+	self->timerPrimary = 0;
+	self->primaryCooldown = 100;
 	
 	self->lastShotRotation = 0;
 
@@ -57,14 +62,38 @@ void playerThink(Entity* self)
 	if (!self)
 		return;
 
+	self->timerPrimary += 1.0;
+	//slog("TimerPrimary is %i,",self->timerPrimary);
 
-
-	if (gfc_input_key_down("z"))
+	if (gfc_input_key_down("UP") && self->timerPrimary >= self->primaryCooldown)
 	{
+		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		playerShoot(self);
-		
+		_playerShoot(self,D_UP);
 	}
+
+	if (gfc_input_key_down("DOWN") && self->timerPrimary >= self->primaryCooldown)
+	{
+		self->timerPrimary = 0;
+		//slog("Should be shooting a thing!");
+		_playerShoot(self,D_DOWN);
+	}
+
+	if (gfc_input_key_down("LEFT") && self->timerPrimary >= self->primaryCooldown)
+	{
+		self->timerPrimary = 0;
+		//slog("Should be shooting a thing!");
+		_playerShoot(self,D_LEFT);
+	}
+	
+	if (gfc_input_key_down("RIGHT") && self->timerPrimary >= self->primaryCooldown)
+	{
+		self->timerPrimary = 0;
+		//slog("Should be shooting a thing!");
+		_playerShoot(self,D_RIGHT);
+	}
+
+
 
 	if (gfc_input_key_down("d"))
 	{
@@ -180,43 +209,53 @@ void playerFree(Entity* self)
 /*
 	To be called in think during state fire
 */
-void playerShoot(Entity* self)
+void _playerShoot(Entity* self,int direction)
 {
 	if (!self)
 		return;
 
-	//To DO fix the aiming
-	Entity* thing = projectileEntityNew(self->position, self->lastShotRotation,TEAM_PLAYER, NULL);
-
-	slog("INSIDER! Last shot rotation: %i", self->lastShotRotation);
 	
-	if (self->lastShotRotation = 180)
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), self->lastShotRotation, TEAM_PLAYER, 10);
+
+	if (!thing)
 	{
-		thing->velocity.x += 10;
-		//180: right - d
-		slog("Fireing Right!");
+		slog("Failed to spawn a projectile when firing player!");
+		return;
 	}
-	else if(self->lastShotRotation = 0)
+
+	strcpy(thing->name, "Player's Pew!");
+
+	//slog("INSIDER! Last shot rotation: %i", self->lastShotRotation);
+	
+	if (direction == D_LEFT)
 	{
 		thing->velocity.x -= 10;
-		//0: left - a
-		slog("Fireing Left!");
+		//180: right - d
+		//slog("Fireing Left!");
 	}
-	else if(self->lastShotRotation = 270)
+	else if(direction == D_RIGHT)
 	{
-		thing->velocity.y -= 10;
-		//270 down - s
-		slog("Fireing down!");
+		thing->velocity.x += 10;
+		//0: left - a
+		//slog("Fireing Right!");
 	}
-	else if (self->lastShotRotation = 90)
+	else if(direction == D_DOWN)
 	{
 		thing->velocity.y += 10;
+		//270 down - s
+		//slog("Fireing down!");
+	}
+	else if (direction == D_UP)
+	{
+		thing->velocity.y -= 10;
 		//90 up
-		slog("Fireing Up!");
+		//slog("Fireing Up!");
 	}
 	else
 	{
-		slog("Fireing No where!");
+		slog("Fireing Nowhere!");
 	}
+
+	return;
 
 }

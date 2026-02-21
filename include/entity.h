@@ -28,9 +28,14 @@ typedef struct Entity_S
 
 
 	Uint8 team;						//ENUM For what team entity is on
-	int		timeToLive;				//Time to Live for projectiles like things. Can be NULL;
-	int		timeTillAttack;			//Time untill an attack can be made
+	
+
+	float timerPrimary;				//Timer that counts up to cooldown
+	float primaryCooldown;			//Time until primary attack can be fired
 	int lastShotRotation;
+
+	int timerDeath;				//Timer to count up to timeToLive
+	int timeToLive;				//Time to Live for projectiles like things. Can be NULL;
 
 	
 }Entity;
@@ -43,6 +48,15 @@ typedef enum
 	TEAM_ENEMY,
 
 }Teams;
+
+typedef enum
+{
+	D_UP,
+	D_DOWN,
+	D_LEFT,
+	D_RIGHT,
+
+}Directions;
 
 
 /*
@@ -65,6 +79,8 @@ Entity* entityNew();
 	@note do not use the memory address again after calling it
 */
 void entityFree(Entity* self);
+
+void entityFreeAll();
 
 void entityDraw(Entity* self);
 

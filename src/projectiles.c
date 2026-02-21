@@ -6,6 +6,7 @@
 
 
 
+
 Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, int timeToLive)
 {
 	Entity* self;
@@ -34,10 +35,26 @@ Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, 
 
 	self->team = team;
 
+	
+
 	if (!timeToLive)
+	{
 		self->timeToLive = 5;
+		self->timerDeath = 0;
+	}
+	else if (timeToLive == -1)
+	{
+		self->timerDeath = -1;
+	}
 	else
 		self->timeToLive = timeToLive;
+
+	//slog("Timerdeath: %i",self->timerDeath);
+
+	
+	strcpy(self->name, "PROJECTILE");
+
+	return self;
 }
 
 
@@ -46,8 +63,16 @@ void projectileThink(Entity* self)
 	if (!self)
 		return;
 
-	/*if (self->timeToLive + getTime() >= getTime())
-		projectileFree(self);*/
+	if (self->timerDeath != -1)
+	{
+		self->timerDeath += 1;
+		slog("Timer Death: %i", self->timerDeath);
+	}
+
+	
+
+	//slog("Timer Death: %i", self->timerDeath);
+	
 
 	if (self->velocity.y)
 	{
@@ -64,6 +89,12 @@ void projectileThink(Entity* self)
 		gfc_vector2d_normalize(&self->velocity);
 	}
 
+	if (self->timerDeath >= self->timeToLive)
+	{
+		self->_inUse = false;
+		slog("I am going to heaven, my child!");
+		return;
+	}
 
 }
 
