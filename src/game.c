@@ -61,6 +61,7 @@ int main(int argc, char * argv[])
 
     Entity* player;
     player = playerEntityNew(gfc_vector2d(0, 0));
+    strcpy(player->name, "Matt the Player");
 
     Entity* projectile;
     projectile = projectileEntityNew(gfc_vector2d(300, 0),TEAM_ENEMY,-1);
@@ -69,6 +70,7 @@ int main(int argc, char * argv[])
 
     Entity* enemy;
     enemy = monsterEntityNew(gfc_vector2d(100, 100));
+    strcpy(enemy->name, "Mr Monster!");
 
     /*main game loop*/
     while(!done)
@@ -114,9 +116,10 @@ int main(int argc, char * argv[])
                 (int)mf);
 
             //gf2d_draw_line(gfc_vector2d(0,0), gfc_vector2d(100,100), GFC_COLOR_RED);
-            entityUpdateAll();
+
             entityTouchAll();
-            //entityFreeAll();
+            entityUpdateAll();
+            entityFreeAll();
 
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
@@ -124,9 +127,14 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
-    entityFree(player);
-    entityFree(projectile);
-    entityFree(enemy);
+    if(player)
+        entityFree(player);
+    
+    if(projectile)
+        entityFree(projectile);
+    
+    if(enemy)
+        entityFree(enemy);
 
     entityManagerClose();
     //monsterManagerClose();

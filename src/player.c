@@ -13,12 +13,12 @@
 
 typedef struct PD
 {
-	float* timerPrimary;				//Timer that counts up to cooldown
-	float* primaryCooldown;			//Time until primary attack can be fired
-	int* basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
+	float timerPrimary;				//Timer that counts up to cooldown
+	float primaryCooldown;			//Time until primary attack can be fired
+	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
 
-	int* timerDeath;				//Timer to count up to timeToLive
-	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+	int timerDeath;				//Timer to count up to timeToLive
+	int timeToLive;				//Time to Live for projectiles like things. Can be NULL;
 
 }Player_Data; //Currently Cut content until I can fix this
 
@@ -66,6 +66,8 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	self->primaryCooldown = 50;
 
 	self->basicPlayerProjectileLife = 1000;
+
+	self->hitDelay = 300;
 
 	
 	/*

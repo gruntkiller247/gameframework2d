@@ -28,7 +28,8 @@ typedef struct Entity_S
 
 
 	Uint8 team;						//ENUM For what team entity is on
-	Uint8 hp;
+	int hp;
+	int hitDelay;				   //Delay before the entity can take damage again
 	
 	//Clean these up and put them in children class at some point
 	float timerPrimary;				//Timer that counts up to cooldown

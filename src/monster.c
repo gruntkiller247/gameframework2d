@@ -87,6 +87,7 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 	self->team = 2;
 	self->hp = 2;
+	self->hitDelay = 300;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
@@ -122,6 +123,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 		if (toucher->team = TEAM_PLAYER)
 		{
 			self->hp -= 1;
+			slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 		}
 	}
 }
@@ -159,14 +161,18 @@ void monsterThink(Entity* self)
 	//GFC_Vector2D toPlayer = { 0 };
 	//MonsterData *data;
 
-	if (!self || !self->data)
+	if (!self)
 		return;
-
+	
+	//slog("Inside monster thinking. HP is %i", self->hp);
+	
 	if (self->hp <= 0)
 	{
 		slog("I am dead! MR Monster!");
 		self->_inUse = 0;
 	}
+
+
 
 	//slog("Monster is thinking!");
 
@@ -180,6 +186,8 @@ void monsterFree(Entity* self)
 
 	if (!self)
 		return;
+
+	slog("Free Monster!");
 
 	data = self->data;
 	//clean up anything I own

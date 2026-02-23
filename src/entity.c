@@ -85,20 +85,26 @@ Entity* entityNew()
 void entityFree(Entity* self)
 {
 	if (!self)
+	{
+		//slog("Trying to free null or inUse entity");
 		return;
+	}
+
+	if (!self->free)
+		slog("entity, %s , has no free!", self->name);
+		
+
+	slog("Trying to free %s", self->name);
 
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
+	if (self->data)
+		self->free(self->data);
 
 	//IDK if this is correct
 	if (self->free)
 		self->free(self);
-
-
-	/*if (self->free)
-		self->free(self->data);*/
-
 
 	memset(self, 0, sizeof(Entity));
 }
@@ -109,8 +115,9 @@ void entityFreeAll()
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
 		
-		if (!entityManager.entityList[c]._inUse)
+		if (entityManager.entityList[c]._inUse)
 			continue;
+
 
 		entityFree(&entityManager.entityList[c]);
 		
@@ -175,6 +182,7 @@ void entityThink(Entity* self)
 		
 
 	//Tricking rocks into thinking!
+	//slog("Inside thinking. %s is thinking!",self->name);
 	self->think(self);
 
 
