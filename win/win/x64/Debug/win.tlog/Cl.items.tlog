@@ -37,6 +37,5 @@ C:\Users\Matthew\git\gameframework2d\src\MattHelper.c;C:\Users\Matthew\git\gamef
 C:\Users\Matthew\git\gameframework2d\src\monster.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\monster.obj
 C:\Users\Matthew\git\gameframework2d\src\player.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\player.obj
 C:\Users\Matthew\git\gameframework2d\src\projectiles.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\projectiles.obj
+C:\Users\Matthew\git\gameframework2d\src\role.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\role.obj
 C:\Users\Matthew\git\gameframework2d\src\world.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\world.obj
-C:\Users\Matthew\git\gameframework2d\win\class.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\class.obj
-C:\Users\Matthew\git\gameframework2d\win\tiledef.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\tiledef.obj

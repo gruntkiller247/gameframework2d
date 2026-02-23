@@ -43,6 +43,8 @@ Entity* playerEntityNew(GFC_Vector2D position)
 		//slog("Failed to allocate memory for player's data!");
 	}*/
 
+
+	//This will be all the baseline stats for the player. Class specific stuff will be in the class function call
 	strcpy(self->name,"Matt");
 
 	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
@@ -66,8 +68,11 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	self->primaryCooldown = 50;
 
 	self->basicPlayerProjectileLife = 1000;
+	self->hp = 3;
 
 	self->hitDelay = 300;
+	self->hitTimer = 0;
+	self->isInvul = 0;
 
 	
 	/*
@@ -163,6 +168,20 @@ void playerThink(Entity* self)
 		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
 	}
 
+
+	//Player Damage Checking
+	if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
+	{
+		self->hitTimer += 1;
+		//slog("Monster is immune, has been for %i", self->hitTimer);
+	}
+	else
+	{
+		self->isInvul = 0;
+		self->hitTimer = 0;
+		//slog("Monster is no longer immune!");
+	}
+
 	//slog("Last shot rotation: %i", self->lastShotRotation);
 
 }
@@ -186,6 +205,13 @@ void playerTouch(Entity* self, Entity* toucher)
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 		//slog("%s is touching something!",self->name);
+		if (toucher->team = TEAM_ENEMY && self->isInvul == 0) 
+		{
+			self->hp -= 1;
+			self->isInvul = 1;
+			slog("Enemy aligned thing touched me %s. HP is now %i", self->name, self->hp);
+
+		}
 	}
 
 }
@@ -240,7 +266,8 @@ void playerFree(Entity* self)
 }
 
 /*
-	To be called in think during state fire
+	To be called in think during state fire. 
+	Test method deperciated
 */
 void _playerShoot(Entity* self,int direction)
 {
@@ -289,5 +316,20 @@ void _playerShoot(Entity* self,int direction)
 	}
 
 	return;
+
+}
+
+void playerGunnerShoot(Entity* self, int direction)
+{
+
+}
+
+void playerGunnterSpecial(Entity* self) 
+{
+
+}
+
+void playerGunnerUltimate(Entity* self)
+{
 
 }

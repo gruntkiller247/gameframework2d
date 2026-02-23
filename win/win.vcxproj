@@ -181,9 +181,8 @@
     <ClCompile Include="..\src\monster.c" />
     <ClCompile Include="..\src\player.c" />
     <ClCompile Include="..\src\projectiles.c" />
+    <ClCompile Include="..\src\role.c" />
     <ClCompile Include="..\src\world.c" />
-    <ClCompile Include="class.c" />
-    <ClCompile Include="tiledef.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gfc\include\gfc_actions.h" />
@@ -226,9 +225,9 @@
     <ClInclude Include="..\include\monster.h" />
     <ClInclude Include="..\include\player.h" />
     <ClInclude Include="..\include\projectiles.h" />
+    <ClInclude Include="..\include\role.h" />
     <ClInclude Include="..\include\tiledef.h" />
     <ClInclude Include="..\include\world.h" />
-    <ClInclude Include="class.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="testLevel.level" />

@@ -45,9 +45,6 @@
     <ClCompile Include="..\src\level.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tiledef.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\projectiles.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,11 +141,11 @@
     <ClCompile Include="..\gfc\simple_logger\src\simple_logger.c">
       <Filter>Helper Sources</Filter>
     </ClCompile>
-    <ClCompile Include="class.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\gfc\src\miniz.c">
       <Filter>Helper Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\role.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,7 +275,7 @@
     <ClInclude Include="..\gfc\include\gfc_types.h">
       <Filter>Helper Headers</Filter>
     </ClInclude>
-    <ClInclude Include="class.h">
+    <ClInclude Include="..\include\role.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

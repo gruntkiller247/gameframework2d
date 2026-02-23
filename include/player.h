@@ -23,4 +23,10 @@ void _playerShoot(Entity* self, int direction);
 
 //Entity* playerGet(Entity* self);
 
+void playerGunnerShoot(Entity* self, int direction);
+
+void playerGunnterSpecial(Entity* self);
+
+void playerGunnerUltimate(Entity* self);
+
 #endif

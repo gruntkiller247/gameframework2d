@@ -180,7 +180,9 @@ void projectileFree(Entity* self)
 	{
 		gf2d_sprite_free(self->sprite);
 	}
-		
+	
+	if (self->data)
+		free(self->data);
 
 	free(self);
 }

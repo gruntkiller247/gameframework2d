@@ -87,7 +87,10 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 	self->team = 2;
 	self->hp = 2;
+
 	self->hitDelay = 300;
+	self->hitTimer = 0;
+	self->isInvul = 0;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
@@ -120,9 +123,10 @@ void monsterTouch(Entity* self, Entity* toucher)
 	{
 		//slog("Monster is touching something!");
 
-		if (toucher->team = TEAM_PLAYER)
+		if (toucher->team = TEAM_PLAYER && self->isInvul == 0)
 		{
 			self->hp -= 1;
+			self->isInvul = 1;
 			slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 		}
 	}
@@ -168,9 +172,25 @@ void monsterThink(Entity* self)
 	
 	if (self->hp <= 0)
 	{
-		slog("I am dead! MR Monster!");
+		//slog("I am dead! MR Monster!");
 		self->_inUse = 0;
 	}
+
+	if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
+	{
+		self->hitTimer += 1;
+		//slog("Monster is immune, has been for %i", self->hitTimer);
+	}
+	else
+	{
+		self->isInvul = 0;
+		self->hitTimer = 0;
+		//slog("Monster is no longer immune!");
+	}
+
+
+
+	
 
 
 
@@ -182,22 +202,24 @@ void monsterThink(Entity* self)
 
 void monsterFree(Entity* self)
 {
-	MonsterData* data;
+	//MonsterData* data;
 
 	if (!self)
 		return;
 
 	slog("Free Monster!");
 
-	data = self->data;
+	
 	//clean up anything I own
 
-	free(data);
+	if(self->data)
+		free(self->data);
 
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
-	free(self);
+	if(self)
+		free(self);
 
 
 }

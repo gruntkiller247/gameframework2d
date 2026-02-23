@@ -84,27 +84,25 @@ Entity* entityNew()
 
 void entityFree(Entity* self)
 {
-	if (!self)
+	if (!self || self->_inUse)
 	{
-		//slog("Trying to free null or inUse entity");
+		slog("Trying to free null or inUse entity");
 		return;
 	}
 
-	if (!self->free)
-		slog("entity, %s , has no free!", self->name);
-		
+	//if (!self->free)
+		//slog("entity, %s , has no free!", self->name);
+	//slog("Trying to free %s", self->name);
 
-	slog("Trying to free %s", self->name);
-
-	if (self->sprite)
-		gf2d_sprite_free(self->sprite);
-
-	if (self->data)
+	/*if (self->data)
 		self->free(self->data);
-
-	//IDK if this is correct
+	
 	if (self->free)
 		self->free(self);
+		*/
+
+	
+	
 
 	memset(self, 0, sizeof(Entity));
 }
@@ -115,7 +113,7 @@ void entityFreeAll()
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
 		
-		if (entityManager.entityList[c]._inUse)
+		if (entityManager.entityList[c]._inUse || entityManager.entityList[c]._inUse == NULL)
 			continue;
 
 
@@ -124,6 +122,20 @@ void entityFreeAll()
 	}
 }
 
+
+/*
+* Remeber, Frees all entities, not set hp to 0!
+*/
+void entityKillAll()
+{
+	int c;
+
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		entityFree(&entityManager.entityList[c]);
+
+	}
+}
 
 
 void entityDraw(Entity* self)
@@ -134,7 +146,7 @@ void entityDraw(Entity* self)
 		return;
 	}
 
-	if (self->sprite)
+	if (self->sprite && self->_inUse)
 	{
 		//GFC_Vector2D thing = gfc_vector2d(self->bounds.x / 2, self->bounds.y);
 
@@ -295,6 +307,10 @@ void entityTouchAll()
 	}
 }
 
+void playerSetter(Entity* player)
+{
+	thePlayer = player;
+}
 
 Entity* playerGetter()
 {
