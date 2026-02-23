@@ -63,7 +63,9 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0));
 
     Entity* projectile;
-    projectile = projectileEntityNew(gfc_vector2d(300, 0),0,TEAM_ENEMY,-1);
+    projectile = projectileEntityNew(gfc_vector2d(300, 0),TEAM_ENEMY,-1);
+
+    strcpy(projectile->name, "TEST_PROJECTILE");
 
     Entity* enemy;
     enemy = monsterEntityNew(gfc_vector2d(100, 100));

@@ -11,6 +11,16 @@
 #include "gf2d_graphics.h"
 #include "projectiles.h"
 
+typedef struct PD
+{
+	float* timerPrimary;				//Timer that counts up to cooldown
+	float* primaryCooldown;			//Time until primary attack can be fired
+	int* basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
+
+	int* timerDeath;				//Timer to count up to timeToLive
+	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+
+}Player_Data; //Currently Cut content until I can fix this
 
 
 
@@ -25,6 +35,13 @@ Entity* playerEntityNew(GFC_Vector2D position)
 		slog("Failed to spawn a player!");
 	}
 
+	/*Player_Data* data = malloc(sizeof(Player_Data));
+
+	if (!data)
+	{
+		//return NULL;
+		//slog("Failed to allocate memory for player's data!");
+	}*/
 
 	strcpy(self->name,"Matt");
 
@@ -43,12 +60,22 @@ Entity* playerEntityNew(GFC_Vector2D position)
 
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
-	self->team = 1;
+	self->team = TEAM_PLAYER;
 
 	self->timerPrimary = 0;
-	self->primaryCooldown = 100;
+	self->primaryCooldown = 50;
+
+	self->basicPlayerProjectileLife = 1000;
+
 	
-	self->lastShotRotation = 0;
+	/*
+	data->timerPrimary = 0;
+	data->primaryCooldown = 50;
+	
+	data->basicPlayerProjectileLife = 1000;
+
+	self->data = data;
+	*/
 
 	return self;
 
@@ -63,7 +90,8 @@ void playerThink(Entity* self)
 		return;
 
 	self->timerPrimary += 1.0;
-	//slog("TimerPrimary is %i,",self->timerPrimary);
+	//slog("TimerPrimary is %i,", self->timerPrimary);
+	//slog("primaryCooldown is %i,", self->primaryCooldown);
 
 	if (gfc_input_key_down("UP") && self->timerPrimary >= self->primaryCooldown)
 	{
@@ -99,7 +127,7 @@ void playerThink(Entity* self)
 	{
 		self->position.x += 1;
 		//self->rotation = 180;
-		self->lastShotRotation = 180;
+		//self->basicPlayerProjectileLife = 180;
 
 	}
 
@@ -107,7 +135,7 @@ void playerThink(Entity* self)
 	{
 		self->position.x -= 1;
 		//self->rotation = 0;
-		self->lastShotRotation = 0;
+		//self->lastShotRotation = 0;
 
 	}
 
@@ -115,7 +143,7 @@ void playerThink(Entity* self)
 	{
 		self->position.y += 1;
 		//self->rotation = 270;
-		self->lastShotRotation = 270;
+		//self->lastShotRotation = 270;
 
 	}
 
@@ -123,7 +151,7 @@ void playerThink(Entity* self)
 	{
 		self->position.y -= 1;
 		//self->rotation = 90;
-		self->lastShotRotation = 90;
+		//self->lastShotRotation = 90;
 
 	}
 
@@ -203,6 +231,9 @@ void playerFree(Entity* self)
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
+	if (self->data)
+		free(self->data);
+
 	free(self);
 }
 
@@ -214,8 +245,7 @@ void _playerShoot(Entity* self,int direction)
 	if (!self)
 		return;
 
-	
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), self->lastShotRotation, TEAM_PLAYER, 10);
+	Entity* thing = projectileEntityNew( gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), TEAM_PLAYER,self->basicPlayerProjectileLife);
 
 	if (!thing)
 	{

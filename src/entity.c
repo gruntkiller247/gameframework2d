@@ -108,10 +108,12 @@ void entityFreeAll()
 	int c;
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
+		
 		if (!entityManager.entityList[c]._inUse)
 			continue;
 
 		entityFree(&entityManager.entityList[c]);
+		
 	}
 }
 
@@ -166,7 +168,7 @@ void entityThink(Entity* self)
 	if (!self)
 		return;
 
-	/*if (self->name && strcmp(self->name, "Matt") != 0 && strcmp(self->name, "") != 0)
+	/**if (self->name && strcmp(self->name, "Matt") != 0 && strcmp(self->name, "") != 0)
 	{
 		slog("Making %s Think!", self->name);
 	}*/

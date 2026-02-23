@@ -86,13 +86,14 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
 	self->team = 2;
+	self->hp = 2;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
 	{
 
 	}
-
+	strcpy(self->name, "MONSTER");
 
 
 	return self;
@@ -116,7 +117,12 @@ void monsterTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("Monster is touching something!");
+		//slog("Monster is touching something!");
+
+		if (toucher->team = TEAM_PLAYER)
+		{
+			self->hp -= 1;
+		}
 	}
 }
 
@@ -155,6 +161,12 @@ void monsterThink(Entity* self)
 
 	if (!self || !self->data)
 		return;
+
+	if (self->hp <= 0)
+	{
+		slog("I am dead! MR Monster!");
+		self->_inUse = 0;
+	}
 
 	//slog("Monster is thinking!");
 

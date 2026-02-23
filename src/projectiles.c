@@ -4,19 +4,31 @@
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
 
+typedef struct PD
+{
+	int* timerDeath;				//Timer to count up to timeToLive
+	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+}Projectile_Data; //Currently cut content
 
 
-
-Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, int timeToLive)
+Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 {
 	Entity* self;
 	self = entityNew();
 
 	if (!self)
 	{
-		return NULL;
 		slog("Failed to spawn a projectile!");
+		return NULL;
 	}
+
+	/*Projectile_Data* data = malloc(sizeof(Projectile_Data));
+	
+	if (!data)
+	{
+		slog("Data couldn't be made for projectile!");
+		return NULL;
+	}*/
 
 	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
 	self->position = position;
@@ -36,18 +48,28 @@ Entity* projectileEntityNew(GFC_Vector2D position, float direction, Uint8 team, 
 	self->team = team;
 
 	
-
+	
 	if (!timeToLive)
 	{
+		slog("No time to live in Projectiles!");
 		self->timeToLive = 5;
 		self->timerDeath = 0;
+		/*data->timeToLive = 5;
+		data->timerDeath = 0;*/
 	}
 	else if (timeToLive == -1)
 	{
+		//data->timerDeath = -1;
 		self->timerDeath = -1;
 	}
 	else
+	{
 		self->timeToLive = timeToLive;
+		self->timerDeath = 0;
+		//data->timeToLive = timeToLive;
+		//data-> timerDeath = 0;
+	}
+		
 
 	//slog("Timerdeath: %i",self->timerDeath);
 
@@ -63,15 +85,22 @@ void projectileThink(Entity* self)
 	if (!self)
 		return;
 
+	//((Player_Data*)self)->basicPlayerProjectileLife
+
 	if (self->timerDeath != -1)
 	{
 		self->timerDeath += 1;
-		slog("Timer Death: %i", self->timerDeath);
+
+		//slog("Timer Death: %i", self->timerDeath);
+
+		
+		if (self->timerDeath >= self->timeToLive)
+		{
+			self->_inUse = false;
+			//slog("I am going to heaven, my child!");
+			return;
+		}
 	}
-
-	
-
-	//slog("Timer Death: %i", self->timerDeath);
 	
 
 	if (self->velocity.y)
@@ -89,12 +118,6 @@ void projectileThink(Entity* self)
 		gfc_vector2d_normalize(&self->velocity);
 	}
 
-	if (self->timerDeath >= self->timeToLive)
-	{
-		self->_inUse = false;
-		slog("I am going to heaven, my child!");
-		return;
-	}
 
 }
 
@@ -154,7 +177,10 @@ void projectileFree(Entity* self)
 	slog("Projectile is being killed!");
 
 	if (self->sprite)
+	{
 		gf2d_sprite_free(self->sprite);
+	}
+		
 
 	free(self);
 }

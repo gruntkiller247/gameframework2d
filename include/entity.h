@@ -22,20 +22,22 @@ typedef struct Entity_S
 	GFC_Vector2D velocity;
 	void	(*think)(struct Entity_S *self);	//Called every frame if defined for the entity
 	void	(*update)(struct Entity_S* self);	
-	void	(*free)(struct Entity_S* self);		
+	void	(*free)(struct Entity_S* self);	
 	void	(*data) (struct data);
 	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 
 
 	Uint8 team;						//ENUM For what team entity is on
+	Uint8 hp;
 	
-
+	//Clean these up and put them in children class at some point
 	float timerPrimary;				//Timer that counts up to cooldown
 	float primaryCooldown;			//Time until primary attack can be fired
-	int lastShotRotation;
+	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
 
 	int timerDeath;				//Timer to count up to timeToLive
 	int timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+
 
 	
 }Entity;

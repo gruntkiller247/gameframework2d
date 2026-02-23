@@ -27,9 +27,6 @@
     <ClCompile Include="..\src\game.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gfc\src\miniz.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="class.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gfc\src\miniz.c">
+      <Filter>Helper Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
