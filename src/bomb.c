@@ -92,6 +92,23 @@ void bombThink(Entity* self)
 		}
 	}
 
+	if (self->velocity.y)
+	{
+		self->position.y += self->velocity.y;
+		//slog("Boming moving on Y!");
+	}
+
+	if (self->velocity.x)
+	{
+		self->position.x += self->velocity.x;
+		//slog("Bomb moving on X!");
+	}
+
+	if (self->velocity.y || self->velocity.x)
+	{
+		gfc_vector2d_normalize(&self->velocity);
+	}
+
 }
 
 void bombTouch(Entity* self, Entity* toucher) 
@@ -112,7 +129,7 @@ void bombTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		slog("Bomb is touching something! %s",toucher->name);
+		//slog("Bomb is touching something! %s",toucher->name);
 	}
 }
 
@@ -174,15 +191,30 @@ void explode(Entity* self)
 
 	//N, NE, E, SE, S ,SW, W ,NW
 
-	N->damage = self->damage/3;
-	NE->damage = self->damage/3;
-	E->damage = self->damage/3;
-	SE->damage = self->damage/3;
-	
-	S->damage = self->damage/3;
-	SW->damage = self->damage/3;
-	W->damage = self->damage/3;
-	NW->damage = self->damage/3;
+	if (self->damage / 3 > 0)
+	{
+		N->damage = self->damage / 3;
+		NE->damage = self->damage / 3;
+		E->damage = self->damage / 3;
+		SE->damage = self->damage / 3;
+
+		S->damage = self->damage / 3;
+		SW->damage = self->damage / 3;
+		W->damage = self->damage / 3;
+		NW->damage = self->damage / 3;
+	}
+	else
+	{
+		N->damage = 1;
+		NE->damage = 1;
+		E->damage = 1;
+		SE->damage = 1;
+
+		S->damage = 1;
+		SW->damage = 1;
+		W->damage = 1;
+		NW->damage = 1;
+	}
 
 	move(N, D_NORTH);
 	move(NE, D_NORTHEAST);

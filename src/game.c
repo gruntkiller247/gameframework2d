@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
 
 
     Entity* player;
-    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_BAKER);
+    player = playerEntityNew(gfc_vector2d(500, 500), ROLE_PLAYER_BAKER);
     strcpy(player->name, "Player");
 
     Entity* projectile;

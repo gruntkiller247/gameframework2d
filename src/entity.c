@@ -157,10 +157,12 @@ void entityDraw(Entity* self)
 		//
 		//gf2d_draw_rect(self->bounds, GFC_COLOR_RED); IDK if this is working
 	}
-	else
+	else if (self->sprite && self->_inUse)
 	{
 		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, self->color, (Uint32)self->frame);
 	}
+	else
+		;
 
 
 

@@ -41,7 +41,7 @@ void playerGunnerUltimate(Entity* self);
 
 void playerBakerShoot(Entity* self,int direction);
 
-void playerBakerSpecial(Entity* self);
+void playerBakerSpecial(Entity* self, int direction);
 
 void playerBakerUlt(Entity* self);
 

@@ -95,7 +95,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 		case ROLE_PLAYER_BAKER:
 		
 		self->bombAmount = 20;
-		self->bombTLL = 20;
+		self->bombTLL = 100;
 		self->fire = playerBakerShoot;
 		self->special = playerBakerSpecial;
 		self->ultimate = playerBakerUlt;
@@ -563,9 +563,9 @@ void playerBakerShoot(Entity* self, int direction)
 
 	//Same as gunner, shoots bombs that have as hort range/life
 	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL);
-	thing->scale = gfc_vector2d(5, 5);
-	thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
-	thing->damage = self->specialDamage;
+	//thing->scale = gfc_vector2d(5, 5);
+	//thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
+	thing->damage = self->damage;
 
 	switch (direction)
 	{
@@ -598,7 +598,8 @@ void playerBakerShoot(Entity* self, int direction)
 
 }
 
-void playerBakerSpecial(Entity* self)
+//This special does not use a direction
+void playerBakerSpecial(Entity* self, int direction)
 {
 	slog("Baker Special");
 	
@@ -611,13 +612,15 @@ void playerBakerSpecial(Entity* self)
 		rX = (self->position.x) + (float)rand() / RAND_MAX * (self->bounds.w * 2);
 		rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h * 2);
 
-		thing = bombEntityNew(gfc_vector2d(rX, rY), TEAM_PLAYER, self->bombTLL*2);
+		thing = bombEntityNew(gfc_vector2d((int)rX, (int)rY), TEAM_PLAYER, self->bombTLL*2);
 
 		if (!thing)
 		{
 			slog("Failed to make a bomb in playerBakerSpecial");
 			return;
 		}
+
+		slog("Created a bomb! It's velocitys are (%f,%f)", thing->velocity.x, thing->velocity.y);
 	}
 
 }
