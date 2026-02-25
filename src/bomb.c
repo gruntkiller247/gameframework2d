@@ -24,8 +24,8 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		return NULL;
 	}
 
-	self->color = malloc(sizeof(GFC_Color));
-	*self->color = GFC_COLOR_DARKORANGE;
+	/*self->color = malloc(sizeof(GFC_Color));
+	*self->color = GFC_COLOR_DARKORANGE;*/
 
 	self->team = team;
 
@@ -171,8 +171,8 @@ void bombFree(Entity* self)
 	if (self->data)
 		free(self->data);
 
-	if (self->color)
-		free(self->color);
+	/*if (self->color)
+		free(self->color);*/
 
 	free(self);
 }

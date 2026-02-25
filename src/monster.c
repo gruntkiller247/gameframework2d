@@ -219,6 +219,9 @@ void monsterFree(Entity* self)
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
+	/*if (self->color)
+		free(self->color);*/
+
 	if(self)
 		free(self);
 

@@ -28,7 +28,7 @@ typedef struct Entity_S
 	void	(*data) (struct data);
 	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 
-	GFC_Color* color;
+	//GFC_Color* color;
 
 	Uint8 team;						//ENUM For what team entity is on
 	int hp;

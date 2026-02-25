@@ -207,8 +207,8 @@ void projectileFree(Entity* self)
 	if (self->data)
 		free(self->data);
 
-	if (self->color)
-		free(self->color);
+	/*if (self->color)
+		free(self->color);*/
 
 	free(self);
 }
