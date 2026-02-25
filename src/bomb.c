@@ -66,6 +66,8 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		//data-> timerDeath = 0;
 	}
 
+	self->move = -1;
+
 	return self;
 }
 
@@ -92,21 +94,28 @@ void bombThink(Entity* self)
 		}
 	}
 
-	if (self->velocity.y)
+	if (self->move != -1)
 	{
-		self->position.y += self->velocity.y;
-		//slog("Boming moving on Y!");
-	}
+		if (self->velocity.y)
+		{
+			self->position.y += self->velocity.y;
+			//slog("Boming moving on Y!");
+		}
 
-	if (self->velocity.x)
-	{
-		self->position.x += self->velocity.x;
-		//slog("Bomb moving on X!");
-	}
+		if (self->velocity.x )
+		{
+			self->position.x += self->velocity.x;
+			//slog("Bomb moving on X!");
+		}
 
-	if (self->velocity.y || self->velocity.x)
+		if (self->velocity.y || self->velocity.x )
+		{
+			gfc_vector2d_normalize(&self->velocity);
+		}
+	}
+	else
 	{
-		gfc_vector2d_normalize(&self->velocity);
+		//slog("I AM A BOMB AND I SHOULD NOT BE MOVING!");
 	}
 
 }

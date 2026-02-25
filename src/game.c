@@ -77,6 +77,7 @@ int main(int argc, char * argv[])
     
     Entity* bomb;
     bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
+    strcpy(bomb->name, "TEST_BOMB!");
 
     /*main game loop*/
     while(!done)

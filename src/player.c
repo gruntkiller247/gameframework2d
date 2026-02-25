@@ -566,6 +566,7 @@ void playerBakerShoot(Entity* self, int direction)
 	//thing->scale = gfc_vector2d(5, 5);
 	//thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
 	thing->damage = self->damage;
+	thing->move = 1;
 
 	switch (direction)
 	{
@@ -613,6 +614,7 @@ void playerBakerSpecial(Entity* self, int direction)
 		rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h * 2);
 
 		thing = bombEntityNew(gfc_vector2d((int)rX, (int)rY), TEAM_PLAYER, self->bombTLL*2);
+		//thing->move = -1;
 
 		if (!thing)
 		{
@@ -628,5 +630,7 @@ void playerBakerSpecial(Entity* self, int direction)
 void playerBakerUlt(Entity* self)
 {
 	slog("Baker Ult");
+	
+	//I do not have any ideas
 
 }

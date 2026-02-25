@@ -55,6 +55,7 @@ typedef struct Entity_S
 	//Player Baker special values
 	int bombTLL;
 	int bombAmount;
+	int move;
 
 	int timerDeath;				//Timer to count up to timeToLive
 	int timeToLive;				//Time to Live for projectiles like things. Can be NULL; Used for Player projectiles + Bombs
