@@ -631,6 +631,11 @@ void playerBakerUlt(Entity* self)
 {
 	slog("Baker Ult");
 	
-	//I do not have any ideas
+	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL*2);
+	thing->scale = gfc_vector2d(0, 0);
+	thing->bounds = gfc_rect(0, 0, 32 * 0, 32 * 0);
+	thing->damage = self->ultDamage;
+	thing->ultIs = 1;
+	//thing->move = 1;
 
 }

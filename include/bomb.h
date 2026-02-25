@@ -20,4 +20,11 @@ void bombFree(Entity* self);
 */
 void explode(Entity* self);
 
+void bakerExplode(Entity* self);
+
+/*
+	A copy of projectile move but for bombs
+*/
+void moveBomb(Entity* self, int direction);
+
 #endif

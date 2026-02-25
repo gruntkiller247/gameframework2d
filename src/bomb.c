@@ -66,7 +66,7 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		//data-> timerDeath = 0;
 	}
 
-	self->move = -1;
+	self->move = 0;
 
 	return self;
 }
@@ -76,6 +76,26 @@ void bombThink(Entity* self)
 {
 	if (!self)
 		return;
+
+	if (self->ultIs > 0 && self->ultIs <= 50)
+	{
+		//self->scale = gfc_vector2d(self->ultIs, self->ultIs);
+		if(self->ultIs % 5 == 0)
+			bakerExplode(self);
+
+		//self->bounds = gfc_rect(0, 0, 32 * self->ultIs, 32 * self->ultIs);
+		self->ultIs += 1;
+		//slog("My damage is %i", self->damage);
+	}
+	else if (self->ultIs > 50)
+	{
+		//Kill itself
+		self->ultIs = 0;
+		self->_inUse = 0;
+		//slog("Gunner ult killing self!");
+	}
+	else
+		;
 
 	if (self->timerDeath != -1)
 	{
@@ -94,7 +114,7 @@ void bombThink(Entity* self)
 		}
 	}
 
-	if (self->move != -1)
+	if (self->move != 0)
 	{
 		if (self->velocity.y)
 		{
@@ -115,7 +135,7 @@ void bombThink(Entity* self)
 	}
 	else
 	{
-		//slog("I AM A BOMB AND I SHOULD NOT BE MOVING!");
+		slog("I AM A BOMB AND I SHOULD NOT BE MOVING!");
 	}
 
 }
@@ -198,6 +218,13 @@ void explode(Entity* self)
 	Entity* W = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
 	Entity* NW = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
 
+
+	if (!N || !NE || !E || !SE || !S || !SW || !W || !NW)
+	{
+		slog("Bomb Explode can't spawn bombs!");
+		return;
+	}
+
 	//N, NE, E, SE, S ,SW, W ,NW
 
 	if (self->damage / 3 > 0)
@@ -235,5 +262,119 @@ void explode(Entity* self)
 	move(W, D_WEST);
 	move(NW, D_NORTHWEST);
 
-	self->_inUse = 0;
+	if(self->ultIs == -1)
+		self->_inUse = 0;
+	
+}
+
+void moveBomb(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	//slog("Inside Projectile Move! Entity Name: %s",self->name);
+
+	switch (direction)
+	{
+	case(D_NORTH):
+		self->velocity.y -= self->topSpeed.y;
+		break;
+
+	case(D_NORTHEAST):
+		self->velocity.y -= self->topSpeed.y;
+		self->velocity.x += self->topSpeed.x;
+		break;
+
+	case(D_EAST):
+		self->velocity.x += self->topSpeed.x;
+		break;
+
+	case(D_SOUTHEAST):
+		self->velocity.y += self->topSpeed.y;
+		self->velocity.x += self->topSpeed.x;
+		break;
+
+	case(D_SOUTH):
+		self->velocity.y += self->topSpeed.y;
+		break;
+
+	case(D_SOUTHWEST):
+		self->velocity.y += self->topSpeed.y;
+		self->velocity.x -= self->topSpeed.x;
+		break;
+
+	case(D_WEST):
+		self->velocity.x -= self->topSpeed.x;
+		break;
+
+	case(D_NORTHWEST):
+		self->velocity.y -= self->topSpeed.y;
+		self->velocity.x -= self->topSpeed.x;
+		break;
+
+	default:
+
+		slog("No real direction given for projectile movement!");
+		return;
+
+
+	}
+	return;
+}
+
+
+/*
+	Only to be called by the Baker's Ultimate!
+*/
+void bakerExplode(Entity* self)
+{
+	Entity* N = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* NE = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* E = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* SE = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* S = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* SW = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* W = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+	Entity* NW = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+
+	//N, NE, E, SE, S ,SW, W ,NW
+
+	if (!N || !NE || !E || !SE || !S || !SW || !W || !NW)
+	{
+		slog("Baker Ult can't spawn bombs!");
+		return;
+	}
+	
+	N->damage = self->damage;
+	NE->damage = self->damage;
+	E->damage = self->damage;
+	SE->damage = self->damage;
+
+	S->damage = self->damage;
+	SW->damage = self->damage;
+	W->damage = self->damage;
+	NW->damage = self->damage;
+	
+	N->move = 1;
+	NE->move = 1;
+	E->move = 1;
+	SE->move = 1;
+
+	S->move = 1;
+	SW->move = 1;
+	W->move = 1;
+	NW->move = 1;
+	
+
+	moveBomb(N, D_NORTH);
+	moveBomb(NE, D_NORTHEAST);
+	moveBomb(E, D_EAST);
+	moveBomb(SE, D_SOUTHEAST);
+
+	
+
+	moveBomb(S, D_SOUTH);
+	moveBomb(SW, D_SOUTHWEST);
+	moveBomb(W, D_WEST);
+	moveBomb(NW, D_NORTHWEST);
 }

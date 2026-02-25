@@ -75,9 +75,9 @@ int main(int argc, char * argv[])
     strcpy(enemy->name, "Mr Monster!");
     enemy->hp = 10;
     
-    Entity* bomb;
-    bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
-    strcpy(bomb->name, "TEST_BOMB!");
+    //Entity* bomb;
+    //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
+    //strcpy(bomb->name, "TEST_BOMB!");
 
     /*main game loop*/
     while(!done)
