@@ -13,6 +13,7 @@
 #include "gf2d_draw.h"
 #include "projectiles.h"
 #include "MattHelper.h"
+#include "bomb.h"
 
 //128 x 128 grid for GIMP + snap to grid
 
@@ -28,7 +29,8 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color(1, 1, 1, 100);//= gfc_color8(255,100,255,200);
 
-    slog("The curret time is %i",time(NULL));
+    srand(time(NULL));
+    //slog("The curret time is %i",time(NULL));
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -45,7 +47,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
 
     
-    entityManagerInit(1024);
+    entityManagerInit(2048);
     //monsterManagerInit(1024);
 
     //Not Working?
@@ -60,8 +62,8 @@ int main(int argc, char * argv[])
 
 
     Entity* player;
-    player = playerEntityNew(gfc_vector2d(0, 0));
-    strcpy(player->name, "Matt the Player");
+    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_BAKER);
+    strcpy(player->name, "Player");
 
     Entity* projectile;
     projectile = projectileEntityNew(gfc_vector2d(300, 0),TEAM_ENEMY,-1);
@@ -71,6 +73,10 @@ int main(int argc, char * argv[])
     Entity* enemy;
     enemy = monsterEntityNew(gfc_vector2d(100, 100));
     strcpy(enemy->name, "Mr Monster!");
+    enemy->hp = 10;
+    
+    Entity* bomb;
+    bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
 
     /*main game loop*/
     while(!done)

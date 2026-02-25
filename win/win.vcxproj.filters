@@ -147,6 +147,9 @@
     <ClCompile Include="..\src\role.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\bomb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\entity.h">
@@ -276,6 +279,9 @@
       <Filter>Helper Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\include\role.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\bomb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

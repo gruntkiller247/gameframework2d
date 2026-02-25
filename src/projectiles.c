@@ -11,6 +11,9 @@ typedef struct PD
 }Projectile_Data; //Currently cut content
 
 
+
+
+
 Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 {
 	Entity* self;
@@ -40,12 +43,14 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 	self->touch = projectileTouch;
 
 	self->velocity = gfc_vector2d(0, 0);
-	self->topSpeed = gfc_vector2d(100, 100);
+	self->topSpeed = gfc_vector2d(10, 10);
 	self->rotation = 0;
 
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
 	self->team = team;
+
+	self->damage = 1; //hard code this for now, generic projectiles always deal 1! So does body contact!
 
 	
 	
@@ -87,6 +92,24 @@ void projectileThink(Entity* self)
 
 	//((Player_Data*)self)->basicPlayerProjectileLife
 
+	//This is used for the Player Gunner Ult
+	if (self->ultIs > 0 && self->ultIs <= 100)
+	{
+		self->scale = gfc_vector2d(self->ultIs, self->ultIs);
+		self->bounds = gfc_rect(0, 0, 32 * self->ultIs, 32 * self->ultIs);
+		self->ultIs += 1;
+		//slog("My damage is %i", self->damage);
+	}
+	else if (self->ultIs > 100)
+	{
+		//Kill itself
+		self->ultIs = 0;
+		self->_inUse = 0;
+		//slog("Gunner ult killing self!");
+	}
+	else
+		;
+
 	if (self->timerDeath != -1)
 	{
 		self->timerDeath += 1;
@@ -102,7 +125,7 @@ void projectileThink(Entity* self)
 		}
 	}
 	
-
+	//Update to make a legal check and move in update later
 	if (self->velocity.y)
 	{
 		self->position.y += self->velocity.y;
@@ -139,7 +162,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		//slog("Projectile is touching something!");
+		//slog("Projectile is touching something! %s",toucher->name);
 	}
 
 
@@ -174,7 +197,7 @@ void projectileFree(Entity* self)
 	if (!self)
 		return;
 
-	slog("Projectile is being killed!");
+	//slog("Projectile is being killed!");
 
 	if (self->sprite)
 	{
@@ -184,5 +207,68 @@ void projectileFree(Entity* self)
 	if (self->data)
 		free(self->data);
 
+	if (self->color)
+		free(self->color);
+
 	free(self);
+}
+
+void move(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	//slog("Inside Projectile Move! Entity Name: %s",self->name);
+
+	switch (direction)
+	{
+		case(D_NORTH):
+			self->velocity.y -= self->topSpeed.y;
+			break;
+
+		case(D_NORTHEAST):
+			self->velocity.y -= self->topSpeed.y;
+			self->velocity.x += self->topSpeed.x;
+			break;
+
+		case(D_EAST):
+			self->velocity.x += self->topSpeed.x;
+			break;
+
+		case(D_SOUTHEAST):
+			self->velocity.y += self->topSpeed.y;
+			self->velocity.x += self->topSpeed.x;
+			break;
+
+		case(D_SOUTH):
+			self->velocity.y += self->topSpeed.y;
+			break;
+
+		case(D_SOUTHWEST):
+			self->velocity.y += self->topSpeed.y;
+			self->velocity.x -= self->topSpeed.x;
+			break;
+
+		case(D_WEST):
+			self->velocity.x -= self->topSpeed.x;
+			break;
+
+		case(D_NORTHWEST):
+			self->velocity.y -= self->topSpeed.y;
+			self->velocity.x -= self->topSpeed.x;
+			break;
+
+		default:
+
+			slog("No real direction given for projectile movement!");
+			return;
+
+	
+	}
+	return;
+}
+
+void gunnerUlt(Entity* self)
+{
+	self->ultIs = 1;
 }

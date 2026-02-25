@@ -10,6 +10,8 @@
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
 #include "projectiles.h"
+#include "bomb.h"
+#include <stdlib.h>
 
 typedef struct PD
 {
@@ -24,7 +26,8 @@ typedef struct PD
 
 
 
-Entity* playerEntityNew(GFC_Vector2D position)
+
+Entity* playerEntityNew(GFC_Vector2D position, int role)
 {
 	Entity* self;
 	self = entityNew();
@@ -45,7 +48,7 @@ Entity* playerEntityNew(GFC_Vector2D position)
 
 
 	//This will be all the baseline stats for the player. Class specific stuff will be in the class function call
-	strcpy(self->name,"Matt");
+	strcpy(self->name,"The Player");
 
 	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 	self->position = position;
@@ -56,6 +59,8 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	self->update = playerUpdate;
 	self->touch = playerTouch;
 
+	
+
 	self->velocity = gfc_vector2d(0,0);
 	self->topSpeed = gfc_vector2d(100, 100);
 	self->rotation = 0;
@@ -64,8 +69,7 @@ Entity* playerEntityNew(GFC_Vector2D position)
 
 	self->team = TEAM_PLAYER;
 
-	self->timerPrimary = 0;
-	self->primaryCooldown = 50;
+
 
 	self->basicPlayerProjectileLife = 1000;
 	self->hp = 3;
@@ -73,6 +77,50 @@ Entity* playerEntityNew(GFC_Vector2D position)
 	self->hitDelay = 300;
 	self->hitTimer = 0;
 	self->isInvul = 0;
+
+	self->damage = 1;
+
+	//Player Roll Stuff
+	//int role = roleSelect(self,ROLE_PLAYER_GUNNER);
+	
+	switch (role)
+	{
+		case ROLE_PLAYER_GUNNER:
+		
+		self->fire = playerGunnerShoot;
+		self->special = playerGunnerSpecial;
+		self->ultimate = playerGunnerUltimate;
+		break;
+
+		case ROLE_PLAYER_BAKER:
+		
+		self->bombAmount = 20;
+		self->bombTLL = 20;
+		self->fire = playerBakerShoot;
+		self->special = playerBakerSpecial;
+		self->ultimate = playerBakerUlt;
+
+
+		break;
+
+		default:
+		slog("Player has no role!");
+
+	}
+
+
+	//Gunner numbers
+	self->timerPrimary = 0;
+	self->primaryCooldown = 50;
+
+	self->timerSpecial = 0;
+	self->specialCooldown = 100;
+	self->specialDamage = 3;
+
+	self->timerUlt = 0;
+	self->ultCooldown = 100;
+	self->ultDamage = 5;
+	self->ultIs = 0;
 
 	
 	/*
@@ -96,43 +144,79 @@ void playerThink(Entity* self)
 	if (!self)
 		return;
 
-	self->timerPrimary += 1.0;
+	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
+	self->timerPrimary += 1;
+	self->timerSpecial += 1;
+	self->timerUlt += 1;
 	//slog("TimerPrimary is %i,", self->timerPrimary);
 	//slog("primaryCooldown is %i,", self->primaryCooldown);
+
+	
+	if (gfc_input_key_down("v") && self->timerUlt >= self->ultCooldown)
+	{
+		//slog("Trying to use Gunner Ult!");
+		self->ultimate(self);
+		self->timerUlt = 0;
+	}
+
+
+	if (gfc_input_key_down("z") && self->timerSpecial >= self->specialCooldown)
+	{
+		//slog("Trying to fire gunner special!");
+		self->timerSpecial = 0;
+
+
+		if (gfc_input_key_down("UP"))
+		{
+			self->special(self, D_UP);
+		}
+		else if (gfc_input_key_down("DOWN"))
+		{
+			self->special(self, D_DOWN);
+		}	
+		else if (gfc_input_key_down("LEFT"))
+		{
+			self->special(self, D_LEFT);
+		}
+		else
+		{
+			self->special(self, D_RIGHT);
+		}
+	}
 
 	if (gfc_input_key_down("UP") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		_playerShoot(self,D_UP);
+		self->fire(self,D_UP);
 	}
 
 	if (gfc_input_key_down("DOWN") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		_playerShoot(self,D_DOWN);
+		self->fire(self,D_DOWN);
 	}
 
 	if (gfc_input_key_down("LEFT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		_playerShoot(self,D_LEFT);
+		self->fire(self,D_LEFT);
 	}
 	
 	if (gfc_input_key_down("RIGHT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		_playerShoot(self,D_RIGHT);
+		self->fire(self,D_RIGHT);
 	}
 
 
 
 	if (gfc_input_key_down("d"))
 	{
-		self->position.x += 1;
+		self->position.x += 1.0;
 		//self->rotation = 180;
 		//self->basicPlayerProjectileLife = 180;
 
@@ -140,7 +224,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("a"))
 	{
-		self->position.x -= 1;
+		self->position.x -= 1.0;
 		//self->rotation = 0;
 		//self->lastShotRotation = 0;
 
@@ -148,7 +232,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("s"))
 	{
-		self->position.y += 1;
+		self->position.y += 1.0;
 		//self->rotation = 270;
 		//self->lastShotRotation = 270;
 
@@ -156,7 +240,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("w"))
 	{
-		self->position.y -= 1;
+		self->position.y -= 1.0;
 		//self->rotation = 90;
 		//self->lastShotRotation = 90;
 
@@ -167,7 +251,7 @@ void playerThink(Entity* self)
 		gfc_vector2d_normalize(&self->velocity);
 		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
 	}
-
+	
 
 	//Player Damage Checking
 	if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
@@ -183,6 +267,7 @@ void playerThink(Entity* self)
 	}
 
 	//slog("Last shot rotation: %i", self->lastShotRotation);
+	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
 
 }
 
@@ -205,11 +290,11 @@ void playerTouch(Entity* self, Entity* toucher)
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 		//slog("%s is touching something!",self->name);
-		if (toucher->team = TEAM_ENEMY && self->isInvul == 0) 
+		if (toucher->team == TEAM_ENEMY && self->isInvul == 0) 
 		{
 			self->hp -= 1;
 			self->isInvul = 1;
-			slog("Enemy aligned thing touched me %s. HP is now %i", self->name, self->hp);
+			slog("Player being touched %s. \nHP is now %i", toucher->name, self->hp);
 
 		}
 	}
@@ -256,11 +341,16 @@ void playerFree(Entity* self)
 	if (!self)
 		return;
 
+	slog("Player is being freed!");
+
 	if (self->sprite)
 		gf2d_sprite_free(self->sprite);
 
 	if (self->data)
 		free(self->data);
+
+	if (self->color)
+		free(self->color);
 
 	free(self);
 }
@@ -269,7 +359,7 @@ void playerFree(Entity* self)
 	To be called in think during state fire. 
 	Test method deperciated
 */
-void _playerShoot(Entity* self,int direction)
+void playerShoot(Entity* self,int direction)
 {
 	if (!self)
 		return;
@@ -282,7 +372,7 @@ void _playerShoot(Entity* self,int direction)
 		return;
 	}
 
-	strcpy(thing->name, "Player's Pew!");
+	strcpy(thing->name, "Pew!");
 
 	//slog("INSIDER! Last shot rotation: %i", self->lastShotRotation);
 	
@@ -319,17 +409,221 @@ void _playerShoot(Entity* self,int direction)
 
 }
 
-void playerGunnerShoot(Entity* self, int direction)
+/*
+	Spawns a bomb at the player's feet on the player's team!
+*/
+void makeBomb(Entity* self)
 {
+	//slog("Spawning a bomb for testing!");
 
+	slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
+	
+	float rX = (self->position.x) + (float)rand() / RAND_MAX * (self->bounds.w*2);
+	float rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h*2);
+
+	slog("Random spot: X = %i Y = %i",rX,rY);
+
+	Entity* thing = bombEntityNew(gfc_vector2d(rX,rY), TEAM_PLAYER, -1);
+	//explode(thing);
+
+	return;
 }
 
-void playerGunnterSpecial(Entity* self) 
+void playerGunnerShoot(Entity* self, int direction)
 {
+	if (!self)
+		return;
 
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	Entity* thing2 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	//thing->damage = 2;
+
+
+	if (!thing)
+	{
+		slog("Failed to spawn a projectile when firing Gunner!");
+		return;
+	}
+
+	//strcpy(thing->name, strcat(self->name,"'s Pew!"));
+	//strcpy(thing2->name, strcat(self->name, "'s Pews!"));
+	//strcpy(thing3->name, strcat(self->name, "'s Pews!"));
+
+	switch (direction)
+	{
+		case(D_LEFT):
+			thing->velocity.x -= 10;
+
+
+			thing2->velocity.x -= 10;
+			thing2->velocity.y -= 5;
+
+			thing3->velocity.x -= 10;
+			thing3->velocity.y += 5;
+			break;
+
+		case(D_RIGHT):
+			thing->velocity.x+=10;
+
+			thing2->velocity.x += 10;
+			thing2->velocity.y += 5;
+
+			thing3->velocity.x += 10;
+			thing3->velocity.y -= 5;
+			break;
+
+		case(D_DOWN):
+			thing->velocity.y += 10;
+
+			thing2->velocity.y += 10;
+			thing2->velocity.x -= 5;
+
+			thing3->velocity.y += 10;
+			thing3->velocity.x += 5;
+			break;
+
+		case(D_UP):
+			thing->velocity.y -= 10;
+
+			thing2->velocity.y -= 10;
+			thing2->velocity.x -= 5;
+
+			thing3->velocity.y -= 10;
+			thing3->velocity.x += 5;
+			break;
+
+		default:
+			slog("Something went wrong during Gunner Shoot!");
+	}
+		
+	
+
+	return;
+}
+
+void playerGunnerSpecial(Entity* self,int direction) 
+{
+	if (!self)
+		return;
+	//slog("Firing gunner special!");
+
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	thing->scale = gfc_vector2d(5,5);
+	thing->bounds= gfc_rect(0, 0, 32*5, 32*5);
+	thing->damage = self->specialDamage;
+
+	switch (direction)
+	{
+	case(D_LEFT):
+		thing->velocity.x -= 10;
+		
+		break;
+
+	case(D_RIGHT):
+		thing->velocity.x += 10;
+		
+
+		break;
+
+	case(D_DOWN):
+		thing->velocity.y += 10;
+
+		
+		break;
+
+	case(D_UP):
+		thing->velocity.y -= 10;
+
+		
+		break;
+
+	default:
+		slog("Something went wrong during Gunner Shoot!");
+	}
 }
 
 void playerGunnerUltimate(Entity* self)
 {
+	//slog("Firing Gunner Ult!");
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x * -1 + self->bounds.x * -2, self->position.y * -1 + self->bounds.y * -2), TEAM_PLAYER, -1);
+	thing->scale = gfc_vector2d(0, 0);
+	thing->bounds = gfc_rect(0, 0, 32*0, 32*0);
+	thing->damage = self->ultDamage;
+	thing->ultIs = 1;
+
+	//return thing;
+}
+
+void playerBakerShoot(Entity* self, int direction)
+{
+	slog("Baker Shooting");
+	if (!self)
+		return;
+
+	//Same as gunner, shoots bombs that have as hort range/life
+	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL);
+	thing->scale = gfc_vector2d(5, 5);
+	thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
+	thing->damage = self->specialDamage;
+
+	switch (direction)
+	{
+	case(D_LEFT):
+		thing->velocity.x -= 10;
+
+		break;
+
+	case(D_RIGHT):
+		thing->velocity.x += 10;
+
+
+		break;
+
+	case(D_DOWN):
+		thing->velocity.y += 10;
+
+
+		break;
+
+	case(D_UP):
+		thing->velocity.y -= 10;
+
+
+		break;
+
+	default:
+		slog("Something went wrong during Gunner Shoot!");
+	}
+
+}
+
+void playerBakerSpecial(Entity* self)
+{
+	slog("Baker Special");
+	
+	float rX, rY;
+	Entity* thing;
+	int c;
+
+	for (c = 0; c <= self->bombAmount; c++)
+	{
+		rX = (self->position.x) + (float)rand() / RAND_MAX * (self->bounds.w * 2);
+		rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h * 2);
+
+		thing = bombEntityNew(gfc_vector2d(rX, rY), TEAM_PLAYER, self->bombTLL*2);
+
+		if (!thing)
+		{
+			slog("Failed to make a bomb in playerBakerSpecial");
+			return;
+		}
+	}
+
+}
+
+void playerBakerUlt(Entity* self)
+{
+	slog("Baker Ult");
 
 }

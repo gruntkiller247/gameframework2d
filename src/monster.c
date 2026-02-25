@@ -85,8 +85,9 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
-	self->team = 2;
+	self->team = TEAM_ENEMY;
 	self->hp = 2;
+	self->damage = 1;
 
 	self->hitDelay = 300;
 	self->hitTimer = 0;
@@ -125,7 +126,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 
 		if (toucher->team = TEAM_PLAYER && self->isInvul == 0)
 		{
-			self->hp -= 1;
+			self->hp -= toucher->damage;
 			self->isInvul = 1;
 			slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 		}

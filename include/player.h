@@ -7,7 +7,7 @@
 #include "entity.h"
 #include "gfc_shape.h"
 
-Entity* playerEntityNew(GFC_Vector2D position);
+Entity* playerEntityNew(GFC_Vector2D position, int role);
 
 void playerThink(Entity* self);
 
@@ -19,14 +19,31 @@ void playerTouch(Entity* self, Entity* toucher);
 
 void playerUpdate(Entity* self);
 
-void _playerShoot(Entity* self, int direction);
+
+//Testing Functions:
+
+void playerShoot(Entity* self, int direction);
+
+void makeBomb(Entity* self);
 
 //Entity* playerGet(Entity* self);
 
+
+//Player Class Functions:
+
 void playerGunnerShoot(Entity* self, int direction);
 
-void playerGunnterSpecial(Entity* self);
+void playerGunnerSpecial(Entity* self, int direction);
 
 void playerGunnerUltimate(Entity* self);
+
+
+
+void playerBakerShoot(Entity* self,int direction);
+
+void playerBakerSpecial(Entity* self);
+
+void playerBakerUlt(Entity* self);
+
 
 #endif

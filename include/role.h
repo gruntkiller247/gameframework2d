@@ -7,16 +7,7 @@
 //This class forms the basis for player's class
 // and monster/boss classes
 
-typedef enum RN
-{
-	ROLE_PLAYER_GUNNER,
-	ROLE_PLAYER_MAGE,
-	ROLE_PLAYER_WARRIOR,
-	ROLE_TRASHMOB,
-
-}RoleNames;
-
-
+void roleSelect(Entity* self);
 
 void roleSelect(Entity* self,int className);
 

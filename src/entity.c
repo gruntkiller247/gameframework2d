@@ -146,7 +146,9 @@ void entityDraw(Entity* self)
 		return;
 	}
 
-	if (self->sprite && self->_inUse)
+	
+
+	if (!self->color && self->sprite && self->_inUse)
 	{
 		//GFC_Vector2D thing = gfc_vector2d(self->bounds.x / 2, self->bounds.y);
 
@@ -154,6 +156,10 @@ void entityDraw(Entity* self)
 		//
 		//
 		//gf2d_draw_rect(self->bounds, GFC_COLOR_RED); IDK if this is working
+	}
+	else
+	{
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, self->color, (Uint32)self->frame);
 	}
 
 
