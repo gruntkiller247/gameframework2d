@@ -13,6 +13,9 @@
 typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
+	Uint8* id;	
+	Uint32* layer;								//What layer I am on
+
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
@@ -29,6 +32,7 @@ typedef struct Entity_S
 	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 
 	//GFC_Color* color;
+	GFC_Color colorReal;
 
 	Uint8 team;						//ENUM For what team entity is on
 	int hp;
@@ -75,6 +79,16 @@ typedef struct Entity_S
 	
 }Entity;
 
+typedef enum
+{
+	EL_NONE = 0,
+	EL_PLAYER = 1,
+	EL_MONSTER = 2,
+	EL_ITEM = 4,
+	EL_WORLD = 8,
+	EL_PROJECTILES =16,
+	EL_ALL = 32
+}Layers;
 
 typedef enum DS
 {

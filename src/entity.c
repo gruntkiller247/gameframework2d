@@ -11,7 +11,7 @@ typedef struct
 {
 	Entity* entityList;
 	Uint32 entityMax;
-
+	Uint32 entityPool;
 }EntityManager;
 
 
@@ -71,7 +71,10 @@ Entity* entityNew()
 			continue;
 			
 		entityManager.entityList[c]._inUse = 1;
+		entityManager.entityList[c].id = ++entityManager.entityPool;
 		//set defaults
+		
+		entityManager.entityList[c].colorReal = GFC_COLOR_TRANSPARENT;
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
 
@@ -79,6 +82,21 @@ Entity* entityNew()
 	}
 
 	return NULL;
+}
+
+Entity* entityGetID(Uint32 id)
+{
+	if (!entityManager.entityList)
+		return NULL;
+
+	for (int i = 0; i < entityManager.entityMax; i++)
+	{
+		if (!entityManager.entityList[i]._inUse)
+			continue;
+
+		if (entityManager.entityList[i].id == id)
+			return &entityManager.entityList[i];
+	}
 }
 
 
@@ -146,10 +164,18 @@ void entityDraw(Entity* self)
 		return;
 	}
 
-	if (self->sprite && self->_inUse)
+
+	
+	if (!gfc_color_cmp(self->colorReal, GFC_COLOR_TRANSPARENT) && self->sprite && self->_inUse)
+	{
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, &self->colorReal, (Uint32)self->frame);
+	}
+	else if (self->sprite && self->_inUse)
 	{
 		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 	}
+	else
+		;
 	
 
 	/*if (!self->color && self->sprite && self->_inUse)
@@ -307,6 +333,9 @@ void entityTouchAll()
 	{
 		if (!entityManager.entityList[c]._inUse)
 			continue;
+
+		//CHECK TEAMS HERE
+		//BITWISE & USing the layer system
 
 		for (d = c+1; d < entityManager.entityMax; d++)
 		{
