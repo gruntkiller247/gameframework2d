@@ -26,6 +26,6 @@ void gunnerUlt(Entity* self);
 /*
 	The direction moves the direction 1 unit based on input
 */
-void move(Entity* self,int direction);
+void moveProjectile(Entity* self,int direction);
 
 #endif

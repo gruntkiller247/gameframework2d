@@ -45,5 +45,12 @@ void playerBakerSpecial(Entity* self, int direction);
 
 void playerBakerUlt(Entity* self);
 
+void playerGamblerShoot(Entity* self, Uint8 direction);
+
+void playerGamblerSpecial(Entity* self, int direction);
+
+void playerGamblerUlt(Entity* self, int direction);
+
+void playerMove(Entity* self, int direction);
 
 #endif

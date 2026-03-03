@@ -82,31 +82,6 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 
 	//Player Roll Stuff
 	//int role = roleSelect(self,ROLE_PLAYER_GUNNER);
-	
-	switch (role)
-	{
-		case ROLE_PLAYER_GUNNER:
-		
-		self->fire = playerGunnerShoot;
-		self->special = playerGunnerSpecial;
-		self->ultimate = playerGunnerUltimate;
-		break;
-
-		case ROLE_PLAYER_BAKER:
-		
-		self->bombAmount = 20;
-		self->bombTLL = 100;
-		self->fire = playerBakerShoot;
-		self->special = playerBakerSpecial;
-		self->ultimate = playerBakerUlt;
-
-
-		break;
-
-		default:
-		slog("Player has no role!");
-
-	}
 
 
 	//Gunner numbers
@@ -121,6 +96,47 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->ultCooldown = 100;
 	self->ultDamage = 5;
 	self->ultIs = 0;
+	
+	switch (role)
+	{
+		case ROLE_PLAYER_GUNNER:
+		
+			self->fire = playerGunnerShoot;
+			self->special = playerGunnerSpecial;
+			self->ultimate = playerGunnerUltimate;
+			break;
+
+		case ROLE_PLAYER_BAKER:
+		
+			self->bombAmount = 20;
+			self->bombTLL = 100;
+			self->fire = playerBakerShoot;
+			self->special = playerBakerSpecial;
+			self->ultimate = playerBakerUlt;
+		
+			break;
+
+		case ROLE_PLAYER_GAMBLER:
+			self->ultIs = 0;
+			self->fire = playerGamblerShoot;
+			self->special = playerGamblerSpecial;
+			self->ultimate = playerGamblerUlt;
+			self->ultLength = 10;
+
+
+			break;
+
+
+		case ROLE_PLAYER_WARRIOR:
+		slog("Player is a non implemted class! You will probably crash!");
+		break;
+
+		default:
+		slog("Player has no role!");
+
+	}
+
+
 
 	
 	/*
@@ -312,6 +328,18 @@ void playerUpdate(Entity* self)
 
 	if (self->frame >= 8)
 		self->frame = 0;
+
+	//gambler Ult stuff
+	if (self->ultIs == 1)
+	{
+		slog("Gambler Ult is on!");
+
+		if (self->timerUlt >= self->ultLength)
+		{
+			self->ultIs == 0;
+			
+		}
+	}
 
 	//Does not work for intended purpose, but makes a funny leash from world origin to player
 	//gf2d_draw_line(gfc_vector2d(self->position.x, self->position.y), gfc_vector2d(self->bounds.x, self->bounds.y), GFC_COLOR_RED);
@@ -594,7 +622,7 @@ void playerBakerShoot(Entity* self, int direction)
 		break;
 
 	default:
-		slog("Something went wrong during Gunner Shoot!");
+		slog("Something went wrong during Baker Shoot!");
 	}
 
 }
@@ -638,4 +666,93 @@ void playerBakerUlt(Entity* self)
 	thing->ultIs = 1;
 	//thing->move = 1;
 
+}
+
+void playerGamblerShoot(Entity* self, Uint8 direction)
+{
+	if (!self)
+		return;
+
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+
+	//slog("Gambler Shooting");
+
+	if (self->ultIs == 1)
+	{
+		
+		thing->damage = 3;
+		//return;
+	}
+
+	int num = rand() % 10;
+
+	if (num <= 7)
+	{
+		
+		thing->damage = 1;
+	}
+	else if (num <= 9)
+	{
+		
+		thing->damage = 2;
+	}
+	else
+	{
+		
+		thing->damage = 3;
+	}
+
+	//thing->damage = 3;
+	slog("Damage is %i", thing->damage);
+
+	switch (direction)
+	{
+	case(D_LEFT):
+		thing->velocity.x -= 10;
+
+		break;
+
+	case(D_RIGHT):
+		thing->velocity.x += 10;
+
+
+		break;
+
+	case(D_DOWN):
+		thing->velocity.y += 10;
+
+
+		break;
+
+	case(D_UP):
+		thing->velocity.y -= 10;
+
+
+		break;
+
+	default:
+		slog("Something went wrong during Gabmler Shoot!");
+	}
+
+	return;
+
+	
+}
+
+void playerGamblerSpecial(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	slog("Gambler Special... Nothing!");
+}
+
+void playerGamblerUlt(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	self->ultIs = 1;
+
+	slog("Gambler Ult");
 }

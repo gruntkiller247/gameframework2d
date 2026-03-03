@@ -213,7 +213,7 @@ void projectileFree(Entity* self)
 	free(self);
 }
 
-void move(Entity* self, int direction)
+void moveProjectile(Entity* self, int direction)
 {
 	if (!self)
 		return;

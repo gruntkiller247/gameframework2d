@@ -13,7 +13,7 @@
 typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
-	Uint8* id;	
+	Uint8* id;									
 	Uint32* layer;								//What layer I am on
 
 	GFC_TextLine name;							//Name of the entity
@@ -47,9 +47,10 @@ typedef struct Entity_S
 	//ROLE STUFF HERE -First 3 are the Player's stuff
 	int role;	//Might be used
 
-	void (*fire)(struct Entity_S* fire,int direction); //Describes how the character attacks
-	void (*special)(struct Entity_S* special, int direction); //Describes how the character uses their special attack
-	void (*ultimate)(struct Entity_S* ultimate); //Describes how the character uses their ultimate
+	void (*fire)(struct Entity_S* fire,int direction); //Describes how the entity attacks
+	void (*special)(struct Entity_S* special, int direction); //Describes how the entity uses their special attack
+	void (*ultimate)(struct Entity_S* ultimate); //Describes how the entity uses their ultimate
+	
 	
 	//This stuff is for the player
 	int timerPrimary;				//Timer that counts up to cooldown
@@ -61,11 +62,15 @@ typedef struct Entity_S
 	int bombAmount;
 	int move;
 
+	//Player Gambler specail values
+	int ultLength;
+
+
 	int timerDeath;				//Timer to count up to timeToLive
 	int timeToLive;				//Time to Live for projectiles like things. Can be NULL; Used for Player projectiles + Bombs
 
-	int timerSpecial;
-	int specialCooldown;
+	int timerSpecial;			//The thing that counts up
+	int specialCooldown;		//The thing that is counted to
 	int specialDamage;
 
 	int timerUlt;
@@ -108,7 +113,8 @@ typedef enum RN
 {
 	ROLE_PLAYER_GUNNER,
 	ROLE_PLAYER_BAKER,
-	ROLE_PLAYER_WARRIOR,
+	ROLE_PLAYER_GAMBLER,
+	ROLE_PLAYER_WARRIOR,//Deprciated
 	ROLE_TRASHMOB,
 	ROLE_COUNT
 
@@ -120,7 +126,7 @@ typedef enum
 	TEAM_NONE,
 	TEAM_PLAYER,
 	TEAM_ENEMY,
-
+	TEAM_IGNORE
 }Teams;
 
 typedef enum

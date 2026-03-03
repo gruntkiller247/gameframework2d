@@ -44,7 +44,7 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 
 	self->team = team;
 	
-	strcpy(self->name, "FRESH_BOMB!");
+	strcpy(self->name, "BOMB!");
 
 	if (!timeToLive)
 	{
@@ -136,7 +136,7 @@ void bombThink(Entity* self)
 	}
 	else
 	{
-		slog("I AM A BOMB AND I SHOULD NOT BE MOVING!");
+		//slog("I AM A BOMB AND I SHOULD NOT BE MOVING!");
 	}
 
 }
@@ -253,15 +253,25 @@ void explode(Entity* self)
 		NW->damage = 1;
 	}
 
-	move(N, D_NORTH);
-	move(NE, D_NORTHEAST);
-	move(E, D_EAST);
-	move(SE, D_SOUTHEAST);
+	N->team = self->team;
+	NE->team = self->team;
+	E->team = self->team;
+	SE->team = self->team;
 
-	move(S, D_SOUTH);
-	move(SW, D_SOUTHWEST);
-	move(W, D_WEST);
-	move(NW, D_NORTHWEST);
+	S->team = self->team;
+	SW->team = self->team;
+	W->team = self->team;
+	NW->team = self->team;
+
+	moveProjectile(N, D_NORTH);
+	moveProjectile(NE, D_NORTHEAST);
+	moveProjectile(E, D_EAST);
+	moveProjectile(SE, D_SOUTHEAST);
+
+	moveProjectile(S, D_SOUTH);
+	moveProjectile(SW, D_SOUTHWEST);
+	moveProjectile(W, D_WEST);
+	moveProjectile(NW, D_NORTHWEST);
 
 	if(self->ultIs == -1)
 		self->_inUse = 0;
@@ -365,6 +375,16 @@ void bakerExplode(Entity* self)
 	SW->move = 1;
 	W->move = 1;
 	NW->move = 1;
+
+	N->team = self->team;
+	NE->team = self->team;
+	E->team = self->team;
+	SE->team = self->team;
+
+	S->team = self->team;
+	SW->team = self->team;
+	W->team = self->team;
+	NW->team = self->team;
 	
 
 	moveBomb(N, D_NORTH);

@@ -333,14 +333,22 @@ void entityTouchAll()
 	{
 		if (!entityManager.entityList[c]._inUse)
 			continue;
-
-		//CHECK TEAMS HERE
-		//BITWISE & USing the layer system
+		if (entityManager.entityList[c].team == TEAM_IGNORE)
+			continue;
+		
+		//BITWISE & Using the layer system
 
 		for (d = c+1; d < entityManager.entityMax; d++)
 		{
 			if (!entityManager.entityList[d]._inUse)
 				continue;
+			if (entityManager.entityList[d].team == entityManager.entityList[c].team)
+				continue;
+			if (entityManager.entityList[d].team == TEAM_IGNORE)
+				continue;
+
+			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);
+
 			//slog("Touching all entities: ");
 			entityTouch(&entityManager.entityList[c], &entityManager.entityList[d]);
 		}
