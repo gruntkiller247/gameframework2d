@@ -51,6 +51,12 @@ void playerGamblerSpecial(Entity* self, int direction);
 
 void playerGamblerUlt(Entity* self, int direction);
 
-void playerMove(Entity* self, int direction);
+
+/*
+	Checks if touched thing is a powerup and if it should be used!
+*/
+void playerPowerUps(Entity* self,Entity* powerup);
+
+//void playerMove(Entity* self, int direction);
 
 #endif

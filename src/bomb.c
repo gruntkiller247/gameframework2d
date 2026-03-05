@@ -43,6 +43,7 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 	self->damage = 3;
 
 	self->team = team;
+	self->layer = EL_PROJECTILES;
 	
 	strcpy(self->name, "BOMB!");
 

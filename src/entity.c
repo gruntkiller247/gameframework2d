@@ -12,6 +12,7 @@ typedef struct
 	Entity* entityList;
 	Uint32 entityMax;
 	Uint32 entityPool;
+	//Uint8 drawBounds;
 }EntityManager;
 
 
@@ -342,9 +343,17 @@ void entityTouchAll()
 		{
 			if (!entityManager.entityList[d]._inUse)
 				continue;
+
 			if (entityManager.entityList[d].team == entityManager.entityList[c].team)
 				continue;
+
 			if (entityManager.entityList[d].team == TEAM_IGNORE)
+				continue;
+
+			if (entityManager.entityList[c].layer == entityManager.entityList[d].layer)
+				continue;
+
+			if (entityManager.entityList[c].layer == EL_ITEM && entityManager.entityList[d].layer != EL_PLAYER)
 				continue;
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);

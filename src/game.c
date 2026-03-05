@@ -14,6 +14,7 @@
 #include "projectiles.h"
 #include "MattHelper.h"
 #include "bomb.h"
+#include "powerup.h"
 
 //128 x 128 grid for GIMP + snap to grid
 
@@ -31,6 +32,9 @@ int main(int argc, char * argv[])
 
     srand(time(NULL));
     //slog("The curret time is %i",time(NULL));
+
+
+    //SDL_GetTikcs returns milli seconds program has been running
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -62,7 +66,7 @@ int main(int argc, char * argv[])
 
 
     Entity* player;
-    player = playerEntityNew(gfc_vector2d(500, 500), ROLE_PLAYER_GAMBLER);
+    player = playerEntityNew(gfc_vector2d(500, 500), ROLE_PLAYER_BAKER);
     strcpy(player->name, "Player");
 
     Entity* projectile;
@@ -79,6 +83,9 @@ int main(int argc, char * argv[])
     bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
     bomb->team = TEAM_IGNORE;
     strcpy(bomb->name, "TEST_BOMB!");
+
+    Entity* powerup;
+    powerup = powerUpEntityNew(gfc_vector2d(200, 500),PU_INVUL);
 
 
     /*main game loop*/

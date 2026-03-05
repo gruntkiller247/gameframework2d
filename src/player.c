@@ -49,6 +49,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 
 	//This will be all the baseline stats for the player. Class specific stuff will be in the class function call
 	strcpy(self->name,"The Player");
+	self->role = role;
 
 	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 	self->position = position;
@@ -68,7 +69,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
 	self->team = TEAM_PLAYER;
-
+	self->layer = EL_PLAYER;
 
 
 	self->basicPlayerProjectileLife = 1000;
@@ -273,7 +274,7 @@ void playerThink(Entity* self)
 	if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
 	{
 		self->hitTimer += 1;
-		//slog("Monster is immune, has been for %i", self->hitTimer);
+		//slog("Player is immune, has been for %i", self->hitTimer);
 	}
 	else
 	{
@@ -312,6 +313,12 @@ void playerTouch(Entity* self, Entity* toucher)
 			self->isInvul = 1;
 			slog("Player being touched %s. \nHP is now %i", toucher->name, self->hp);
 
+		}
+
+		if (toucher->team == TEAM_ITEM)
+		{
+			playerPowerUps(self, toucher);
+			toucher->_inUse = 0;
 		}
 	}
 
@@ -589,7 +596,7 @@ void playerBakerShoot(Entity* self, int direction)
 	if (!self)
 		return;
 
-	//Same as gunner, shoots bombs that have as hort range/life
+	//Same as gunner, shoots bombs that have a short range/life
 	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL);
 	//thing->scale = gfc_vector2d(5, 5);
 	//thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
@@ -755,4 +762,45 @@ void playerGamblerUlt(Entity* self, int direction)
 	self->ultIs = 1;
 
 	slog("Gambler Ult");
+}
+
+/*
+	self is the player, role is the role of the powerup!
+*/
+void playerPowerUps(Entity* self, Entity* powerup)
+{
+	if (!self || !powerup)
+		return;
+
+	int role = powerup->role;
+
+	switch (role)
+	{
+		case PU_CLONE:
+
+			break;
+
+		case PU_INVUL:
+			self->isInvul = 1;
+			
+			slog("Player picked up invul powerup!");
+			break;
+
+		case PU_HP_RECOVERY:
+
+			break;
+
+		case PU_SPEED:
+
+			break;
+
+		case PU_BOMB:
+
+			break;
+
+		default:
+			slog("Player picked up a bad powerup!");
+			return;
+
+	}
 }

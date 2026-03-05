@@ -86,6 +86,10 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 	self->bounds = gfc_rect(30, 30, 72, 72);
 
 	self->team = TEAM_ENEMY;
+	self->layer = EL_MONSTER;
+	
+	//self->role = role; Fill in once trash mobs exist!
+
 	self->hp = 2;
 	self->damage = 1;
 
@@ -95,9 +99,8 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
-	{
 
-	}
+
 	strcpy(self->name, "MONSTER");
 
 

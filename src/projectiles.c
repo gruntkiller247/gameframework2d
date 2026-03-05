@@ -49,6 +49,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
 	self->team = team;
+	self->layer = EL_PROJECTILES;
 
 	self->damage = 1; //hard code this for now, generic projectiles always deal 1! So does body contact!
 

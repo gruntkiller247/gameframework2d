@@ -29,7 +29,7 @@ typedef struct Entity_S
 	void	(*update)(struct Entity_S* self);	
 	void	(*free)(struct Entity_S* self);	
 	void	(*data) (struct data);
-	Uint8	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
+	void	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 
 	//GFC_Color* color;
 	GFC_Color colorReal;
@@ -40,6 +40,7 @@ typedef struct Entity_S
 	int hitTimer;
 	int isInvul;
 	int damage;
+	
 
 	
 
@@ -52,10 +53,16 @@ typedef struct Entity_S
 	void (*ultimate)(struct Entity_S* ultimate); //Describes how the entity uses their ultimate
 	
 	
+	//This stuff is for the powerup
+	int powerUpTimer;
+	int powerUpMaxTime;
+	
+
 	//This stuff is for the player
 	int timerPrimary;				//Timer that counts up to cooldown
 	int primaryCooldown;			//Time until primary attack can be fired
 	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
+	int amPowered;					//Flag toggled when in a powered up state, only allowed 1 power up at a time!
 	
 	//Player Baker special values
 	int bombTLL;
@@ -86,6 +93,18 @@ typedef struct Entity_S
 
 typedef enum
 {
+	PU_RANDOM = -1,
+	PU_HP_RECOVERY = 0,
+	PU_INVUL,
+	PU_BOMB,
+	PU_SPEED,
+	PU_CLONE,
+	PU_MAXNUMBER
+}PowerUps;
+
+
+typedef enum
+{
 	EL_NONE = 0,
 	EL_PLAYER = 1,
 	EL_MONSTER = 2,
@@ -93,7 +112,7 @@ typedef enum
 	EL_WORLD = 8,
 	EL_PROJECTILES =16,
 	EL_ALL = 32
-}Layers;
+}EntityLayers;
 
 typedef enum DS
 {
@@ -116,6 +135,9 @@ typedef enum RN
 	ROLE_PLAYER_GAMBLER,
 	ROLE_PLAYER_WARRIOR,//Deprciated
 	ROLE_TRASHMOB,
+	ROLE_BOSS1,
+	ROLE_BOSS2,
+	ROLE_BOSS3,
 	ROLE_COUNT
 
 }RoleNames;
@@ -126,7 +148,8 @@ typedef enum
 	TEAM_NONE,
 	TEAM_PLAYER,
 	TEAM_ENEMY,
-	TEAM_IGNORE
+	TEAM_IGNORE,
+	TEAM_ITEM
 }Teams;
 
 typedef enum
