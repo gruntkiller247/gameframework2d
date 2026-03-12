@@ -502,14 +502,18 @@ void makeBomb(Entity* self)
 {
 	//slog("Spawning a bomb for testing!");
 
-	slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
+	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
 	
 	float rX = (self->position.x) + (float)rand() / RAND_MAX * (self->bounds.w*2);
 	float rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h*2);
 
-	slog("Random spot: X = %i Y = %i",rX,rY);
 
-	Entity* thing = bombEntityNew(gfc_vector2d(rX,rY), TEAM_PLAYER, -1);
+	//slog("Random spot: X = %i Y = %i",rX,rY);
+
+	Entity* thing = bombEntityNewSpecial(self->position, TEAM_PLAYER, 300);
+
+	//Entity* thing2 = bombEntityNewSpecial(gfc_vector2d(rX, rY), TEAM_PLAYER, 300);
+	//thing->scale = gfc_vector2d(5,5);
 	//explode(thing);
 
 	return;
@@ -854,6 +858,7 @@ void playerPowerUps(Entity* self, Entity* powerup)
 
 		case PU_BOMB:
 
+			makeBomb(self);
 			break;
 
 		default:

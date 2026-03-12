@@ -6,6 +6,9 @@
 
 Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive);
 
+//For bomb powerup
+Entity* bombEntityNewSpeical(GFC_Vector2D position, Uint8 team, int* timeToLive);
+
 void bombThink(Entity* self);
 
 void bombTouch(Entity* self, Entity* toucher);

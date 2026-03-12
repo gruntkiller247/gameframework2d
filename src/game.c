@@ -84,8 +84,9 @@ int main(int argc, char * argv[])
     //bomb->team = TEAM_IGNORE;
     //strcpy(bomb->name, "TEST_BOMB!");
 
-    //Entity* powerup;
-    //powerup = powerUpEntityNew(gfc_vector2d(200, 500),PU_INVUL);
+    Entity* powerup;
+    powerup = powerUpEntityNew(gfc_vector2d(200, 500),PU_BOMB);
+    strcpy(powerup->name, "Bomb Power Up");
 
     Entity* powerup2;
     powerup2 = powerUpEntityNew(gfc_vector2d(400, 400), PU_SPEED);

@@ -13,6 +13,8 @@ void bombUpdate(Entity* self);
 
 void bombFree(Entity* self);
 
+
+
 Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 {
 	Entity* self;
@@ -71,6 +73,14 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 	self->move = 0;
 
 	return self;
+}
+
+Entity* bombEntityNewSpecial(GFC_Vector2D position, Uint8 team, int* timeToLive)
+{
+	Entity* self;
+	self = bombEntityNew(position, team, timeToLive);
+
+	self->isSpecialBomb = 1;
 }
 
 
@@ -273,10 +283,10 @@ void explode(Entity* self)
 	moveProjectile(SW, D_SOUTHWEST);
 	moveProjectile(W, D_WEST);
 	moveProjectile(NW, D_NORTHWEST);
+		
 
 	if(self->ultIs == -1)
 		self->_inUse = 0;
-	
 }
 
 void moveBomb(Entity* self, int direction)

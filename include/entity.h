@@ -42,7 +42,7 @@ typedef struct Entity_S
 	int damage;
 	
 
-	
+	int isSpecialBomb;
 
 	//Clean these up and put them in children class at some point
 	//ROLE STUFF HERE -First 3 are the Player's stuff
@@ -97,10 +97,10 @@ typedef enum
 	PU_NONE = -2,
 	PU_RANDOM = -1,
 	PU_HP_RECOVERY = 0,
-	PU_INVUL,
-	PU_BOMB,
-	PU_SPEED,
-	PU_CLONE,
+	PU_INVUL,			//Working, uses the hit invul system
+	PU_BOMB,			//Spawn a bomb at player's feet
+	PU_SPEED,			//Working
+	PU_CLONE,			//Probably changing
 	PU_MAXNUMBER
 }PowerUps;
 
