@@ -25,7 +25,7 @@ typedef struct PD
 }Player_Data; //Currently Cut content until I can fix this
 
 
-
+static int baseSpeedMod = 3;
 
 Entity* playerEntityNew(GFC_Vector2D position, int role)
 {
@@ -60,9 +60,9 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->update = playerUpdate;
 	self->touch = playerTouch;
 
-	
+	self->currentPowerUp = PU_NONE;
 
-	self->velocity = gfc_vector2d(0,0);
+	self->velocity = gfc_vector2d(1,1);
 	self->topSpeed = gfc_vector2d(100, 100);
 	self->rotation = 0;
 
@@ -233,7 +233,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("d"))
 	{
-		self->position.x += 1.0;
+		self->position.x += self->velocity.x;
 		//self->rotation = 180;
 		//self->basicPlayerProjectileLife = 180;
 
@@ -241,7 +241,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("a"))
 	{
-		self->position.x -= 1.0;
+		self->position.x -= self->velocity.x;
 		//self->rotation = 0;
 		//self->lastShotRotation = 0;
 
@@ -249,7 +249,7 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("s"))
 	{
-		self->position.y += 1.0;
+		self->position.y += self->velocity.y;
 		//self->rotation = 270;
 		//self->lastShotRotation = 270;
 
@@ -257,17 +257,13 @@ void playerThink(Entity* self)
 
 	if (gfc_input_key_down("w"))
 	{
-		self->position.y -= 1.0;
+		self->position.y -= self->velocity.y;
 		//self->rotation = 90;
 		//self->lastShotRotation = 90;
 
 	}
 
-	if (self->velocity.y || self->velocity.x)
-	{		
-		gfc_vector2d_normalize(&self->velocity);
-		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
-	}
+
 	
 
 	//Player Damage Checking
@@ -282,6 +278,59 @@ void playerThink(Entity* self)
 		self->hitTimer = 0;
 		//slog("Monster is no longer immune!");
 	}
+
+	//player powerup checker
+	if (self->currentPowerUp != PU_NONE)
+	{
+		if (self->powerUpTimer < self->powerUpMaxTime)
+			self->powerUpTimer += 1;
+		else
+		{
+			//Kill the powered up state!
+			slog("Disabling the power up!");
+
+			switch (self->currentPowerUp)
+			{
+			case PU_CLONE:
+
+				break;
+
+			case PU_INVUL:
+
+				break;
+
+			case PU_HP_RECOVERY:
+
+				break;
+
+			case PU_SPEED:
+				self->velocity = gfc_vector2d(1, 1);
+				break;
+
+			case PU_BOMB:
+
+				break;
+
+			default:
+				slog("Player picked up a bad powerup!");
+				return;
+
+			}
+
+
+
+			self->currentPowerUp = PU_NONE;
+		}
+	}
+	else if (self->velocity.y || self->velocity.x)
+	{
+		gfc_vector2d_normalize(&self->velocity);
+		self->velocity.x *= baseSpeedMod;
+		self->velocity.y *= baseSpeedMod;
+		//gfc_vector2d_scale(self->velocity, self->velocity, self->topSpeed);
+	}
+	else
+		;
 
 	//slog("Last shot rotation: %i", self->lastShotRotation);
 	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
@@ -315,10 +364,12 @@ void playerTouch(Entity* self, Entity* toucher)
 
 		}
 
-		if (toucher->team == TEAM_ITEM)
+		if (toucher->team == TEAM_ITEM && self->currentPowerUp == PU_NONE)
 		{
-			playerPowerUps(self, toucher);
+			self->currentPowerUp = toucher->currentPowerUp;
 			toucher->_inUse = 0;
+			playerPowerUps(self, toucher);
+
 		}
 	}
 
@@ -774,6 +825,8 @@ void playerPowerUps(Entity* self, Entity* powerup)
 
 	int role = powerup->role;
 
+	self->powerUpMaxTime = powerup->powerUpMaxTime;
+
 	switch (role)
 	{
 		case PU_CLONE:
@@ -791,6 +844,11 @@ void playerPowerUps(Entity* self, Entity* powerup)
 			break;
 
 		case PU_SPEED:
+			self->velocity = gfc_vector2d(5,5);
+
+			//self->topSpeed = gfc_vector2d(5, 5);
+			
+			slog("Player picked up speed powerup!");
 
 			break;
 

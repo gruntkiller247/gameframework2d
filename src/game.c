@@ -79,13 +79,17 @@ int main(int argc, char * argv[])
     strcpy(enemy->name, "Mr Monster!");
     enemy->hp = 10;
     
-    Entity* bomb;
-    bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
-    bomb->team = TEAM_IGNORE;
-    strcpy(bomb->name, "TEST_BOMB!");
+    //Entity* bomb;
+    //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
+    //bomb->team = TEAM_IGNORE;
+    //strcpy(bomb->name, "TEST_BOMB!");
 
-    Entity* powerup;
-    powerup = powerUpEntityNew(gfc_vector2d(200, 500),PU_INVUL);
+    //Entity* powerup;
+    //powerup = powerUpEntityNew(gfc_vector2d(200, 500),PU_INVUL);
+
+    Entity* powerup2;
+    powerup2 = powerUpEntityNew(gfc_vector2d(400, 400), PU_SPEED);
+    strcpy(powerup2->name, "Speed Power Up");
 
 
     /*main game loop*/

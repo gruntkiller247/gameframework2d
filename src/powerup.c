@@ -57,7 +57,8 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 			break;
 
 		case PU_SPEED:
-			
+			//self->powerUpTimer = 0;
+			self->powerUpMaxTime = 400;
 			break;
 
 		case PU_BOMB:
@@ -98,7 +99,7 @@ void powerUpTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		//slog("Powerup is touching something! %s",toucher->name);
+		//slog("%s is touching something! %s",self->name,toucher->name);
 	}
 }
 

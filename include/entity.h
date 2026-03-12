@@ -53,16 +53,17 @@ typedef struct Entity_S
 	void (*ultimate)(struct Entity_S* ultimate); //Describes how the entity uses their ultimate
 	
 	
-	//This stuff is for the powerup
+	//This stuff is for the powerup on the player
 	int powerUpTimer;
 	int powerUpMaxTime;
+	int currentPowerUp;
 	
 
 	//This stuff is for the player
 	int timerPrimary;				//Timer that counts up to cooldown
 	int primaryCooldown;			//Time until primary attack can be fired
 	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
-	int amPowered;					//Flag toggled when in a powered up state, only allowed 1 power up at a time!
+	//int amPowered;					//Flag toggled when in a powered up state, only allowed 1 power up at a time!
 	
 	//Player Baker special values
 	int bombTLL;
@@ -93,6 +94,7 @@ typedef struct Entity_S
 
 typedef enum
 {
+	PU_NONE = -2,
 	PU_RANDOM = -1,
 	PU_HP_RECOVERY = 0,
 	PU_INVUL,
