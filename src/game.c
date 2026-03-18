@@ -69,18 +69,33 @@ void stolenCodeThatClaimsToWorkButDoesNot()
     SDL_DestroyTexture(Message);
 }
 
-//128 x 128 grid for GIMP + snap to grid
+void realUI(Entity* player, Entity* boss, SDL_Surface* words)
+{
+    if (!words)
+    {
+        slog("Words are Null! Error with rendering text to surface!");
+        return;
+    }
+        
+
+}
+
+
+//This function is meant to draw the HP bars for both the Boss, if any, and the Player dyanamically, but the stupid fucking code does not fucking work and I am sick of it!
+//Instead, I manually mapped out the numbers and drew them with lines. Horseshit and should have never needed to be done!
 void drawUI(Entity* player, Entity* boss, TTF_Font* font)
 {
     if (!font)
     {
+        slog("Font does not exist!");
         return;
     }
 
+    double* wid, hei;
     SDL_Color color = { 255, 0, 0, 255 };
-    SDL_Texture* whatIsOnBox = NULL;
-    SDL_Texture* whatMayBeOnBox = NULL;
-    SDL_Texture* postConversionBox = NULL;
+    SDL_Texture* textImage = NULL;
+    SDL_Surface* surface = NULL;
+    //SDL_Texture* Final = NULL;
 
     GFC_Rect menu;
 
@@ -90,76 +105,69 @@ void drawUI(Entity* player, Entity* boss, TTF_Font* font)
     //SDL_RenderClear(gf2d_graphics_get_renderer());
 
 
-    whatIsOnBox = TTF_RenderText_Blended(font, "Test Text", color);
+    surface = TTF_RenderText_Blended(font, "Test Text", color);
 
-    if (!whatIsOnBox)
+    if (!surface)
     {
-        slog("Text render failed: %s\n", TTF_GetError());
+        slog("Surface failed: %s\n", TTF_GetError());
         goto fail;
     }
 
-    whatMayBeOnBox = gf2d_graphics_screen_convert(&whatIsOnBox);
+    wid = surface->w;
+    hei = surface->h;
 
-    if (!whatIsOnBox)
+    //surface = gf2d_graphics_screen_convert(&surface);
+
+    if (!surface)
     {
         slog("Conversion lead to NULL!");
         goto fail;
     }
+    
+    textImage = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+    SDL_FreeSurface(surface);
 
-    postConversionBox = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), whatIsOnBox);
-
-    if (!postConversionBox)
+    if (!textImage)
     {
-        slog("Failed to make new texture");
+        slog("Failed to make new texture Error:%s",SDL_GetError());
         goto fail;
     }
-    SDL_FreeSurface(whatMayBeOnBox);
-
+    
     
 
-   
     menu.x = 0;
     menu.y = 0;
-    menu.w = 800;
-    menu.h = 800;
+    menu.w = (int)wid;
+    menu.h = hei;
 
-    //gf2d_draw_rect_filled(menu, GFC_COLOR_RED);
-    SDL_RenderCopy(gf2d_graphics_get_renderer(), whatIsOnBox, NULL, &menu);
-  
-    slog("I am trying to do things!");
+    gf2d_draw_rect_filled(menu, GFC_COLOR_WHITE);
+    SDL_RenderCopy(gf2d_graphics_get_renderer(), textImage, NULL, &menu);
+    SDL_RenderPresent(gf2d_graphics_get_renderer());
     
-    //SDL_RenderPresent(gf2d_graphics_get_renderer());
-    SDL_Delay(10000);
+    //SDL_Delay(100);
 
-    SDL_FreeSurface(whatIsOnBox);
-    SDL_DestroyTexture(postConversionBox);
+    //SDL_DestroyTexture(textImage);
     
     return;
 
     fail:
     
-    slog("In UI Fail!");
-    
-    if (!whatIsOnBox)
+    if (!surface)
         ;
     else
-        SDL_FreeSurface(whatIsOnBox);
+        SDL_FreeSurface(surface);
 
-    if (!whatMayBeOnBox)
+    if (!textImage)
         ;
     else
-        SDL_DestroyTexture(whatMayBeOnBox);
-
-    if (!postConversionBox)
-        ;
-    else
-        SDL_DestroyTexture(postConversionBox);
+        SDL_DestroyTexture(textImage);
+;
 
     return;
 }
 
 
-
+//128 x 128 grid for GIMP + snap to grid
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
@@ -173,13 +181,27 @@ int main(int argc, char * argv[])
     GFC_Color mouseGFC_Color = gfc_color(1, 1, 1, 100);//= gfc_color8(255,100,255,200);
 
     srand(time(NULL));
+    TTF_Font* font = NULL;
+
+
     //slog("The curret time is %i",time(NULL));
-
-
     //SDL_GetTikcs returns milli seconds program has been running
-    
+    TTF_Init();
 
+    if (TTF_Init() == -1) {
+        slog("TTF_Init Error: %s\n", TTF_GetError());
+        return 1;
+    }
 
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        slog("Couldn't initialize SDL: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    font = TTF_OpenFont(MY_FONT, 64);
+
+    if (!font)
+        slog("FONT DID NOT LOAD!");
 
 
     /*program initializtion*/
@@ -195,7 +217,9 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
-    
+
+
+
     TTF_Init();
 
     if (TTF_Init() == -1) {
@@ -207,12 +231,13 @@ int main(int argc, char * argv[])
         slog("Couldn't initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
-    
-    TTF_Font* font = TTF_OpenFont(MY_FONT, 64);
 
-    if(!font)
+    font = TTF_OpenFont(MY_FONT, 64);
+
+    if (!font)
         slog("FONT DID NOT LOAD!");
-
+    
+    
     entityManagerInit(2048);
     //monsterManagerInit(1024);
 
@@ -237,10 +262,15 @@ int main(int argc, char * argv[])
 
 
     int level = 1;
+    int powerUpSpawning = 0;
+    int powerUpCounter = 0;
+    int powerUpTime = 500;
+    Entity* powerUpGame = NULL;
 
     switch (level)
     {
          case  1:
+             slog("Loading Testing Level");
              /*Entity* projectile;
                 projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
                 projectile->team = TEAM_IGNORE;
@@ -279,13 +309,24 @@ int main(int argc, char * argv[])
 
          case 2:
              slog("Loading Boss 1");
-
+             powerUpSpawning = 1;
              break;
 
          default:
              slog("No Level Loaded!");
     }
 
+    SDL_Color color = { 255, 255, 255, 255 };
+    SDL_Surface* surface = TTF_RenderText_Solid(font, "Hello SDL_ttf!", color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+
+    SDL_Rect dstRect;
+    dstRect.x = 100;
+    dstRect.y = 100;
+    dstRect.w = surface->w;
+    dstRect.h = surface->h;
+    SDL_FreeSurface(surface);
+    
    
     
     /*main game loop*/
@@ -299,6 +340,10 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
+
+
+        if (powerUpSpawning == 1)
+            powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200,rand() % 720), -1);
 
         
         //update Thinking Here
@@ -338,8 +383,14 @@ int main(int argc, char * argv[])
             entityBoundsCheckAll();
            
             //drawUI(player, boss, font);
+            //realUI(player, boss, surface);
+            SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
+            SDL_RenderClear(gf2d_graphics_get_renderer());
 
+            // Render text
+            SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
 
+            SDL_RenderPresent(gf2d_graphics_get_renderer());
 
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
@@ -370,7 +421,8 @@ int main(int argc, char * argv[])
         entityFree(enemy);
     }*/
 
-
+   
+    
     TTF_CloseFont(font);
     TTF_Quit();
     entityManagerClose();
