@@ -392,31 +392,31 @@ void outOfBounds(Entity* self)
 		//slog("Teleporting Player or Boss!");
 
 
-		if (self->position.x >= 1200)
+		if (self->position.x >= 1100)
 		{
 			//slog("Entity bounds name %s role is %i",self->name,self->role);
-			self->position = gfc_vector2d(1150, self->position.y);
+			self->position = gfc_vector2d(1100, self->position.y);
 		}
 			
 
-		if (self->position.y >= 720)
+		if (self->position.y >= 650)
 		{
 			//slog("Entity bounds name %s role is %i", self->name, self->role);
-			self->position = gfc_vector2d(self->position.x, 670);
+			self->position = gfc_vector2d(self->position.x, 650);
 		}
 			
 
-		if (self->position.x <= 0)
+		if (self->position.x <= -50)
 		{
 			//slog("Entity bounds name %s role is %i", self->name, self->role);
-			self->position = gfc_vector2d(50, self->position.y);
+			self->position = gfc_vector2d(-50, self->position.y);
 		}
 			
 
-		if (self->position.y <= 0)
+		if (self->position.y <= -50)
 		{
 			//slog("Entity bounds name %s role is %i", self->name, self->role);
-			self->position = gfc_vector2d(self->position.x, 50);
+			self->position = gfc_vector2d(self->position.x, -50);
 		}
 			
 
@@ -429,16 +429,29 @@ void outOfBounds(Entity* self)
 		//Neither player not boss
 		//slog("NOT PLAYUER Entity bounds name %s role is %i", self->name, self->role);
 		if (self->position.x >= 1200)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
 			self->_inUse = 0;
+		}
+			
 
 		if (self->position.y >= 720)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
 			self->_inUse = 0;
+		}
 
-		if (self->position.x <= 0)
+		if (self->position.x <= -50)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
 			self->_inUse = 0;
+		}
 
-		if (self->position.y <= 0)
+		if (self->position.y <= -50)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
 			self->_inUse = 0;
+		}
 	}
 }
 
