@@ -41,26 +41,31 @@ int main(int argc, char * argv[])
 
     srand(time(NULL));
     TTF_Font* font = NULL;
+    SDL_Color color = { 255, 255, 255, 255 };
+    SDL_Surface* surface; 
+    SDL_Texture* texture; 
+
+    SDL_Rect dstRect;
     char playerHP[100];
 
-    //slog("The curret time is %i",time(NULL));
+    SDL_Rect dstRect2;
+    char bossHP[100];
+
+    SDL_Surface* surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+    SDL_Texture* textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+
+
+    Entity* boss = NULL;
+    Entity* player;
+
+    int level = 1;
+    int numPowerUps = 0;
+    int powerUpSpawning = 0;
+    int powerUpCounter = 0;
+    int powerUpTime = 500;
+    Entity* powerUpGame = NULL;
+
     //SDL_GetTikcs returns milli seconds program has been running
-    TTF_Init();
-
-    if (TTF_Init() == -1) {
-        slog("TTF_Init Error: %s\n", TTF_GetError());
-        return 1;
-    }
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        slog("Couldn't initialize SDL: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    font = TTF_OpenFont(MY_FONT, 64);
-
-    if (!font)
-        slog("FONT DID NOT LOAD!");
 
 
     /*program initializtion*/
@@ -76,55 +81,36 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
-
-
-
     TTF_Init();
 
     if (TTF_Init() == -1) {
         slog("TTF_Init Error: %s\n", TTF_GetError());
         return 1;
     }
-
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         slog("Couldn't initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
-
     font = TTF_OpenFont(MY_FONT, 64);
-
     if (!font)
         slog("FONT DID NOT LOAD!");
     
     
     entityManagerInit(2048);
-    //monsterManagerInit(1024);
-
-    //Not Working?
     gfc_input_init("config/input.gfc");
-
     SDL_ShowCursor(SDL_DISABLE);
     
+
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/cat.jpg");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
- 
-    
-
-    Entity* player;
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_BAKER);
     strcpy(player->name, "Player");
 
-    Entity* boss = NULL;
-
-
-    int level = 1;
-    int powerUpSpawning = 0;
-    int powerUpCounter = 0;
-    int powerUpTime = 500;
-    Entity* powerUpGame = NULL;
+    
+    level = 2;
 
     switch (level)
     {
@@ -169,6 +155,9 @@ int main(int argc, char * argv[])
          case 2:
              slog("Loading Boss 1");
              powerUpSpawning = 1;
+
+             boss = monsterEntityNew(gfc_vector2d(100, 100));
+             strcpy(boss->name, "POS");
              break;
 
          default:
@@ -177,17 +166,36 @@ int main(int argc, char * argv[])
 
     snprintf(playerHP, sizeof(playerHP), "Player HP: %d", player->hp);
 
-    SDL_Color color = { 255, 255, 255, 255 };
-    SDL_Surface* surface = TTF_RenderText_Solid(font, playerHP, color);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+    
+    surface = TTF_RenderText_Solid(font, playerHP, color);
+    texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
 
-    SDL_Rect dstRect;
+
     dstRect.x = 10;
     dstRect.y = 10;
     dstRect.w = surface->w/2;
     dstRect.h = surface->h/2;
     SDL_FreeSurface(surface);
-    
+
+    if (!boss)
+    {
+        ;
+    }
+    else
+    {
+        snprintf(bossHP, sizeof(bossHP), "Boss HP: %d", boss->hp);
+        
+        surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+        textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+
+       
+        dstRect2.x = 1000;
+        dstRect2.y = 10;
+        dstRect2.w = surfaceBoss->w / 2;
+        dstRect2.h = surfaceBoss->h / 2;
+        SDL_FreeSurface(surfaceBoss);
+    }
+
    
     
     /*main game loop*/
@@ -203,8 +211,25 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
 
-        if (powerUpSpawning == 1)
-            powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200,rand() % 720), -1);
+        if (powerUpSpawning == 1/* && numPowerUps < 3*/)
+        {
+            if (rand() % 10000 == 1)
+            {
+                slog("Spawning a power up!");
+                powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), -1);
+                numPowerUps++;
+            }
+
+        }
+        else if (numPowerUps == 3)
+        {
+            slog("Power ups spawns maxed out!");
+        }
+        else
+        {
+            ;
+        }
+            
 
         
         //update Thinking Here
@@ -233,25 +258,19 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-            //gf2d_draw_line(gfc_vector2d(0,0), gfc_vector2d(100,100), GFC_COLOR_RED);
-
-
-            //player->position = gfc_vector2d(100, 100);
             
             entityTouchAll();
             entityUpdateAll();
             entityFreeAll();
             entityBoundsCheckAll();
-           
-            //drawUI(player, boss, font);
-            //realUI(player, boss, surface);
+
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
-            //SDL_RenderClear(gf2d_graphics_get_renderer());
+            
 
-            // Render text
+            //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
-
+            SDL_RenderCopy(gf2d_graphics_get_renderer(), textureBoss, NULL, &dstRect2);
             SDL_RenderPresent(gf2d_graphics_get_renderer());
 
 
