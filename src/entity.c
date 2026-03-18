@@ -377,4 +377,86 @@ Entity* playerGetter()
 	return thePlayer;
 }
 
+
+
+void outOfBounds(Entity* self)
+{
+	if (!self)
+		return;
+
+	
+
+	if(self->role != NULL && self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3 || self->role == ROLE_PLAYER_BAKER || self->role == ROLE_PLAYER_GAMBLER || self->role == ROLE_PLAYER_GUNNER)
+	{
+		//Hard coded size is 1200x720
+		//slog("Teleporting Player or Boss!");
+
+
+		if (self->position.x >= 1200)
+		{
+			//slog("Entity bounds name %s role is %i",self->name,self->role);
+			self->position = gfc_vector2d(1150, self->position.y);
+		}
+			
+
+		if (self->position.y >= 720)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
+			self->position = gfc_vector2d(self->position.x, 670);
+		}
+			
+
+		if (self->position.x <= 0)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
+			self->position = gfc_vector2d(50, self->position.y);
+		}
+			
+
+		if (self->position.y <= 0)
+		{
+			//slog("Entity bounds name %s role is %i", self->name, self->role);
+			self->position = gfc_vector2d(self->position.x, 50);
+		}
+			
+
+
+
+
+	}
+	else
+	{
+		//Neither player not boss
+		//slog("NOT PLAYUER Entity bounds name %s role is %i", self->name, self->role);
+		if (self->position.x >= 1200)
+			self->_inUse = 0;
+
+		if (self->position.y >= 720)
+			self->_inUse = 0;
+
+		if (self->position.x <= 0)
+			self->_inUse = 0;
+
+		if (self->position.y <= 0)
+			self->_inUse = 0;
+	}
+}
+
+void entityBoundsCheckAll()
+{
+	int c, d;
+
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+		if (entityManager.entityList[c].team == TEAM_IGNORE)
+			continue;
+
+		//slog("Checking Bounds");
+		outOfBounds(&entityManager.entityList[c]);
+
+	}
+}
+
 //endLine

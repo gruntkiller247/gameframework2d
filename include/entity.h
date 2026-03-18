@@ -110,10 +110,11 @@ typedef enum
 	EL_NONE = 0,
 	EL_PLAYER = 1,
 	EL_MONSTER = 2,
-	EL_ITEM = 4,
-	EL_WORLD = 8,
-	EL_PROJECTILES =16,
-	EL_ALL = 32
+	EL_BOSS = 4,
+	EL_ITEM = 8,
+	EL_WORLD = 16,
+	EL_PROJECTILES =32,
+	EL_ALL = 36
 }EntityLayers;
 
 typedef enum DS
@@ -140,6 +141,8 @@ typedef enum RN
 	ROLE_BOSS1,
 	ROLE_BOSS2,
 	ROLE_BOSS3,
+	ROLE_PROJECTILE,
+	ROLE_BOMB,
 	ROLE_COUNT
 
 }RoleNames;
@@ -214,7 +217,11 @@ void playerSetter(Entity* player);
 /*
 	Returns a pointer value to the player
 */
-Entity* playerGetter();
 
 
+
+//Checks if an Entity is out of bounds, kills it if it is anything except a Player or Boss, otherwise moves them back inbounds
+void outOfBounds(Entity* self);
+
+void entityBoundsCheckAll();
 #endif

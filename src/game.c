@@ -19,6 +19,14 @@
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
+//Static bullshit for window sizes
+static int viewWidth = 1200;
+static int viewHeight = 720;
+static int renderWdith = 1200;
+static int renderHeight = 720;
+
+//This code was stolen from some fucking person on stack overflow and it works for everyone but me!
+//https://stackoverflow.com/questions/22886500/how-to-render-text-in-sdl2
 void stolenCodeThatClaimsToWorkButDoesNot()
 {
     //this opens a font style and sets a size
@@ -170,15 +178,19 @@ int main(int argc, char * argv[])
 
     //SDL_GetTikcs returns milli seconds program has been running
     
+
+
+
+
     /*program initializtion*/
     init_logger("gf2d.log",0);
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        1200,
-        720,
-        1200,
-        720,
+        viewWidth,
+        viewHeight,
+        renderWdith,
+        renderHeight,
         gfc_vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(16);
@@ -318,11 +330,12 @@ int main(int argc, char * argv[])
             //gf2d_draw_line(gfc_vector2d(0,0), gfc_vector2d(100,100), GFC_COLOR_RED);
 
 
-
+            //player->position = gfc_vector2d(100, 100);
+            
             entityTouchAll();
             entityUpdateAll();
             entityFreeAll();
-
+            entityBoundsCheckAll();
            
             //drawUI(player, boss, font);
 

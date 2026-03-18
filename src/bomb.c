@@ -26,6 +26,8 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		return NULL;
 	}
 
+	self->role = ROLE_BOMB;
+
 	/*self->color = malloc(sizeof(GFC_Color));
 	*self->color = GFC_COLOR_DARKORANGE;*/
 	self->colorReal = GFC_COLOR_ORANGE;

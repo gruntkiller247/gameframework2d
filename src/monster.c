@@ -88,7 +88,7 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 	self->team = TEAM_ENEMY;
 	self->layer = EL_MONSTER;
 	
-	//self->role = role; Fill in once trash mobs exist!
+	self->role = ROLE_TRASHMOB;
 
 	self->hp = 2;
 	self->damage = 1;

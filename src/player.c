@@ -101,14 +101,14 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	switch (role)
 	{
 		case ROLE_PLAYER_GUNNER:
-		
+			self->role = role;
 			self->fire = playerGunnerShoot;
 			self->special = playerGunnerSpecial;
 			self->ultimate = playerGunnerUltimate;
 			break;
 
 		case ROLE_PLAYER_BAKER:
-		
+			self->role = role;
 			self->bombAmount = 20;
 			self->bombTLL = 100;
 			self->fire = playerBakerShoot;
@@ -118,6 +118,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 			break;
 
 		case ROLE_PLAYER_GAMBLER:
+			self->role = role;
 			self->ultIs = 0;
 			self->fire = playerGamblerShoot;
 			self->special = playerGamblerSpecial;
@@ -417,9 +418,6 @@ void playerUpdate(Entity* self)
 	gf2d_draw_line(TR, BR, GFC_COLOR_RED);
 	gf2d_draw_line(BR, BL, GFC_COLOR_RED);
 	gf2d_draw_line(BL, TL, GFC_COLOR_RED);
-
-
-	
 }
 
 void playerFree(Entity* self)

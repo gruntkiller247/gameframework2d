@@ -25,6 +25,8 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		return NULL;
 	}
 
+	self->role = ROLE_PROJECTILE;
+
 	/*Projectile_Data* data = malloc(sizeof(Projectile_Data));
 	
 	if (!data)
