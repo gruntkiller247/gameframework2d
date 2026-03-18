@@ -14,14 +14,54 @@
 #include "world.h"
 #include "gf2d_draw.h"
 #include "projectiles.h"
-#include "MattHelper.h"
 #include "bomb.h"
 #include "powerup.h"
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
-//128 x 128 grid for GIMP + snap to grid
+void stolenCodeThatClaimsToWorkButDoesNot()
+{
+    //this opens a font style and sets a size
+    TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
 
+    // this is the color in rgb format,
+    // maxing out all would give you the color white,
+    // and it will be your text's color
+    SDL_Color White = { 255, 255, 255 };
+
+    // as TTF_RenderText_Solid could only be used on
+    // SDL_Surface then you have to create the surface first
+    SDL_Surface* surfaceMessage =
+        TTF_RenderText_Solid(Sans, "put your text here", White);
+
+    // now you can convert it into a texture
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceMessage);
+
+    SDL_Rect Message_rect; //create a rect
+    Message_rect.x = 0;  //controls the rect's x coordinate 
+    Message_rect.y = 0; // controls the rect's y coordinte
+    Message_rect.w = 100; // controls the width of the rect
+    Message_rect.h = 100; // controls the height of the rect
+
+    // (0,0) is on the top left of the window/screen,
+    // think a rect as the text's box,
+    // that way it would be very simple to understand
+
+    // Now since it's a texture, you have to put RenderCopy
+    // in your game loop area, the area where the whole code executes
+
+    // you put the renderer's name first, the Message,
+    // the crop size (you can ignore this if you don't want
+    // to dabble with cropping), and the rect which is the size
+    // and coordinate of your texture
+    SDL_RenderCopy(gf2d_graphics_get_renderer(), Message, NULL, &Message_rect);
+    
+    // Don't forget to free your surface and texture
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
+}
+
+//128 x 128 grid for GIMP + snap to grid
 void drawUI(Entity* player, Entity* boss, TTF_Font* font)
 {
     if (!font)
@@ -29,63 +69,88 @@ void drawUI(Entity* player, Entity* boss, TTF_Font* font)
         return;
     }
 
-    //SDL_RenderClear(gf2d_graphics_get_renderer());
-    //SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
-
-    SDL_Color color = { 255, 255, 255, 255 };
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Test Text", color);
-
-
-    if (!textSurface)
-    {
-        slog("Text render failed: %s\n", TTF_GetError());
-    }
-
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), textSurface);
-
-    if (!textTexture)
-    {
-        slog("Failed to create texture: %s\n", SDL_GetError());
-        return;
-    }
+    SDL_Color color = { 255, 0, 0, 255 };
+    SDL_Texture* whatIsOnBox = NULL;
+    SDL_Texture* whatMayBeOnBox = NULL;
+    SDL_Texture* postConversionBox = NULL;
 
     GFC_Rect menu;
-    menu.x = 100;
-    menu.y = 100;
-    menu.w = textSurface->w;
-    menu.h = textSurface->h;
 
-    SDL_RenderCopy(gf2d_graphics_get_renderer(), textTexture, NULL, &menu);
+    
+    
+    //SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 255, 255, 255, 255);
+    //SDL_RenderClear(gf2d_graphics_get_renderer());
+
+
+    whatIsOnBox = TTF_RenderText_Blended(font, "Test Text", color);
+
+    if (!whatIsOnBox)
+    {
+        slog("Text render failed: %s\n", TTF_GetError());
+        goto fail;
+    }
+
+    whatMayBeOnBox = gf2d_graphics_screen_convert(&whatIsOnBox);
+
+    if (!whatIsOnBox)
+    {
+        slog("Conversion lead to NULL!");
+        goto fail;
+    }
+
+    postConversionBox = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), whatIsOnBox);
+
+    if (!postConversionBox)
+    {
+        slog("Failed to make new texture");
+        goto fail;
+    }
+    SDL_FreeSurface(whatMayBeOnBox);
+
+    
+
+   
+    menu.x = 0;
+    menu.y = 0;
+    menu.w = 800;
+    menu.h = 800;
+
+    //gf2d_draw_rect_filled(menu, GFC_COLOR_RED);
+    SDL_RenderCopy(gf2d_graphics_get_renderer(), whatIsOnBox, NULL, &menu);
+  
+    slog("I am trying to do things!");
+    
     //SDL_RenderPresent(gf2d_graphics_get_renderer());
-    //SDL_Delay(2000);
+    SDL_Delay(10000);
 
-    SDL_FreeSurface(textSurface);
-    SDL_DestroyTexture(textTexture);
-    //gf2d_draw_rect_filled(menu, GFC_COLOR_WHITE);
+    SDL_FreeSurface(whatIsOnBox);
+    SDL_DestroyTexture(postConversionBox);
+    
+    return;
+
+    fail:
+    
+    slog("In UI Fail!");
+    
+    if (!whatIsOnBox)
+        ;
+    else
+        SDL_FreeSurface(whatIsOnBox);
+
+    if (!whatMayBeOnBox)
+        ;
+    else
+        SDL_DestroyTexture(whatMayBeOnBox);
+
+    if (!postConversionBox)
+        ;
+    else
+        SDL_DestroyTexture(postConversionBox);
+
     return;
 }
 
-    /*if (!player)
-        ;
-    else
-    {
-        //Draw Player's HP
 
-    }
-
-    if (!boss)
-        ;
-    else
-    {
-        //Draw Boss's HP
-    }
-
-    //SDL_FreeSurface(textSurface);
-    //SDL_DestroyTexture(textTexture);
-    //TTF_Quit();
-    
-    return;
-}*/
 
 int main(int argc, char * argv[])
 {
@@ -118,6 +183,8 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    
+    TTF_Init();
 
     if (TTF_Init() == -1) {
         slog("TTF_Init Error: %s\n", TTF_GetError());
@@ -126,10 +193,13 @@ int main(int argc, char * argv[])
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         slog("Couldn't initialize SDL: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
+        return 1;
     }
     
     TTF_Font* font = TTF_OpenFont(MY_FONT, 64);
+
+    if(!font)
+        slog("FONT DID NOT LOAD!");
 
     entityManagerInit(2048);
     //monsterManagerInit(1024);
@@ -253,11 +323,8 @@ int main(int argc, char * argv[])
             entityUpdateAll();
             entityFreeAll();
 
-            
-            drawUI(player, boss, font);
            
-
-            //SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
+            //drawUI(player, boss, font);
 
 
 
