@@ -98,6 +98,8 @@ Entity* entityGetID(Uint32 id)
 		if (entityManager.entityList[i].id == id)
 			return &entityManager.entityList[i];
 	}
+
+	return NULL;
 }
 
 

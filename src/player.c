@@ -291,7 +291,7 @@ void playerThink(Entity* self)
 
 			switch (self->currentPowerUp)
 			{
-			case PU_CLONE:
+			case PU_FREE_ULT:
 
 				break;
 
@@ -318,7 +318,7 @@ void playerThink(Entity* self)
 			}
 
 
-
+			self->powerUpTimer = 0;
 			self->currentPowerUp = PU_NONE;
 		}
 	}
@@ -833,7 +833,14 @@ void playerPowerUps(Entity* self, Entity* powerup)
 
 	switch (role)
 	{
-		case PU_CLONE:
+		case PU_FREE_ULT:
+			if (rand() % 4 == 1)
+			{
+				self->timerUlt = self->ultCooldown;
+				slog("Player is lucky, giving them a free ult!");
+			}
+			else
+				slog("Player was unlucky! No ult for you!");
 
 			break;
 
@@ -844,7 +851,7 @@ void playerPowerUps(Entity* self, Entity* powerup)
 			break;
 
 		case PU_HP_RECOVERY:
-
+			self->hp += 1;
 			break;
 
 		case PU_SPEED:

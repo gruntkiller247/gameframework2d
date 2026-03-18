@@ -13,7 +13,7 @@
 typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
-	Uint8* id;									
+	Uint8* id;									//What Number Entity I am
 	Uint32* layer;								//What layer I am on
 
 	GFC_TextLine name;							//Name of the entity
@@ -57,7 +57,7 @@ typedef struct Entity_S
 	int powerUpTimer;
 	int powerUpMaxTime;
 	int currentPowerUp;
-	
+	int ultPowerup;
 
 	//This stuff is for the player
 	int timerPrimary;				//Timer that counts up to cooldown
@@ -84,7 +84,7 @@ typedef struct Entity_S
 	int timerUlt;
 	int ultCooldown;
 	int ultDamage;
-	int ultIs;	//This should only be touched by the projectile class when the gunner ults
+	int ultIs;					//This should only be touched by the projectile class when the gunner ults
 
 	
 
@@ -100,7 +100,7 @@ typedef enum
 	PU_INVUL,			//Working, uses the hit invul system
 	PU_BOMB,			//Spawn a bomb at player's feet
 	PU_SPEED,			//Working
-	PU_CLONE,			//Probably changing
+	PU_FREE_ULT,			
 	PU_MAXNUMBER
 }PowerUps;
 

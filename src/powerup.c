@@ -1,5 +1,9 @@
 #include "simple_logger.h"
 #include "powerup.h"
+#include "player.h"
+#include "gfc_input.h"
+#include "gf2d_draw.h"
+#include "gf2d_graphics.h"
 
 void powerUpThink(Entity* self);
 
@@ -43,8 +47,9 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 	//Add color based on powerup!
 	switch (role)
 	{
-		case PU_CLONE:
-			
+		case PU_FREE_ULT:
+			self->colorReal = GFC_COLOR_GREY;
+			self->ultPowerup = 1;
 			break;
 
 		case PU_INVUL:
@@ -53,11 +58,12 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 			break;
 
 		case PU_HP_RECOVERY:
-			
+			self->colorReal = GFC_COLOR_RED;
 			break;
 
 		case PU_SPEED:
 			//self->powerUpTimer = 0;
+			self->colorReal = GFC_COLOR_CYAN;
 			self->powerUpMaxTime = 400;
 			break;
 
