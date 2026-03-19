@@ -252,13 +252,11 @@ int main(int argc, char * argv[])
 
         if (!paused)
         {
-            if (gfc_input_key_down("g"))
+            if (gfc_input_key_pressed("g"))
             {
                 slog("Pausing?");
                 paused = 1;
             }
-            else
-                paused = 0;
                 
 
             mf += 0.1;
@@ -335,11 +333,28 @@ int main(int argc, char * argv[])
         }
         else
         {
-            if (gfc_input_key_down("g")) 
+            if (gfc_input_key_pressed("g"))
             {
                 slog("Unpausing?");
                 paused = 0;
-            }
+            } 
+            gf2d_graphics_clear_screen();
+            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+            entityManagerDrawAll();
+           
+
+            gf2d_sprite_draw(
+                mouse,
+                gfc_vector2d(mx, my),
+                NULL,
+                NULL,
+                NULL,
+                NULL,
+                &mouseGFC_Color,
+                (int)mf);
+
+            
+            gf2d_graphics_next_frame();
               
         }
        

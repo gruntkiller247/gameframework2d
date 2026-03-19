@@ -170,7 +170,7 @@ void playerThink(Entity* self)
 	//slog("primaryCooldown is %i,", self->primaryCooldown);
 
 	
-	if (gfc_input_key_down("v") && self->timerUlt >= self->ultCooldown)
+	if (gfc_input_key_pressed("v") && self->timerUlt >= self->ultCooldown)
 	{
 		//slog("Trying to use Gunner Ult!");
 		self->ultimate(self);
@@ -178,21 +178,21 @@ void playerThink(Entity* self)
 	}
 
 
-	if (gfc_input_key_down("z") && self->timerSpecial >= self->specialCooldown)
+	if (gfc_input_key_pressed("z") && self->timerSpecial >= self->specialCooldown)
 	{
 		//slog("Trying to fire gunner special!");
 		self->timerSpecial = 0;
 
 
-		if (gfc_input_key_down("UP"))
+		if (gfc_input_key_pressed("UP"))
 		{
 			self->special(self, D_UP);
 		}
-		else if (gfc_input_key_down("DOWN"))
+		else if (gfc_input_key_pressed("DOWN"))
 		{
 			self->special(self, D_DOWN);
 		}	
-		else if (gfc_input_key_down("LEFT"))
+		else if (gfc_input_key_pressed("LEFT"))
 		{
 			self->special(self, D_LEFT);
 		}
@@ -202,28 +202,28 @@ void playerThink(Entity* self)
 		}
 	}
 
-	if (gfc_input_key_down("UP") && self->timerPrimary >= self->primaryCooldown)
+	if (gfc_input_key_pressed("UP") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
 		self->fire(self,D_UP);
 	}
 
-	if (gfc_input_key_down("DOWN") && self->timerPrimary >= self->primaryCooldown)
+	if (gfc_input_key_pressed("DOWN") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
 		self->fire(self,D_DOWN);
 	}
 
-	if (gfc_input_key_down("LEFT") && self->timerPrimary >= self->primaryCooldown)
+	if (gfc_input_key_pressed("LEFT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
 		self->fire(self,D_LEFT);
 	}
 	
-	if (gfc_input_key_down("RIGHT") && self->timerPrimary >= self->primaryCooldown)
+	if (gfc_input_key_pressed("RIGHT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
