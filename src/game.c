@@ -19,12 +19,60 @@
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
-//Static bullshit for window sizes
+//Static bullshit
+//Window Size
 static int viewWidth = 1200;
 static int viewHeight = 720;
 static int renderWdith = 1200;
 static int renderHeight = 720;
 
+//Drawing for UI
+static char playerHP[100];
+static char bossHP[100];
+static SDL_Surface* surface;
+static SDL_Texture* texture;
+static SDL_Surface* surfaceBoss;
+static SDL_Texture* textureBoss; 
+static SDL_Rect dstRect;    //For the Player's Health UI
+static SDL_Rect dstRect2;   //For the Boss's Health UI
+
+void updateUI(Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color color, SDL_Rect** playerHPUI, SDL_Rect** bossHPUI)
+{
+    if (!font || !playerHPUI)
+    {
+        slog("Font or player UI not working! Can't draw!");
+        return;
+    }
+    //slog("Player hp is %i", player);
+        
+
+    snprintf(playerHP, sizeof(playerHP), "Player HP: %i", playerNumHP);
+    snprintf(bossHP, sizeof(bossHP), "Boss HP: %i", bossNumHP);
+
+    surface = TTF_RenderText_Solid(font, playerHP, color);
+    texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+    dstRect.x = 10;
+    dstRect.y = 10;
+    dstRect.w = surface->w / 2;
+    dstRect.h = surface->h / 2;
+    SDL_FreeSurface(surface);
+
+    if (!bossHPUI)
+    {
+        //slog("No Boss for UI to draw!");
+    }
+    else
+    {
+        surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+        textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+        dstRect2.x = 1000;
+        dstRect2.y = 10;
+        dstRect2.w = surfaceBoss->w / 2;
+        dstRect2.h = surfaceBoss->h / 2;
+        SDL_FreeSurface(surfaceBoss);
+    }
+
+}
 
 //128 x 128 grid for GIMP + snap to grid
 int main(int argc, char * argv[])
@@ -42,21 +90,17 @@ int main(int argc, char * argv[])
     srand(time(NULL));
     TTF_Font* font = NULL;
     SDL_Color color = { 255, 255, 255, 255 };
-    SDL_Surface* surface; 
-    SDL_Texture* texture; 
+   
 
-    SDL_Rect dstRect;
-    char playerHP[100];
+    
+    
 
-    SDL_Rect dstRect2;
-    char bossHP[100];
-
-    SDL_Surface* surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
-    SDL_Texture* textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+    surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+    textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
 
 
     Entity* boss = NULL;
-    Entity* player;
+    Entity* player = NULL;
 
     int level = 1;
     int numPowerUps = 0;
@@ -165,8 +209,6 @@ int main(int argc, char * argv[])
     }
 
     snprintf(playerHP, sizeof(playerHP), "Player HP: %d", player->hp);
-
-    
     surface = TTF_RenderText_Solid(font, playerHP, color);
     texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
 
@@ -264,6 +306,8 @@ int main(int argc, char * argv[])
             entityFreeAll();
             entityBoundsCheckAll();
 
+            
+            updateUI(player->hp, boss->hp,font,color,&dstRect,&dstRect2);
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
             
