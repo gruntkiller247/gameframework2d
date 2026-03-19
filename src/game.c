@@ -92,7 +92,7 @@ int main(int argc, char * argv[])
     SDL_Color color = { 255, 255, 255, 255 };
    
 
-    
+    int paused = 0;
     
 
     surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
@@ -249,50 +249,62 @@ int main(int argc, char * argv[])
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
-        mf+=0.1;
-        if (mf >= 16.0)mf = 0;
 
-
-        if (powerUpSpawning == 1/* && numPowerUps < 3*/)
+        if (!paused)
         {
-            if (rand() % 10000 == 1)
+            if (gfc_input_key_down("g"))
             {
-                slog("Spawning a power up!");
-                powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), -1);
-                numPowerUps++;
+                slog("Pausing?");
+                paused = 1;
+            }
+            else
+                paused = 0;
+                
+
+            mf += 0.1;
+            if (mf >= 16.0)mf = 0;
+
+
+            if (powerUpSpawning == 1/* && numPowerUps < 3*/)
+            {
+                if (rand() % 10000 == 1)
+                {
+                    slog("Spawning a power up!");
+                    powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), -1);
+                    numPowerUps++;
+                }
+
+            }
+            else if (numPowerUps == 3)
+            {
+                slog("Power ups spawns maxed out!");
+            }
+            else
+            {
+                ;
             }
 
-        }
-        else if (numPowerUps == 3)
-        {
-            slog("Power ups spawns maxed out!");
-        }
-        else
-        {
-            ;
-        }
-            
-
-        
-        //update Thinking Here
-        entityThinkAll();
 
 
-        
-        
-        gf2d_graphics_clear_screen();// clears drawing buffers
-        // all drawing should happen betweem clear_screen and next_frame
-            //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
-            
-            
+            //update Thinking Here
+            entityThinkAll();
+
+
+
+
+            gf2d_graphics_clear_screen();// clears drawing buffers
+            // all drawing should happen betweem clear_screen and next_frame
+                //backgrounds drawn first
+            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+
+
             entityManagerDrawAll();
-            
+
 
             //UI elements last
             gf2d_sprite_draw(
                 mouse,
-                gfc_vector2d(mx,my),
+                gfc_vector2d(mx, my),
                 NULL,
                 NULL,
                 NULL,
@@ -300,17 +312,17 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-            
+
             entityTouchAll();
             entityUpdateAll();
             entityFreeAll();
             entityBoundsCheckAll();
 
-            
-            updateUI(player->hp, boss->hp,font,color,&dstRect,&dstRect2);
+
+            updateUI(player->hp, boss->hp, font, color, &dstRect, &dstRect2);
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
-            
+
 
             //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
@@ -318,8 +330,19 @@ int main(int argc, char * argv[])
             SDL_RenderPresent(gf2d_graphics_get_renderer());
 
 
-        gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
-        
+            gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
+
+        }
+        else
+        {
+            if (gfc_input_key_down("g")) 
+            {
+                slog("Unpausing?");
+                paused = 0;
+            }
+              
+        }
+       
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
