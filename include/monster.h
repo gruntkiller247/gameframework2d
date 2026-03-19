@@ -20,4 +20,9 @@ void monsterTouch(Entity* self, Entity* toucher);
 
 Entity* monsterEntityNew(GFC_Vector2D position);
 
+/*
+	Recieves a GFC Vector of a position for the monster to look at
+*/
+void lookAt(Entity* self, GFC_Vector2D position);
+
 #endif

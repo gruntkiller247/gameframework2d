@@ -28,7 +28,7 @@ typedef struct Entity_S
 	void	(*think)(struct Entity_S *self);	//Called every frame if defined for the entity
 	void	(*update)(struct Entity_S* self);	
 	void	(*free)(struct Entity_S* self);	
-	void	(*data) (struct data);
+	void	*data;
 	void	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
 
 	//GFC_Color* color;
@@ -224,4 +224,12 @@ void playerSetter(Entity* player);
 void outOfBounds(Entity* self);
 
 void entityBoundsCheckAll();
+
+
+/*
+	Returns a pointer to the player or NULL
+*/
+Entity* getPlayer();
+
+Entity* setPlayer(Entity* player);
 #endif
