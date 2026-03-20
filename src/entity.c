@@ -472,4 +472,14 @@ void entityBoundsCheckAll()
 	}
 }
 
+void setPlayer(Entity* player)
+{
+	thePlayer = player;
+}
+
+Entity* getPlayer()
+{
+	return thePlayer;
+}
+
 //endLine

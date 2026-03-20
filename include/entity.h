@@ -209,15 +209,6 @@ void entityTouchAll();
 */
 void entityKillAll();
 
-/*
-	Sets a pointer value to the player
-*/
-void playerSetter(Entity* player);
-
-/*
-	Returns a pointer value to the player
-*/
-
 
 
 //Checks if an Entity is out of bounds, kills it if it is anything except a Player or Boss, otherwise moves them back inbounds
@@ -231,5 +222,5 @@ void entityBoundsCheckAll();
 */
 Entity* getPlayer();
 
-Entity* setPlayer(Entity* player);
+void setPlayer(Entity* player);
 #endif

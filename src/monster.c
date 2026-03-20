@@ -39,18 +39,28 @@ void monsterManagerInit(Uint32 max)
 
 typedef enum
 {
-	MS_Idle,
-	MS_Hunt,
-	MS_Attack,
-	MS_Pain,
-	MS_Die,
+	MS_IDLE,
+	MS_HUNT,
+	MS_ATTACK,
+	MS_PAIN,
+	MS_DIE,
 	MS_MAX
 }MonsterStates;
+
+typedef enum
+{
+	MP_TRASH,
+	MP_IDLE,
+	MP_ATTACK,
+	MP_PUZZLE,
+	MP_MAX
+}MonsterPhase;
 
 typedef struct MD
 {
 	Entity* player;
 	MonsterStates state;
+	MonsterPhase phase;
 }MonsterData;
 
 void monsterThink(Entity* self);
@@ -59,7 +69,7 @@ void monsterUpdate(Entity* self);
 void monsterTouch(Entity* self,Entity* toucher);
 
 
-Entity* monsterEntityNew(GFC_Vector2D position)
+Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
 	Entity* self;
 	self = entityNew();
@@ -88,7 +98,7 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 	self->team = TEAM_ENEMY;
 	self->layer = EL_MONSTER;
 	
-	self->role = ROLE_TRASHMOB;
+	self->role = role;
 
 	self->hp = 2;
 	self->damage = 1;
@@ -102,6 +112,27 @@ Entity* monsterEntityNew(GFC_Vector2D position)
 
 
 	strcpy(self->name, "MONSTER");
+
+	strcpy(self->name, "MONSTER");
+
+	MonsterData* monsterData = malloc(sizeof(MonsterData));
+	MonsterPhase* monsterPhase = malloc(sizeof(MonsterPhase));
+
+	if (!monsterData)
+		return NULL;
+
+	if (!monsterPhase)
+		return NULL;
+
+	monsterData->player = getPlayer();
+	monsterData->state = MS_IDLE;
+
+	if (role == ROLE_BOSS1 || role == ROLE_BOSS2 || role == ROLE_BOSS3)
+		monsterData->phase = MP_IDLE;
+	else
+		monsterData->phase = MP_TRASH;
+
+	self->data = monsterData;
 
 
 	return self;

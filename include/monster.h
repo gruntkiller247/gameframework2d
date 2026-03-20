@@ -18,7 +18,7 @@ void monsterUpdate(Entity* self);
 
 void monsterTouch(Entity* self, Entity* toucher);
 
-Entity* monsterEntityNew(GFC_Vector2D position);
+Entity* monsterEntityNew(GFC_Vector2D position,int role);
 
 /*
 	Recieves a GFC Vector of a position for the monster to look at
