@@ -155,7 +155,7 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");
 
     
-    level = 1;
+    level = 2;
 
     switch (level)
     {
@@ -167,7 +167,7 @@ int main(int argc, char * argv[])
                 strcpy(projectile->name, "TEST_PROJECTILE");*/
 
              Entity * enemy;
-             enemy = monsterEntityNew(gfc_vector2d(200, 100),ROLE_TRASHMOB);
+             enemy = monsterEntityNew(gfc_vector2d(300, 100),ROLE_TRASHMOB);
              strcpy(enemy->name, "Mr Monster!");
              enemy->hp = 10;
 
@@ -201,7 +201,7 @@ int main(int argc, char * argv[])
              slog("Loading Boss 1");
              powerUpSpawning = 1;
 
-             boss = monsterEntityNew(gfc_vector2d(100, 100),ROLE_BOSS1);
+             boss = monsterEntityNew(gfc_vector2d(300, 100),ROLE_BOSS1);
              strcpy(boss->name, "POS");
              break;
 

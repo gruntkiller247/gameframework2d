@@ -3,8 +3,8 @@
 #include "gfc_input.h"
 #include "gfc_shape.h"
 #include "gf2d_draw.h"
-
 #include "gf2d_graphics.h"
+
 
 
 typedef struct
@@ -169,8 +169,11 @@ void entityDraw(Entity* self)
 	}
 
 
-	
-	if (!gfc_color_cmp(self->colorReal, GFC_COLOR_TRANSPARENT) && self->sprite && self->_inUse)
+	if (self->layer == EL_INVISIBLE)
+	{
+		return;
+	}
+	else if (!gfc_color_cmp(self->colorReal, GFC_COLOR_TRANSPARENT) && self->sprite && self->_inUse)
 	{
 		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, &self->colorReal, (Uint32)self->frame);
 	}
@@ -357,6 +360,9 @@ void entityTouchAll()
 				continue;
 
 			if (entityManager.entityList[c].layer == EL_ITEM && entityManager.entityList[d].layer != EL_PLAYER)
+				continue;
+
+			if (entityManager.entityList[c].layer == EL_INVISIBLE || entityManager.entityList[d].layer == EL_INVISIBLE)
 				continue;
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);

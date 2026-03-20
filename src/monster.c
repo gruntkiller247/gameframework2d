@@ -43,6 +43,7 @@ typedef enum
 	MS_IDLE,
 	MS_HUNT,
 	MS_ATTACK,
+	MS_CUP,
 	MS_PAIN,
 	MS_DIE,
 	MS_MAX
@@ -53,6 +54,7 @@ typedef enum
 	MP_TRASH,
 	MP_IDLE,
 	MP_ATTACK,
+	MP_CUP,
 	MP_PUZZLE,
 	MP_MAX
 }MonsterPhase;
@@ -69,7 +71,9 @@ void monsterThink(Entity* self);
 void monsterFree(Entity* self);
 void monsterUpdate(Entity* self);
 void monsterTouch(Entity* self,Entity* toucher);
+
 void trashShoot(Entity* self, Entity* player);
+void cupShoot(Entity* self);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -228,7 +232,7 @@ void monsterThink(Entity* self)
 	if (!self)
 		return;
 
-	if (self->layer != EL_INVISIBLE && self->role == ROLE_TRASHMOB)
+	if (self->layer != EL_INVISIBLE && self->role == ROLE_BOSS1)
 	{
 		/*
 		int timerPrimary;				//Timer that counts up to cooldown
@@ -246,7 +250,14 @@ void monsterThink(Entity* self)
 			//slog("I know about the player!");
 			if (self->timerPrimary >= self->primaryCooldown)
 			{
-				trashShoot(self, ((MonsterData*)self->data)->player);
+				//trashShoot(self, ((MonsterData*)self->data)->player);
+
+				if (((MonsterData*)self->data)->state != MP_CUP)
+				{
+					((MonsterData*)self->data)->state = MP_CUP;
+					cupShoot(self);
+
+				}
 				self->timerPrimary = 0;
 			}
 			else
@@ -349,30 +360,34 @@ void cupShoot(Entity* self)
 	//The cup projectiles should detect if they are interacted with by the player
 	//This function just spawns the cups
 
+	self->layer = EL_INVISIBLE;
+
 	int num = rand() % 3;
 	Entity* cup1;
 	Entity* cup2;
 	Entity* cup3;
+	int distance = 100;
 
+	
 
 	switch (num)
 	{
 		case 0:
-			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance,self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
-			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup3 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
 			break;
 
 		case 1:
-			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
 			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
-			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup3 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			break;
 
 		default:
-			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
 			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
-			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup3 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			break;
 	}
 
