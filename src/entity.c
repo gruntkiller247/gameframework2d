@@ -20,6 +20,7 @@ typedef struct
 static EntityManager entityManager = { 0 };
 
 static Entity* thePlayer = NULL;
+static Entity* theBoss = NULL;
 
 void entityManagerClose();
 
@@ -480,6 +481,25 @@ void setPlayer(Entity* player)
 Entity* getPlayer()
 {
 	return thePlayer;
+}
+
+void entityImageUpdate(Entity* self, char thing[])
+{
+	if (!self || !gf2d_sprite_load_all(thing, 128, 128, 16, 0))
+		return;
+
+	self->sprite = gf2d_sprite_load_all(thing, 128, 128, 16, 0);
+}
+
+void setBoss(Entity* boss)
+{
+	theBoss = boss;
+}
+
+
+Entity* getBoss() 
+{
+	return theBoss;
 }
 
 //endLine

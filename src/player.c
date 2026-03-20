@@ -450,7 +450,7 @@ void playerShoot(Entity* self,int direction)
 	if (!self)
 		return;
 
-	Entity* thing = projectileEntityNew( gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), TEAM_PLAYER,self->basicPlayerProjectileLife);
+	Entity* thing = projectileEntityNew( gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), TEAM_PLAYER,self->basicPlayerProjectileLife, ROLE_PROJECTILE);
 
 	if (!thing)
 	{
@@ -524,9 +524,9 @@ void playerGunnerShoot(Entity* self, int direction)
 	if (!self)
 		return;
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
-	Entity* thing2 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
-	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	Entity* thing2 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	//thing->damage = 2;
 
 
@@ -598,7 +598,7 @@ void playerGunnerSpecial(Entity* self,int direction)
 		return;
 	//slog("Firing gunner special!");
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(5,5);
 	thing->bounds= gfc_rect(0, 0, 32*5, 32*5);
 	thing->damage = self->specialDamage;
@@ -636,7 +636,7 @@ void playerGunnerSpecial(Entity* self,int direction)
 void playerGunnerUltimate(Entity* self)
 {
 	//slog("Firing Gunner Ult!");
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x * -1 + self->bounds.x * -2, self->position.y * -1 + self->bounds.y * -2), TEAM_PLAYER, -1);
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x * -1 + self->bounds.x * -2, self->position.y * -1 + self->bounds.y * -2), TEAM_PLAYER, -1, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(0, 0);
 	thing->bounds = gfc_rect(0, 0, 32*0, 32*0);
 	thing->damage = self->ultDamage;
@@ -735,7 +735,7 @@ void playerGamblerShoot(Entity* self, Uint8 direction)
 	if (!self)
 		return;
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife);
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
 
 	//slog("Gambler Shooting");
 

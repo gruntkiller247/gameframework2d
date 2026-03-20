@@ -11,10 +11,10 @@ typedef struct PD
 }Projectile_Data; //Currently cut content
 
 
+Entity* boss = NULL;
 
 
-
-Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
+Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,int role)
 {
 	Entity* self;
 	self = entityNew();
@@ -25,7 +25,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 		return NULL;
 	}
 
-	self->role = ROLE_PROJECTILE;
+	self->role = role;
 
 	/*Projectile_Data* data = malloc(sizeof(Projectile_Data));
 	
@@ -55,7 +55,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 
 	self->damage = 1; //hard code this for now, generic projectiles always deal 1! So does body contact!
 
-	
+	boss = getBoss();
 	
 	if (!timeToLive)
 	{
@@ -86,6 +86,8 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 
 	return self;
 }
+
+
 
 
 void projectileThink(Entity* self)
@@ -145,6 +147,8 @@ void projectileThink(Entity* self)
 	}
 
 
+
+
 }
 
 void projectileTouch(Entity* self, Entity* toucher)
@@ -165,7 +169,24 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		//slog("Projectile is touching something! %s",toucher->name);
+		if (self->role == ROLE_CUP)
+		{
+			//Real cup stuff
+			if (toucher->team = TEAM_PLAYER)
+			{
+				self->_inUse = 0;
+			}
+		}
+		else if (self->role == ROLE_FAKECUP)
+		{
+			//Fake cup stuff
+			if (toucher->team = TEAM_PLAYER)
+			{
+				self->_inUse = 0;
+			}
+		}
+		else
+			;
 	}
 
 
@@ -286,4 +307,12 @@ void moveProjectileMob(Entity* self, GFC_Vector2D direction)
 void gunnerUlt(Entity* self)
 {
 	self->ultIs = 1;
+}
+
+/*
+	Handler for the cup event
+*/
+void cup(Entity* self)
+{
+
 }

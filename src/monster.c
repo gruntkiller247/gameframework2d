@@ -62,6 +62,7 @@ typedef struct MD
 	Entity* player;
 	MonsterStates state;
 	MonsterPhase phase;
+	Uint8 phaseCount;
 }MonsterData;
 
 void monsterThink(Entity* self);
@@ -110,6 +111,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	self->primaryCooldown = 90;
 	self->timerPrimary = 0;
+	self->layer = EL_BOSS;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
@@ -117,10 +119,9 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	strcpy(self->name, "MONSTER");
 
-	strcpy(self->name, "MONSTER");
-
 	MonsterData* monsterData = malloc(sizeof(MonsterData));
 	MonsterPhase* monsterPhase = malloc(sizeof(MonsterPhase));
+
 
 	if (!monsterData)
 		return NULL;
@@ -131,12 +132,28 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	monsterData->player = getPlayer();
 	monsterData->state = MS_IDLE;
 
-	if (role == ROLE_BOSS1 || role == ROLE_BOSS2 || role == ROLE_BOSS3)
-		monsterData->phase = MP_IDLE;
-	else
+	switch (role)
 	{
-		monsterData->phase = MP_TRASH;
-		self->timeToLive = 800;
+		case ROLE_BOSS1:
+			monsterData->phase = MP_IDLE;
+			monsterData->phaseCount = 3;
+			setBoss(self);
+			break;
+
+		case ROLE_BOSS2:
+
+			setBoss(self);
+			break;
+
+		case ROLE_BOSS3:
+
+			setBoss(self);
+			break;
+
+		default: //Trashmod
+			monsterData->phase = MP_TRASH;
+			self->timeToLive = 800;
+			break;
 	}
 		
 
@@ -211,7 +228,7 @@ void monsterThink(Entity* self)
 	if (!self)
 		return;
 
-	if (self->role == ROLE_TRASHMOB)
+	if (self->layer != EL_INVISIBLE && self->role == ROLE_TRASHMOB)
 	{
 		/*
 		int timerPrimary;				//Timer that counts up to cooldown
@@ -237,12 +254,16 @@ void monsterThink(Entity* self)
 		}
 
 	}
-	else
+	else if(self->layer != EL_INVISIBLE)
 	{
 		if (!((MonsterData*)self->data)->player)
 		{
 			//slog("I do not know about the player and I am a boss!");
 		}
+	}
+	else
+	{
+		slog("I should be invisible!");
 	}
 	
 	//slog("Inside monster thinking. HP is %i", self->hp);
@@ -298,8 +319,15 @@ void monsterFree(Entity* self)
 
 }
 
+/*
+	Originally a test function, used for the Boss' Gattling attacks
+	Fires a stock projectile at the player entitty
+*/
 void trashShoot(Entity* self, Entity* player)
 {
+	if (!self || !player)
+		return;
+
 	slog("Trash mob trying to shoot!");
 
 
@@ -307,10 +335,48 @@ void trashShoot(Entity* self, Entity* player)
 	GFC_Vector2D angle = gfc_vector2d(player->position.x - self->position.x,player->position.y - self->position.y);
 	gfc_vector2d_normalize(&angle);
 
-	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, self->timeToLive);
-
+	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, self->timeToLive, ROLE_PROJECTILE);
+	projectile->colorReal = GFC_COLOR_DARKMAGENTA;
 
 	moveProjectileMob(projectile,angle);
+
+}
+
+void cupShoot(Entity* self)
+{
+	//Idea is spawns 3 cup objects + temporary disables the boss
+	//The Boss will be in MS_CUP which means it is not drawn and should not be able to attack
+	//The cup projectiles should detect if they are interacted with by the player
+	//This function just spawns the cups
+
+	int num = rand() % 3;
+	Entity* cup1;
+	Entity* cup2;
+	Entity* cup3;
+
+
+	switch (num)
+	{
+		case 0:
+			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			break;
+
+		case 1:
+			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			break;
+
+		default:
+			cup1 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup3 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
+			break;
+	}
+
+
 
 }
 

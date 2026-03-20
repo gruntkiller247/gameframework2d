@@ -115,7 +115,8 @@ typedef enum
 	EL_ITEM = 8,
 	EL_WORLD = 16,
 	EL_PROJECTILES =32,
-	EL_ALL = 36
+	EL_ALL = 36,
+	EL_INVISIBLE = 64
 }EntityLayers;
 
 typedef enum DS
@@ -143,6 +144,8 @@ typedef enum RN
 	ROLE_BOSS2,
 	ROLE_BOSS3,
 	ROLE_PROJECTILE,
+	ROLE_CUP,
+	ROLE_FAKECUP,
 	ROLE_BOMB,
 	ROLE_COUNT
 
@@ -224,4 +227,19 @@ void entityBoundsCheckAll();
 Entity* getPlayer();
 
 void setPlayer(Entity* player);
+
+/*
+	Updates Entity's image
+*/
+void entityImageUpdate(Entity* self, char thing[]);
+
+/*
+	Returns a pointer to the boss or NULL
+*/
+void setBoss(Entity* boss);
+
+/*
+	Returns Boss pointer
+*/
+Entity* getBoss();
 #endif

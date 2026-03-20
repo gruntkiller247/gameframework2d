@@ -10,7 +10,7 @@
 #include "gfc_vector.h"
 
 
-Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive);
+Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive, int role);
 
 void projectileThink(Entity* self);
 
@@ -27,5 +27,9 @@ void gunnerUlt(Entity* self);
 	The direction moves the direction 1 unit based on input
 */
 void moveProjectile(Entity* self,int direction);
+
 void moveProjectileMob(Entity* self, GFC_Vector2D position);
+
+
+
 #endif
