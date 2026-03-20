@@ -4,6 +4,7 @@
 #include "gfc_input.h"
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
+#include "projectiles.h"
 
 /*typedef struct
 {
@@ -67,7 +68,7 @@ void monsterThink(Entity* self);
 void monsterFree(Entity* self);
 void monsterUpdate(Entity* self);
 void monsterTouch(Entity* self,Entity* toucher);
-
+void trashShoot(Entity* self, Entity* player);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -107,6 +108,9 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	self->hitTimer = 0;
 	self->isInvul = 0;
 
+	self->primaryCooldown = 90;
+	self->timerPrimary = 0;
+
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
 
@@ -130,7 +134,11 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	if (role == ROLE_BOSS1 || role == ROLE_BOSS2 || role == ROLE_BOSS3)
 		monsterData->phase = MP_IDLE;
 	else
+	{
 		monsterData->phase = MP_TRASH;
+		self->timeToLive = 800;
+	}
+		
 
 	self->data = monsterData;
 
@@ -202,6 +210,40 @@ void monsterThink(Entity* self)
 
 	if (!self)
 		return;
+
+	if (self->role == ROLE_TRASHMOB)
+	{
+		/*
+		int timerPrimary;				//Timer that counts up to cooldown
+		int primaryCooldown;			//Time until primary attack can be fired
+		nt basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
+		*/
+
+		if (!((MonsterData*)self->data)->player)
+		{
+			slog("I do not know about the player! %s");
+
+		}
+		else
+		{
+			//slog("I know about the player!");
+			if (self->timerPrimary >= self->primaryCooldown)
+			{
+				trashShoot(self, ((MonsterData*)self->data)->player);
+				self->timerPrimary = 0;
+			}
+			else
+				self->timerPrimary++;
+		}
+
+	}
+	else
+	{
+		if (!((MonsterData*)self->data)->player)
+		{
+			//slog("I do not know about the player and I am a boss!");
+		}
+	}
 	
 	//slog("Inside monster thinking. HP is %i", self->hp);
 	
@@ -222,12 +264,6 @@ void monsterThink(Entity* self)
 		self->hitTimer = 0;
 		//slog("Monster is no longer immune!");
 	}
-
-
-
-	
-
-
 
 	//slog("Monster is thinking!");
 
@@ -261,6 +297,23 @@ void monsterFree(Entity* self)
 
 
 }
+
+void trashShoot(Entity* self, Entity* player)
+{
+	slog("Trash mob trying to shoot!");
+
+
+
+	GFC_Vector2D angle = gfc_vector2d(player->position.x - self->position.x,player->position.y - self->position.y);
+	gfc_vector2d_normalize(&angle);
+
+	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, self->timeToLive);
+
+
+	moveProjectileMob(projectile,angle);
+
+}
+
 
 /*void monsterManagerClose()
 {

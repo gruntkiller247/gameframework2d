@@ -150,6 +150,8 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->data = data;
 	*/
 
+	setPlayer(self);
+
 	return self;
 
 }

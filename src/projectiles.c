@@ -216,6 +216,9 @@ void projectileFree(Entity* self)
 	free(self);
 }
 
+/*
+	Used for the player, moves the projectile in one of the 4 cardinal directions
+*/
 void moveProjectile(Entity* self, int direction)
 {
 	if (!self)
@@ -269,6 +272,15 @@ void moveProjectile(Entity* self, int direction)
 	
 	}
 	return;
+}
+
+/*
+	Used by the AI, takes the self + a vector direction to move
+*/
+void moveProjectileMob(Entity* self, GFC_Vector2D direction)
+{
+	self->velocity.x += direction.x;
+	self->velocity.y += direction.y;
 }
 
 void gunnerUlt(Entity* self)

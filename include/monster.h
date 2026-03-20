@@ -25,4 +25,6 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role);
 */
 void lookAt(Entity* self, GFC_Vector2D position);
 
+void trashShoot(Entity* self,Entity* player);
+
 #endif

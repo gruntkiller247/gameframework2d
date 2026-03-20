@@ -57,9 +57,10 @@ void updateUI(Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color colo
     dstRect.h = surface->h / 2;
     SDL_FreeSurface(surface);
 
-    if (!bossHPUI)
+    if (!bossHPUI || !bossNumHP)
     {
         //slog("No Boss for UI to draw!");
+        return;
     }
     else
     {
@@ -154,7 +155,7 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");
 
     
-    level = 2;
+    level = 1;
 
     switch (level)
     {
@@ -166,7 +167,7 @@ int main(int argc, char * argv[])
                 strcpy(projectile->name, "TEST_PROJECTILE");*/
 
              Entity * enemy;
-             enemy = monsterEntityNew(gfc_vector2d(100, 100),ROLE_TRASHMOB);
+             enemy = monsterEntityNew(gfc_vector2d(200, 100),ROLE_TRASHMOB);
              strcpy(enemy->name, "Mr Monster!");
              enemy->hp = 10;
 
@@ -221,7 +222,7 @@ int main(int argc, char * argv[])
 
     if (!boss)
     {
-        ;
+        slog("This level has no boss!");
     }
     else
     {
@@ -286,7 +287,7 @@ int main(int argc, char * argv[])
 
             //update Thinking Here
             entityThinkAll();
-
+            //slog("Thunk");
 
 
 
@@ -297,7 +298,7 @@ int main(int argc, char * argv[])
 
 
             entityManagerDrawAll();
-
+            //slog("Drawn");
 
             //UI elements last
             gf2d_sprite_draw(
@@ -312,12 +313,26 @@ int main(int argc, char * argv[])
 
 
             entityTouchAll();
+            //slog("Touched");
+
             entityUpdateAll();
-            entityFreeAll();
+            //slog("Updated");
+
             entityBoundsCheckAll();
+            //slog("Bounds checked!");
 
-
-            updateUI(player->hp, boss->hp, font, color, &dstRect, &dstRect2);
+            entityFreeAll();
+            //slog("Freed");
+            
+           
+            if (!boss)
+            {
+                updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
+            }
+            else
+                updateUI(player->hp, boss->hp, font, color, &dstRect, &dstRect2);
+            
+            //slog("UI updated");
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
 

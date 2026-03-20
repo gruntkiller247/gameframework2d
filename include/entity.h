@@ -41,6 +41,7 @@ typedef struct Entity_S
 	int isInvul;
 	int damage;
 	
+	
 
 	int isSpecialBomb;
 
