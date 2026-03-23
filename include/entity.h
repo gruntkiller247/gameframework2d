@@ -151,6 +151,9 @@ typedef enum RN
 	ROLE_BOMB,
 	ROLE_SYMBOL1,
 	ROLE_SYMBOL2,
+	ROLE_SYMBOL_ENEMY1,
+	ROLE_SYMBOL_ENEMY2,
+	ROLE_SYMBOL_ENEMY3,
 	ROLE_COUNT
 
 }RoleNames;
@@ -165,7 +168,7 @@ typedef enum
 	TEAM_ITEM
 }Teams;
 
-//I do not know why this exist, but it should probably be depriciated!
+//I do not know why this exist, but it should probably be depriciated! - Used by the Player - deprciate Later for the above one
 typedef enum
 {
 	D_UP,
@@ -244,7 +247,7 @@ void entityImageUpdate(Entity* self, char thing[]);
 void setBoss(Entity* boss);
 
 /*
-	Returns Boss pointer
+	Returns Boss pointer. If NULL either no boss or that entity is the Boss
 */
 Entity* getBoss();
 #endif

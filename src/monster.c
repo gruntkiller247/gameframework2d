@@ -67,13 +67,21 @@ typedef struct MD
 	MonsterStates state;
 	MonsterPhase phase;
 	Uint8 phaseCount;
+
 	Uint8 symbolNum;
 	Entity* symbol1;
 	Entity* symbol2;
+
 	Uint8 aoeTimer;
 	Uint8 aoeMaxTime;
 	Uint8 aoeSide;
+
+	GFC_Color* symbolMons;
+	Uint8 symbolMonsColor;
+	Uint8 symbolOrder;		//Abstract int. Increments when the correct color is killed. If it equals the num of minions spawned, determins the phase ending!
 }MonsterData;
+
+Entity* theBoss = NULL;
 
 void monsterThink(Entity* self);
 void monsterFree(Entity* self);
@@ -84,7 +92,9 @@ void trashShoot(Entity* self, Entity* player);
 void cupShoot(Entity* self);
 void symbols(Entity* self);
 void aoe(Entity* self);
-void aoeThink(Entity* self);
+void symbolPattern(Entity* self);
+
+
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -135,14 +145,14 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	strcpy(self->name, "MONSTER");
 
 	MonsterData* monsterData = malloc(sizeof(MonsterData));
-	MonsterPhase* monsterPhase = malloc(sizeof(MonsterPhase));
+	//MonsterPhase* monsterPhase = malloc(sizeof(MonsterPhase));
 
 
 	if (!monsterData)
 		return NULL;
 
-	if (!monsterPhase)
-		return NULL;
+	/*if (!monsterPhase)
+		return NULL;*/
 
 	monsterData->player = getPlayer();
 	monsterData->state = MS_IDLE;
@@ -168,6 +178,9 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			monsterData->aoeMaxTime = 10;
 			monsterData->aoeTimer = 0;
 
+			monsterData->symbolMons = NULL;
+			monsterData->symbolMonsColor = 0;
+
 			setBoss(self);
 			break;
 
@@ -177,8 +190,32 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			setBoss(self);
 			break;
 
+		case ROLE_SYMBOL_ENEMY1:
+			//self->layer = EL_MONSTER;
+			self->colorReal = GFC_COLOR_DARKRED;
+			self->layer = EL_MONSTER;
+			monsterData->phase = MP_TRASH;
+			theBoss = getBoss();
+
+			break;
+
+		case ROLE_SYMBOL_ENEMY2:
+			self->colorReal = GFC_COLOR_DARKYELLOW;
+			self->layer = EL_MONSTER;
+			monsterData->phase = MP_TRASH;
+			theBoss = getBoss();
+			break;
+
+		case ROLE_SYMBOL_ENEMY3:
+			self->colorReal = GFC_COLOR_DARKBLUE;
+			self->layer = EL_MONSTER;
+			monsterData->phase = MP_TRASH;
+			theBoss = getBoss();
+			break;
+
 		default: //Trashmod
 			monsterData->phase = MP_TRASH;
+			self->layer = EL_MONSTER;
 			self->timeToLive = 800;
 			break;
 	}
@@ -210,7 +247,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 	{
 		//slog("Monster is touching something!");
 
-		if (toucher->team = TEAM_PLAYER && self->isInvul == 0)
+		if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
 		{
 			self->hp -= toucher->damage;
 			self->isInvul = 1;
@@ -254,6 +291,13 @@ void monsterThink(Entity* self)
 
 	if (!self)
 		return;
+
+	if (!((MonsterData*)self->data))
+	{
+		slog("Monster somehow has no data! Killing it!");
+		self->_inUse = 0;
+		return;
+	}
 
 	if (self->layer != EL_INVISIBLE && self->role == ROLE_BOSS1)
 	{
@@ -330,12 +374,14 @@ void monsterThink(Entity* self)
 				//slog("I should shoot!");
 				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
 				{
+					((MonsterData*)self->data)->phaseCount++;
 					//slog("AOE!");
-					aoe(self);
+					//aoe(self);
 				}
 				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
 				{
-					((MonsterData*)self->data)->phaseCount++;
+					//((MonsterData*)self->data)->phaseCount++;
+					symbolPattern(self);
 				}
 				else
 				{
@@ -344,6 +390,23 @@ void monsterThink(Entity* self)
 					if (((MonsterData*)self->data)->phase == MP_AOE || ((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
 					{
 						self->isInvul = 1;
+					}
+
+					if (((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
+					{
+						slog("Changing colors!");
+
+						if (((MonsterData*)self->data)->symbolMonsColor > 3)//This check if being hardcoded temporarly!!! Fix this if you want > 3 mobs for this attack!
+						{
+							((MonsterData*)self->data)->symbolMonsColor = 0;
+						}
+
+						if (((MonsterData*)self->data)->symbolMons != NULL)
+						{
+							self->colorReal = ((MonsterData*)self->data)->symbolMons[((MonsterData*)self->data)->symbolMonsColor];
+						}
+						
+						((MonsterData*)self->data)->symbolMonsColor++;
 					}
 
 					if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
@@ -529,6 +592,8 @@ void symbols(Entity* self)
 {
 	int distance = 100;
 	int num;
+	Entity* sym1;
+	Entity* sym2;
 
 	if (!self)
 		return;
@@ -544,18 +609,33 @@ void symbols(Entity* self)
 	if (((MonsterData*)self->data)->symbol1)
 	{
 		slog("Old symbol1, freeing!");
-		free(((MonsterData*)self->data)->symbol1);
+		((MonsterData*)self->data)->symbol1->_inUse = 0;
+		return;
 	}
 
 	if (((MonsterData*)self->data)->symbol2)
 	{
 		slog("Old symbol2, freeing!");
-		free(((MonsterData*)self->data)->symbol2);
+		((MonsterData*)self->data)->symbol2->_inUse = 0;
+		return;
 	}
 
 	slog("Creating new symbols!");
-	((MonsterData*)self->data)->symbol1 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
-	((MonsterData*)self->data)->symbol2 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL2);
+	sym1 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
+	sym2 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL2);
+
+	if (!sym1 || !sym2)
+	{
+		slog("Could not create symbols for Boss 1!");
+
+		if (sym1)
+			sym1->_inUse = 0;
+		if (sym2)
+			sym2->_inUse = 0;
+	}
+
+	((MonsterData*)self->data)->symbol1 = sym1;
+	((MonsterData*)self->data)->symbol2 = sym2;
 
 	num = rand() % 2 + 1;
 
@@ -587,7 +667,7 @@ void symbols(Entity* self)
 Uint8 getSymbol(Entity* self)
 {
 	if (!self)
-		return NULL;
+		return -1;
 
 	return ((MonsterData*)self->data)->symbolNum;
 }
@@ -617,15 +697,12 @@ void correctSymbol(Entity* self)
 	//Tempoary, see cup
 }
 
+
 /*
-	Sets up Boss 2's AOE attack, calls AOE when time has been given to the player!
-	Changes the boss's color
+	Called every frame Boss 2 is running the AOE phase
+	Changes the boss' color to indicate whether an attack is coming from the left or right
+	Gives the player aoeTimer seconds to prepare, then nukes the field
 */
-void aoeThink(Entity* self)
-{
-
-}
-
 void aoe(Entity* self)
 {
 	int num, c;
@@ -638,7 +715,8 @@ void aoe(Entity* self)
 	if (((MonsterData*)self->data)->aoeTimer > ((MonsterData*)self->data)->aoeMaxTime)
 	{
 		//Boss is ready to attack!
-		((MonsterData*)self->data)->aoeTimer > 0;
+		//End this attack
+		
 	}
 	else if (((MonsterData*)self->data)->aoeTimer > 0)
 	{
@@ -670,6 +748,9 @@ void aoe(Entity* self)
 
 	self->colorReal = GFC_COLOR_TRANSPARENT;
 	pos = gfc_vector2d(self->position.x,self->position.y);
+	((MonsterData*)self->data)->aoeTimer = 0;
+	((MonsterData*)self->data)->phaseCount++;
+	((MonsterData*)self->data)->phase = MP_IDLE;
 
 	//Teleport the boss to the center of the arena 1200 x 720
 	//Then glow either green or red (left - right) 
@@ -702,8 +783,102 @@ void aoe(Entity* self)
 			break;
 	}
 
-	((MonsterData*)self->data)->phaseCount++;
-	((MonsterData*)self->data)->phase = MP_IDLE;
+
+}
+
+/*
+	Boss 2's symbol attack
+	Flashes 3 colors, must kill the monsters in that order, fail and they explode, succeed and the boss is damagble
+*/
+void symbolPattern(Entity* self)
+{
+	if (!self)
+		return;
+
+	int c,d;
+	GFC_Color temp;
+	int distance = 100;
+	GFC_Color shuffler[3];	//Array of 3 colors to be shuffled then given to the boss to cycle between the colors during this puzzle!
+	Entity* mon1;
+	Entity* mon2;
+	Entity* mon3;
+
+	if (!((MonsterData*)self->data)->symbolMons)
+	{
+		;
+	}
+	else
+	{
+		free(((MonsterData*)self->data)->symbolMons);
+		((MonsterData*)self->data)->symbolMons = NULL;
+	}
+
+	mon1 = monsterEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), ROLE_SYMBOL_ENEMY1);
+	mon2 = monsterEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), ROLE_SYMBOL_ENEMY2);
+	mon3 = monsterEntityNew(gfc_vector2d(self->position.x + distance * 2 + self->bounds.w, self->position.y), ROLE_SYMBOL_ENEMY3);
+
+	if (!mon1 || !mon2 || !mon3)
+	{
+		slog("Boss 2 Symbol Monster attack failed!");
+
+		if (mon1)
+			mon1->_inUse = 0;
+
+		if (mon2)
+			mon2->_inUse = 0;
+
+		if (mon3)
+			mon3->_inUse = 0;
+
+		return;
+	}
+
+	shuffler[0] = mon1->colorReal;
+	shuffler[1] = mon2->colorReal;
+	shuffler[2] = mon3->colorReal;
+	
+
+
+	for (c = 0; c < sizeof(shuffler) / sizeof(GFC_Color); c++) 
+	{
+		
+		d = rand() % sizeof(shuffler) / sizeof(GFC_Color);
+		temp = shuffler[c];
+		shuffler[c] = shuffler[d];
+		shuffler[d] = temp;
+	}
+
+
+	if (!(((MonsterData*)self->data)->symbolMons))
+	{
+		((MonsterData*)self->data)->symbolMons = malloc(sizeof(GFC_Color) * 3);
+
+		if (!((MonsterData*)self->data)->symbolMons)
+		{
+			slog("error allocating memory to symbolMons!");
+			mon1->_inUse = 0;
+			mon2->_inUse = 0;
+			mon3->_inUse = 0;
+
+			return;
+		}
+		memcpy(((MonsterData*)self->data)->symbolMons, shuffler, sizeof(GFC_Color) * 3);
+	}
+	else
+	{
+		memcpy(((MonsterData*)self->data)->symbolMons, shuffler, sizeof(GFC_Color) * 3);
+	}
+	
+	((MonsterData*)self->data)->phase = MP_SYMBOLS_MOBS;
+
+}
+
+/*
+	Helper function called by the ROLE_SYMBOL_ENEMY roles to alert their boss what color they are!
+*/
+void symbolPatternAlert(Entity* self)
+{
+
 }
 
 /*void monsterManagerClose()
