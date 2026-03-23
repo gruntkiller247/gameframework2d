@@ -70,6 +70,9 @@ typedef struct MD
 	Uint8 symbolNum;
 	Entity* symbol1;
 	Entity* symbol2;
+	Uint8 aoeTimer;
+	Uint8 aoeMaxTime;
+	Uint8 aoeSide;
 }MonsterData;
 
 void monsterThink(Entity* self);
@@ -81,6 +84,7 @@ void trashShoot(Entity* self, Entity* player);
 void cupShoot(Entity* self);
 void symbols(Entity* self);
 void aoe(Entity* self);
+void aoeThink(Entity* self);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -156,8 +160,14 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			break;
 
 		case ROLE_BOSS2:
-			self->basicPlayerProjectileLife = 500;
 			self->layer = EL_BOSS;
+			monsterData->phase = MP_IDLE;
+			monsterData->phaseCount = 0;
+			self->basicPlayerProjectileLife = 500;
+
+			monsterData->aoeMaxTime = 10;
+			monsterData->aoeTimer = 0;
+
 			setBoss(self);
 			break;
 
@@ -313,10 +323,14 @@ void monsterThink(Entity* self)
 		}
 		else
 		{
+			
+
 			if (self->timerPrimary >= self->primaryCooldown)
 			{
+				//slog("I should shoot!");
 				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
 				{
+					//slog("AOE!");
 					aoe(self);
 				}
 				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
@@ -337,8 +351,11 @@ void monsterThink(Entity* self)
 						((MonsterData*)self->data)->phaseCount = 0;
 					}
 				}
+				self->timerPrimary = 0;
 
 			}
+			else
+				self->timerPrimary++;
 		}
 
 	}
@@ -439,6 +456,9 @@ void cupShoot(Entity* self)
 	//The Boss will be in MS_CUP which means it is not drawn and should not be able to attack
 	//The cup projectiles should detect if they are interacted with by the player
 	//This function just spawns the cups
+
+	if (!self)
+		return;
 
 	self->layer = EL_INVISIBLE;
 
@@ -597,24 +617,93 @@ void correctSymbol(Entity* self)
 	//Tempoary, see cup
 }
 
+/*
+	Sets up Boss 2's AOE attack, calls AOE when time has been given to the player!
+	Changes the boss's color
+*/
+void aoeThink(Entity* self)
+{
+
+}
+
 void aoe(Entity* self)
 {
-	int num;
-	num = rand() % 2 + 1;
+	int num, c;
+	GFC_Vector2D pos;
 	Entity* thing;
-	thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
 
+	if (!self)
+		return;
 
-	switch(num)
+	if (((MonsterData*)self->data)->aoeTimer > ((MonsterData*)self->data)->aoeMaxTime)
+	{
+		//Boss is ready to attack!
+		((MonsterData*)self->data)->aoeTimer > 0;
+	}
+	else if (((MonsterData*)self->data)->aoeTimer > 0)
+	{
+		//Check if the boss has given the player time to think, IE timer > 0
+		slog("Current AOE time is: %i", ((MonsterData*)self->data)->aoeTimer);
+		((MonsterData*)self->data)->aoeTimer++;
+		return;
+	}
+	else
+	{
+		//Give the player time to react to the attack + change boss color to either Red or Green
+
+		num = rand() % 2 + 1;
+		((MonsterData*)self->data)->aoeSide = num;
+
+		switch (num)
+		{
+			case 1:
+				self->colorReal = GFC_COLOR_RED;
+				break;
+
+			default :
+				self->colorReal = GFC_COLOR_GREEN;
+				break;
+		}
+		((MonsterData*)self->data)->aoeTimer++;
+		return;
+	}
+
+	self->colorReal = GFC_COLOR_TRANSPARENT;
+	pos = gfc_vector2d(self->position.x,self->position.y);
+
+	//Teleport the boss to the center of the arena 1200 x 720
+	//Then glow either green or red (left - right) 
+	//Then enter a waiting period, once the waiting is over, do the actual AOE
+
+	
+	switch(((MonsterData*)self->data)->aoeSide)
 	{
 		case 1:
 			//Spawn a ton of projectile moving down to the left!
+			//Just going to spawn a bunch of projectiles for 500 units to the left
+
+			for (c = 0; c < 20; c++)
+			{
+				thing = projectileEntityNew(gfc_vector2d(self->position.x + c*50, self->position.y ), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+				moveProjectile(thing, D_SOUTH);
+			}
 			break;
 
 		default:
 			//Spawn a ton of projectile moving down to the right!
+
+
+			for (c = 0; c < 20; c++)
+			{
+				thing = projectileEntityNew(gfc_vector2d(self->position.x - c * 50, self->position.y), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+				moveProjectile(thing, D_SOUTH);
+			}
+
 			break;
 	}
+
+	((MonsterData*)self->data)->phaseCount++;
+	((MonsterData*)self->data)->phase = MP_IDLE;
 }
 
 /*void monsterManagerClose()

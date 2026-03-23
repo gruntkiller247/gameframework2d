@@ -25,6 +25,7 @@ void gunnerUlt(Entity* self);
 
 /*
 	The direction moves the direction 1 unit based on input
+	Move based on the object's maxspeed
 */
 void moveProjectile(Entity* self,int direction);
 

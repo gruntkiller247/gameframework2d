@@ -165,6 +165,7 @@ typedef enum
 	TEAM_ITEM
 }Teams;
 
+//I do not know why this exist, but it should probably be depriciated!
 typedef enum
 {
 	D_UP,
