@@ -155,7 +155,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
 
     if (!bossGame)
     {
-        slog("This level has no boss!");
+        //slog("This level has no boss!");
     }
     else
     {
@@ -186,7 +186,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
 
     if (!bossHPUI || !bossNumHP)
     {
-        slog("No Boss for UI to draw!");
+        //slog("No Boss for UI to draw!");
         return;
     }
     else

@@ -407,9 +407,9 @@ void monsterThink(Entity* self)
 				//slog("I should shoot!");
 				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
 				{
-					((MonsterData*)self->data)->phaseCount++;
+					//((MonsterData*)self->data)->phaseCount++;
 					//slog("AOE!");
-					//aoe(self);
+					aoe(self);
 				}
 				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
 				{
