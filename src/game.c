@@ -207,6 +207,14 @@ int main(int argc, char * argv[])
 
              break;
 
+         case 3:
+             slog("Loading Boss 2");
+             powerUpSpawning = 1;
+
+             boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
+             strcpy(boss->name, "POS2");
+             boss->hp = 10;
+
          default:
              slog("No Level Loaded!");
     }

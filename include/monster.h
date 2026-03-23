@@ -25,6 +25,10 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role);
 */
 void lookAt(Entity* self, GFC_Vector2D position);
 
+/*
+	Probably a defunct function that lobs a shot at the player!
+	Mainly for testing, might be reused later
+*/
 void trashShoot(Entity* self,Entity* player);
 
 
@@ -33,6 +37,9 @@ void trashShoot(Entity* self,Entity* player);
 */
 void cupStateUpdate(Entity* self);
 
+/*
+	Boss 1 symbols attack. Spawns 2 symbols and changes the boss's color to 1 of them
+*/
 void symbols(Entity* self);
 
 /*

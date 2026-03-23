@@ -80,6 +80,7 @@ void monsterTouch(Entity* self,Entity* toucher);
 void trashShoot(Entity* self, Entity* player);
 void cupShoot(Entity* self);
 void symbols(Entity* self);
+void aoe(Entity* self);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -155,7 +156,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			break;
 
 		case ROLE_BOSS2:
-
+			self->basicPlayerProjectileLife = 500;
 			self->layer = EL_BOSS;
 			setBoss(self);
 			break;
@@ -251,12 +252,12 @@ void monsterThink(Entity* self)
 		int primaryCooldown;			//Time until primary attack can be fired
 		nt basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
 		*/
-
+		//Boss 1 logic
 		
 
 		if (!((MonsterData*)self->data)->player)
 		{
-			slog("I do not know about the player! %s");
+			slog("I do not know about the player!");
 
 		}
 		else
@@ -299,6 +300,45 @@ void monsterThink(Entity* self)
 			}
 			else
 				self->timerPrimary++;
+		}
+
+	}
+	else if (self->layer != EL_INVISIBLE && self->role == ROLE_BOSS2)
+	{
+		//Boss 2 Logic
+		if (!((MonsterData*)self->data)->player)
+		{
+			slog("I do not know about the player!");
+
+		}
+		else
+		{
+			if (self->timerPrimary >= self->primaryCooldown)
+			{
+				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
+				{
+					aoe(self);
+				}
+				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
+				{
+					((MonsterData*)self->data)->phaseCount++;
+				}
+				else
+				{
+					
+					
+					if (((MonsterData*)self->data)->phase == MP_AOE || ((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
+					{
+						self->isInvul = 1;
+					}
+
+					if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
+					{
+						((MonsterData*)self->data)->phaseCount = 0;
+					}
+				}
+
+			}
 		}
 
 	}
@@ -347,7 +387,7 @@ void monsterFree(Entity* self)
 	if (!self)
 		return;
 
-	slog("Free Monster!");
+	//slog("Free Monster!");
 
 	
 	//clean up anything I own
@@ -555,6 +595,26 @@ void correctSymbol(Entity* self)
 	((MonsterData*)self->data)->phaseCount++; 
 	((MonsterData*)self->data)->phase = MP_IDLE;
 	//Tempoary, see cup
+}
+
+void aoe(Entity* self)
+{
+	int num;
+	num = rand() % 2 + 1;
+	Entity* thing;
+	thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+
+
+	switch(num)
+	{
+		case 1:
+			//Spawn a ton of projectile moving down to the left!
+			break;
+
+		default:
+			//Spawn a ton of projectile moving down to the right!
+			break;
+	}
 }
 
 /*void monsterManagerClose()
