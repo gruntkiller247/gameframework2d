@@ -155,7 +155,7 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");
 
     
-    level = 3;
+    level = 4;
 
     switch (level)
     {
@@ -213,6 +213,16 @@ int main(int argc, char * argv[])
 
              boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
              strcpy(boss->name, "POS2");
+             boss->hp = 10;
+
+             break;
+
+         case 4:
+             slog("Loading Boss 3");
+             powerUpSpawning = 1;
+
+             boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS3);
+             strcpy(boss->name, "POS3");
              boss->hp = 10;
 
              break;

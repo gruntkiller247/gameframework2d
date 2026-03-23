@@ -266,7 +266,7 @@ void explode(Entity* self)
 		NW->damage = 1;
 	}
 
-	N->team = self->team;
+	/*N->team = self->team;
 	NE->team = self->team;
 	E->team = self->team;
 	SE->team = self->team;
@@ -274,7 +274,7 @@ void explode(Entity* self)
 	S->team = self->team;
 	SW->team = self->team;
 	W->team = self->team;
-	NW->team = self->team;
+	NW->team = self->team;*/
 
 	moveProjectile(N, D_NORTH);
 	moveProjectile(NE, D_NORTHEAST);
@@ -289,6 +289,9 @@ void explode(Entity* self)
 
 	if(self->ultIs == -1)
 		self->_inUse = 0;
+
+	//Might be a reason I did not write this initially - If I want 1 bomb to explode many times
+	//self->_inUse;
 }
 
 void moveBomb(Entity* self, int direction)
@@ -366,6 +369,46 @@ void bakerExplode(Entity* self)
 	if (!N || !NE || !E || !SE || !S || !SW || !W || !NW)
 	{
 		slog("Baker Ult can't spawn bombs!");
+
+		if (N)
+		{
+			N->_inUse = 0;
+		}
+
+		if (NE)
+		{
+			NE->_inUse = 0;
+		}
+
+		if (E)
+		{
+			E->_inUse = 0;
+		}
+
+		if (SE)
+		{
+			SE->_inUse = 0;
+		}
+
+		if (S)
+		{
+			S->_inUse = 0;
+		}
+
+		if (SW)
+		{
+			SW->_inUse = 0;
+		}
+
+		if (W)
+		{
+			W->_inUse = 0;
+		}
+
+		if (NW)
+		{
+			NW->_inUse = 0;
+		}
 		return;
 	}
 	
@@ -389,7 +432,7 @@ void bakerExplode(Entity* self)
 	W->move = 1;
 	NW->move = 1;
 
-	N->team = self->team;
+	/*N->team = self->team;
 	NE->team = self->team;
 	E->team = self->team;
 	SE->team = self->team;
@@ -397,7 +440,7 @@ void bakerExplode(Entity* self)
 	S->team = self->team;
 	SW->team = self->team;
 	W->team = self->team;
-	NW->team = self->team;
+	NW->team = self->team;*/
 	
 
 	moveBomb(N, D_NORTH);

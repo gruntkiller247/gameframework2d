@@ -62,6 +62,13 @@ typedef enum
 	MP_MAX
 }MonsterPhase;
 
+typedef enum
+{
+	B3_NOTHING,
+	B3_SNIPE,
+	B3_NUKE
+}Boss3_Attack;
+
 typedef struct MD
 {
 	Entity* player;
@@ -83,6 +90,14 @@ typedef struct MD
 	Entity* symbolMonster1;
 	Entity* symbolMonster2;
 	Entity* symbolMonster3;
+
+	Uint8 boss3AttackTimer;
+	Uint8 boss3AttackMaxTime;
+	Uint8 bossAttack;
+	Uint8 bossSnipeMax;
+	Uint8 bossSnipeCount;
+	Uint8 bossNukeMax;
+	Uint8 bossNukeCount;
 }MonsterData;
 
 Entity* theBoss = NULL;
@@ -98,6 +113,7 @@ void symbols(Entity* self);
 void aoe(Entity* self);
 void symbolPattern(Entity* self);
 void symbolPatternAlert(Entity* self, GFC_Color color);
+void boss3Attack(Entity* self);
 
 
 
@@ -178,7 +194,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			self->layer = EL_BOSS;
 			monsterData->phase = MP_IDLE;
 			monsterData->phaseCount = 0;
-			self->basicPlayerProjectileLife = 500;
+			self->timeToLive = 500;
 
 			monsterData->aoeMaxTime = 10;
 			monsterData->aoeTimer = 0;
@@ -191,8 +207,21 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			break;
 
 		case ROLE_BOSS3:
-
 			self->layer = EL_BOSS;
+			self->timeToLive = 500;
+
+			monsterData->boss3AttackTimer = 0;
+			monsterData->boss3AttackMaxTime = 50;
+
+			monsterData->bossAttack = 0;
+			monsterData->phase = MP_IDLE;
+
+			monsterData->bossSnipeCount = 0;
+			monsterData->bossSnipeMax = 500;
+			
+			monsterData->bossNukeCount = 0;
+			monsterData->bossNukeMax = 50;
+
 			setBoss(self);
 			break;
 
@@ -310,11 +339,6 @@ void monsterThink(Entity* self)
 
 	if (self->layer != EL_INVISIBLE && self->role == ROLE_BOSS1)
 	{
-		/*
-		int timerPrimary;				//Timer that counts up to cooldown
-		int primaryCooldown;			//Time until primary attack can be fired
-		nt basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
-		*/
 		//Boss 1 logic
 		
 
@@ -431,6 +455,14 @@ void monsterThink(Entity* self)
 		}
 
 	}
+	else if (self->layer != EL_INVISIBLE && self->role == ROLE_BOSS3)
+	{
+		//Boss 3 logic... simple isn't it?
+
+		//slog("Boss3 is attacking!");
+		boss3Attack(self);
+		
+	}
 	else if(self->layer != EL_INVISIBLE)
 	{
 		if (!((MonsterData*)self->data)->player)
@@ -505,7 +537,7 @@ void monsterFree(Entity* self)
 }
 
 /*
-	Originally a test function, used for the Boss' Gattling attacks
+	Originally a test function, used for the Boss3 attacks /Trash mobs probably
 	Fires a stock projectile at the player entitty
 */
 void trashShoot(Entity* self, Entity* player)
@@ -513,7 +545,7 @@ void trashShoot(Entity* self, Entity* player)
 	if (!self || !player)
 		return;
 
-	slog("Trash mob trying to shoot!");
+	//slog("Trash mob trying to shoot!");
 
 
 
@@ -782,7 +814,7 @@ void aoe(Entity* self)
 
 			for (c = 0; c < 20; c++)
 			{
-				thing = projectileEntityNew(gfc_vector2d(self->position.x + c*50, self->position.y ), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+				thing = projectileEntityNew(gfc_vector2d(self->position.x + c*50, self->position.y ), TEAM_ENEMY, self->timeToLive, ROLE_PROJECTILE);
 				moveProjectile(thing, D_SOUTH);
 			}
 			break;
@@ -793,7 +825,7 @@ void aoe(Entity* self)
 
 			for (c = 0; c < 20; c++)
 			{
-				thing = projectileEntityNew(gfc_vector2d(self->position.x - c * 50, self->position.y), TEAM_ENEMY, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+				thing = projectileEntityNew(gfc_vector2d(self->position.x - c * 50, self->position.y), TEAM_ENEMY, self->timeToLive, ROLE_PROJECTILE);
 				moveProjectile(thing, D_SOUTH);
 			}
 
@@ -983,6 +1015,119 @@ void symbolPatternAlert(Entity* self, GFC_Color color)
 		self->colorReal = GFC_COLOR_TRANSPARENT;
 	}
 }
+
+/*
+	Attack handler for Boss 3.
+	Rolls a random weighted number then does an attack
+*/
+void boss3Attack(Entity* self)
+{
+	if (!self)
+		return;
+
+	int num;
+	int c;
+	Entity* N;
+
+	//slog("Boss 3 attack timer is: %i\nBoss3 attack timer max is %i", ((MonsterData*)self->data)->boss3AttackTimer, ((MonsterData*)self->data)->boss3AttackMaxTime);
+
+	if (((MonsterData*)self->data)->boss3AttackTimer > ((MonsterData*)self->data)->boss3AttackMaxTime)
+	{
+		//Do 1 of the attacks!
+		//((MonsterData*)self->data)->bossAttack = B3_NUKE;
+
+		if (((MonsterData*)self->data)->bossAttack == B3_NOTHING)
+		{
+			//The free attack, IE The boss does nothing!
+			slog("Lucky! Boss3 is doing nothing!");
+			
+
+		}
+		else if (((MonsterData*)self->data)->bossAttack == B3_SNIPE)
+		{
+			//You get several fast balls!
+			trashShoot(self, getPlayer());
+			//((MonsterData*)self->data)->boss3AttackTimer = 0;
+			((MonsterData*)self->data)->bossSnipeCount++;
+			
+			if (((MonsterData*)self->data)->bossSnipeCount >= ((MonsterData*)self->data)->bossSnipeMax)
+			{
+				((MonsterData*)self->data)->phase == MP_IDLE;
+				((MonsterData*)self->data)->boss3AttackTimer = 0;
+				((MonsterData*)self->data)->bossSnipeCount = 0;
+				return;
+			}
+			return;
+			
+		}
+		else
+		{
+			//slog("Boss Nuke!");
+			//The boss is nuking the field a la Blue Baby in TBOI
+			N=bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive);
+			
+			((MonsterData*)self->data)->bossNukeCount++;
+			explode(N);
+
+			if (((MonsterData*)self->data)->bossNukeCount >= ((MonsterData*)self->data)->bossNukeMax)
+			{
+				((MonsterData*)self->data)->phase == MP_IDLE;
+				((MonsterData*)self->data)->boss3AttackTimer = 0;
+				((MonsterData*)self->data)->bossNukeCount = 0;
+				N->_inUse = 0;
+				return;
+			}
+			N->_inUse = 0;
+
+			return;
+			
+
+			
+			
+		}
+
+		((MonsterData*)self->data)->phase == MP_IDLE;
+		((MonsterData*)self->data)->boss3AttackTimer = 0;
+		return;
+	}
+	else if (((MonsterData*)self->data)->boss3AttackTimer > 0)
+	{
+		//Check if the boss has given the player time to think, IE timer > 0
+		//slog("Current Boss3 time is: %i", ((MonsterData*)self->data)->boss3AttackTimer);
+		((MonsterData*)self->data)->boss3AttackTimer++;
+		return;
+	}
+	else
+	{
+		//Start the attack
+		num = rand() % 10;
+
+		if (num <= 2)
+		{
+			//Do nothing
+			((MonsterData*)self->data)->bossAttack = B3_NOTHING;
+		}
+		else if (num > 2 && num <= 6)
+		{
+			//Snipe the player
+			((MonsterData*)self->data)->bossAttack = B3_SNIPE;
+
+		}
+		else
+		{
+			//Nuke the area
+			((MonsterData*)self->data)->bossAttack = B3_NUKE;
+		}
+		//slog("Boss3 attack has been primed!");
+		((MonsterData*)self->data)->boss3AttackTimer++;
+		((MonsterData*)self->data)->phase = MP_MATH;
+	}
+
+	
+	
+}
+
+
 
 /*void monsterManagerClose()
 {
