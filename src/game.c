@@ -36,14 +36,141 @@ static SDL_Texture* textureBoss;
 static SDL_Rect dstRect;    //For the Player's Health UI
 static SDL_Rect dstRect2;   //For the Boss's Health UI
 
-void updateUI(Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color color, SDL_Rect** playerHPUI, SDL_Rect** bossHPUI)
+Entity* bossGame = NULL;
+Entity* player = NULL;
+
+void loadLevel(Uint8 level,Uint8 playerRole)
+{
+    entityKillAll();
+
+    player = playerEntityNew(gfc_vector2d(0, 0), playerRole);
+    strcpy(player->name, "Player");
+
+    switch (level)
+    {
+    case  1:
+        slog("Loading Testing Level");
+        /*Entity* projectile;
+           projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
+           projectile->team = TEAM_IGNORE;
+           strcpy(projectile->name, "TEST_PROJECTILE");*/
+
+        Entity* enemy;
+        enemy = monsterEntityNew(gfc_vector2d(300, 100), ROLE_TRASHMOB);
+        strcpy(enemy->name, "Mr Monster!");
+        enemy->hp = 10;
+
+        //Entity* bomb;
+        //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
+        //bomb->team = TEAM_IGNORE;
+        //strcpy(bomb->name, "TEST_BOMB!");
+
+        Entity* powerup;
+        powerup = powerUpEntityNew(gfc_vector2d(200, 500), PU_FREE_ULT);
+        strcpy(powerup->name, "Free Ult Power Up");
+
+        Entity* powerup2;
+        powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), PU_SPEED);
+        strcpy(powerup2->name, "Speed Power Up");
+
+        Entity* powerup3;
+        powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), PU_BOMB);
+        strcpy(powerup3->name, "Bomb Power Up");
+
+        Entity* powerup4;
+        powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), PU_HP_RECOVERY);
+        strcpy(powerup4->name, "HP Power Up");
+
+        Entity* powerup5;
+        powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), PU_INVUL);
+        strcpy(powerup5->name, "Invul Power Up");
+        break;
+
+    case 2:
+        slog("Loading Boss 1");
+        //powerUpSpawning = 1;
+
+        bossGame = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS1);
+        strcpy(bossGame->name, "POS");
+        bossGame->hp = 10;
+
+        break;
+
+    case 3:
+        slog("Loading Boss 2");
+        //powerUpSpawning = 1;
+
+        bossGame = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
+        strcpy(bossGame->name, "POS2");
+        bossGame->hp = 10;
+
+        break;
+
+    case 4:
+        slog("Loading Boss 3");
+        //powerUpSpawning = 1;
+
+        bossGame = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS3);
+        strcpy(bossGame->name, "POS3");
+        bossGame->hp = 10;
+
+        break;
+
+    default:
+        slog("No Level Loaded!");
+    }
+}
+
+void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color color, SDL_Rect** playerHPUI, SDL_Rect** bossHPUI)
 {
     if (!font || !playerHPUI)
     {
         slog("Font or player UI not working! Can't draw!");
         return;
     }
+
+    if (!player)
+    {
+        slog("UI Has no Player!");
+        return;
+    }
+
+    if (!bossGame)
+    {
+        //slog("UI Has no boss!");
+    }
+
     //slog("Player hp is %i", player);
+
+    snprintf(playerHP, sizeof(playerHP), "Player HP: %d", player->hp);
+    surface = TTF_RenderText_Solid(font, playerHP, color);
+    texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+
+
+    dstRect.x = 10;
+    dstRect.y = 10;
+    dstRect.w = surface->w / 2;
+    dstRect.h = surface->h / 2;
+    SDL_FreeSurface(surface);
+
+    if (!bossGame)
+    {
+        slog("This level has no boss!");
+    }
+    else
+    {
+        snprintf(bossHP, sizeof(bossHP), "Boss HP: %d", bossGame->hp);
+
+        surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+        textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+
+
+        dstRect2.x = 1000;
+        dstRect2.y = 10;
+        dstRect2.w = surfaceBoss->w / 2;
+        dstRect2.h = surfaceBoss->h / 2;
+        SDL_FreeSurface(surfaceBoss);
+    }
         
 
     snprintf(playerHP, sizeof(playerHP), "Player HP: %i", playerNumHP);
@@ -59,7 +186,7 @@ void updateUI(Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color colo
 
     if (!bossHPUI || !bossNumHP)
     {
-        //slog("No Boss for UI to draw!");
+        slog("No Boss for UI to draw!");
         return;
     }
     else
@@ -91,17 +218,14 @@ int main(int argc, char * argv[])
     srand(time(NULL));
     TTF_Font* font = NULL;
     SDL_Color color = { 255, 255, 255, 255 };
-   
+    Uint8 playerRole = ROLE_PLAYER_GAMBLER;
 
     int paused = 0;
     
 
     surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
     textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
-
-
-    Entity* boss = NULL;
-    Entity* player = NULL;
+    
 
     int level = 1;
     int numPowerUps = 0;
@@ -151,115 +275,93 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
-    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_BAKER);
+
+
+    
+    level = 1;
+    loadLevel(level,playerRole);
+    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");
 
     
-    level = 4;
 
-    switch (level)
+    /*switch (level)
     {
-         case  1:
-             slog("Loading Testing Level");
-             /*Entity* projectile;
-                projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
-                projectile->team = TEAM_IGNORE;
-                strcpy(projectile->name, "TEST_PROJECTILE");*/
+    case  1:
+        slog("Loading Testing Level");
+        /*Entity* projectile;
+           projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
+           projectile->team = TEAM_IGNORE;
+           strcpy(projectile->name, "TEST_PROJECTILE");
 
-             Entity * enemy;
-             enemy = monsterEntityNew(gfc_vector2d(300, 100),ROLE_TRASHMOB);
-             strcpy(enemy->name, "Mr Monster!");
-             enemy->hp = 10;
+        Entity* enemy;
+        enemy = monsterEntityNew(gfc_vector2d(300, 100), ROLE_TRASHMOB);
+        strcpy(enemy->name, "Mr Monster!");
+        enemy->hp = 10;
 
-             //Entity* bomb;
-             //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
-             //bomb->team = TEAM_IGNORE;
-             //strcpy(bomb->name, "TEST_BOMB!");
+        //Entity* bomb;
+        //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
+        //bomb->team = TEAM_IGNORE;
+        //strcpy(bomb->name, "TEST_BOMB!");
 
-             Entity* powerup;
-             powerup = powerUpEntityNew(gfc_vector2d(200, 500), PU_FREE_ULT);
-             strcpy(powerup->name, "Free Ult Power Up");
+        Entity* powerup;
+        powerup = powerUpEntityNew(gfc_vector2d(200, 500), PU_FREE_ULT);
+        strcpy(powerup->name, "Free Ult Power Up");
 
-             Entity* powerup2;
-             powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), PU_SPEED);
-             strcpy(powerup2->name, "Speed Power Up");
+        Entity* powerup2;
+        powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), PU_SPEED);
+        strcpy(powerup2->name, "Speed Power Up");
 
-             Entity* powerup3;
-             powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), PU_BOMB);
-             strcpy(powerup3->name, "Bomb Power Up");
+        Entity* powerup3;
+        powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), PU_BOMB);
+        strcpy(powerup3->name, "Bomb Power Up");
 
-             Entity* powerup4;
-             powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), PU_HP_RECOVERY);
-             strcpy(powerup4->name, "HP Power Up");
+        Entity* powerup4;
+        powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), PU_HP_RECOVERY);
+        strcpy(powerup4->name, "HP Power Up");
 
-             Entity* powerup5;
-             powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), PU_INVUL);
-             strcpy(powerup5->name, "Invul Power Up");
-             break;
+        Entity* powerup5;
+        powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), PU_INVUL);
+        strcpy(powerup5->name, "Invul Power Up");
+        break;
 
-         case 2:
-             slog("Loading Boss 1");
-             powerUpSpawning = 1;
+    case 2:
+        slog("Loading Boss 1");
+        //powerUpSpawning = 1;
 
-             boss = monsterEntityNew(gfc_vector2d(300, 100),ROLE_BOSS1);
-             strcpy(boss->name, "POS");
-             boss->hp = 10;
+        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS1);
+        strcpy(boss->name, "POS");
+        boss->hp = 10;
 
-             break;
+        break;
 
-         case 3:
-             slog("Loading Boss 2");
-             powerUpSpawning = 1;
+    case 3:
+        slog("Loading Boss 2");
+        //powerUpSpawning = 1;
 
-             boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
-             strcpy(boss->name, "POS2");
-             boss->hp = 10;
+        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
+        strcpy(boss->name, "POS2");
+        boss->hp = 10;
 
-             break;
+        break;
 
-         case 4:
-             slog("Loading Boss 3");
-             powerUpSpawning = 1;
+    case 4:
+        slog("Loading Boss 3");
+        //powerUpSpawning = 1;
 
-             boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS3);
-             strcpy(boss->name, "POS3");
-             boss->hp = 10;
+        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS3);
+        strcpy(boss->name, "POS3");
+        boss->hp = 10;
 
-             break;
+        break;
 
-         default:
-             slog("No Level Loaded!");
-    }
+    default:
+        slog("No Level Loaded!");
+    }*/
 
-    snprintf(playerHP, sizeof(playerHP), "Player HP: %d", player->hp);
-    surface = TTF_RenderText_Solid(font, playerHP, color);
-    texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
+    powerUpSpawning = 1;
 
-
-    dstRect.x = 10;
-    dstRect.y = 10;
-    dstRect.w = surface->w/2;
-    dstRect.h = surface->h/2;
-    SDL_FreeSurface(surface);
-
-    if (!boss)
-    {
-        slog("This level has no boss!");
-    }
-    else
-    {
-        snprintf(bossHP, sizeof(bossHP), "Boss HP: %d", boss->hp);
-        
-        surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
-        textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
-
-       
-        dstRect2.x = 1000;
-        dstRect2.y = 10;
-        dstRect2.w = surfaceBoss->w / 2;
-        dstRect2.h = surfaceBoss->h / 2;
-        SDL_FreeSurface(surfaceBoss);
-    }
+    
 
    
     
@@ -347,12 +449,12 @@ int main(int argc, char * argv[])
             //slog("Freed");
             
            
-            if (!boss)
+            if (!bossGame)
             {
                 updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
             }
             else
-                updateUI(player->hp, boss->hp, font, color, &dstRect, &dstRect2);
+                updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
             
             //slog("UI updated");
 
@@ -375,6 +477,57 @@ int main(int argc, char * argv[])
                 slog("Unpausing?");
                 paused = 0;
             } 
+
+            if (gfc_input_key_pressed("1"))
+            {
+                //Clear this level then load 1
+                level = 1;
+                loadLevel(level, playerRole);
+            }
+
+            if (gfc_input_key_pressed("2"))
+            {
+                //Clear this level then load 2
+                level = 2;
+                loadLevel(level, playerRole);
+            }
+
+            if (gfc_input_key_pressed("3"))
+            {
+                //Clear this level then load 3
+                level = 3;
+                loadLevel(level, playerRole);
+            }
+
+            if (gfc_input_key_pressed("4"))
+            {
+                //Clear this level then load 4
+                level = 4;
+                loadLevel(level, playerRole);
+            }
+
+            if (gfc_input_key_pressed("p"))
+            {
+                slog("Changing Player's Class to Gambler!");
+                playerRole = ROLE_PLAYER_GAMBLER;
+                loadLevel(level, playerRole);
+                
+            }
+
+            if (gfc_input_key_pressed("o"))
+            {
+                slog("Changing Player's Class to Baker!");
+                playerRole = ROLE_PLAYER_BAKER;
+                loadLevel(level, playerRole);
+            }
+
+            if (gfc_input_key_pressed("i"))
+            {
+                slog("Changing Player's Class to Gunner!");
+                playerRole = ROLE_PLAYER_GUNNER;
+                loadLevel(level, playerRole);
+            }
+
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
             entityManagerDrawAll();

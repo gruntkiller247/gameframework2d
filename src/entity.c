@@ -154,6 +154,7 @@ void entityKillAll()
 
 	for (c = 0; c < entityManager.entityMax; c++)
 	{
+		entityManager.entityList[c]._inUse = 0;
 		entityFree(&entityManager.entityList[c]);
 
 	}
