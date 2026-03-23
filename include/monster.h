@@ -52,4 +52,9 @@ Uint8 getSymbol(Entity* self);
 */
 void correctSymbol(Entity* self);
 
+/*
+	Helper function called by the ROLE_SYMBOL_ENEMY roles to alert their boss what color they are!
+*/
+void symbolPatternAlert(Entity* self, GFC_Color color);
+
 #endif

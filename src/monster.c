@@ -5,6 +5,7 @@
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
 #include "projectiles.h"
+#include "bomb.h"
 
 /*typedef struct
 {
@@ -78,7 +79,10 @@ typedef struct MD
 
 	GFC_Color* symbolMons;
 	Uint8 symbolMonsColor;
-	Uint8 symbolOrder;		//Abstract int. Increments when the correct color is killed. If it equals the num of minions spawned, determins the phase ending!
+	Uint8 symbolOrder;		//Abstract int. Increments when the correct color is killed. If it equals the num of minions spawned, determins the phase ending! That num is hardcoded atm.
+	Entity* symbolMonster1;
+	Entity* symbolMonster2;
+	Entity* symbolMonster3;
 }MonsterData;
 
 Entity* theBoss = NULL;
@@ -93,6 +97,7 @@ void cupShoot(Entity* self);
 void symbols(Entity* self);
 void aoe(Entity* self);
 void symbolPattern(Entity* self);
+void symbolPatternAlert(Entity* self, GFC_Color color);
 
 
 
@@ -180,6 +185,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 			monsterData->symbolMons = NULL;
 			monsterData->symbolMonsColor = 0;
+			monsterData->symbolOrder = 0;
 
 			setBoss(self);
 			break;
@@ -194,6 +200,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			//self->layer = EL_MONSTER;
 			self->colorReal = GFC_COLOR_DARKRED;
 			self->layer = EL_MONSTER;
+			self->hp = 1;
 			monsterData->phase = MP_TRASH;
 			theBoss = getBoss();
 
@@ -202,6 +209,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 		case ROLE_SYMBOL_ENEMY2:
 			self->colorReal = GFC_COLOR_DARKYELLOW;
 			self->layer = EL_MONSTER;
+			self->hp = 1;
 			monsterData->phase = MP_TRASH;
 			theBoss = getBoss();
 			break;
@@ -209,6 +217,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 		case ROLE_SYMBOL_ENEMY3:
 			self->colorReal = GFC_COLOR_DARKBLUE;
 			self->layer = EL_MONSTER;
+			self->hp = 1;
 			monsterData->phase = MP_TRASH;
 			theBoss = getBoss();
 			break;
@@ -251,7 +260,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 		{
 			self->hp -= toucher->damage;
 			self->isInvul = 1;
-			slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
+			//slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 		}
 	}
 }
@@ -394,7 +403,7 @@ void monsterThink(Entity* self)
 
 					if (((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
 					{
-						slog("Changing colors!");
+						//slog("Changing colors!");
 
 						if (((MonsterData*)self->data)->symbolMonsColor > 3)//This check if being hardcoded temporarly!!! Fix this if you want > 3 mobs for this attack!
 						{
@@ -439,6 +448,14 @@ void monsterThink(Entity* self)
 	if (self->hp <= 0)
 	{
 		//slog("I am dead! MR Monster!");
+
+		if (self->role == ROLE_SYMBOL_ENEMY1 || self->role == ROLE_SYMBOL_ENEMY2 || self->role == ROLE_SYMBOL_ENEMY3)
+		{
+			if (self->hp <= 0)
+			{
+				symbolPatternAlert(theBoss, self->colorReal);
+			}
+		}
 		self->_inUse = 0;
 	}
 
@@ -803,6 +820,7 @@ void symbolPattern(Entity* self)
 	Entity* mon2;
 	Entity* mon3;
 
+
 	if (!((MonsterData*)self->data)->symbolMons)
 	{
 		;
@@ -868,17 +886,102 @@ void symbolPattern(Entity* self)
 	{
 		memcpy(((MonsterData*)self->data)->symbolMons, shuffler, sizeof(GFC_Color) * 3);
 	}
+
+	((MonsterData*)self->data)->symbolMonster1 = mon1;
+	((MonsterData*)self->data)->symbolMonster2 = mon2;
+	((MonsterData*)self->data)->symbolMonster3 = mon3;
 	
 	((MonsterData*)self->data)->phase = MP_SYMBOLS_MOBS;
 
 }
 
-/*
-	Helper function called by the ROLE_SYMBOL_ENEMY roles to alert their boss what color they are!
-*/
-void symbolPatternAlert(Entity* self)
-{
 
+void symbolPatternAlert(Entity* self, GFC_Color color)
+{
+	if (!self)
+	{
+		return;
+	}
+	Entity* bomb = NULL;
+	int bombDuration = 200;
+
+	if (color.a == ((MonsterData*)self->data)->symbolMons[((MonsterData*)self->data)->symbolOrder].a)
+	{
+		((MonsterData*)self->data)->symbolOrder++;
+	}
+	else
+	{
+		slog("User messed the order up! Kill all symbolMonsters by explosion and end the phase!");
+
+
+		if (!((MonsterData*)self->data)->symbolMonster1)
+		{
+			;
+		}
+		else
+		{
+			bomb = bombEntityNew(((MonsterData*)self->data)->symbolMonster1->position,TEAM_ENEMY, bombDuration);
+
+			if (!bomb)
+			{
+				slog("Failed to make bomb 1 in Boss 2 Symbol Monster Failed!");
+			}
+
+			((MonsterData*)self->data)->symbolMonster1->_inUse = 0;
+			((MonsterData*)self->data)->symbolMonster1 = NULL;
+		}
+		//slog("Monster 1 dealt with!");
+
+		if (!((MonsterData*)self->data)->symbolMonster2)
+		{
+			;
+		}
+		else
+		{
+			bomb = bombEntityNew(((MonsterData*)self->data)->symbolMonster2->position, TEAM_ENEMY, bombDuration);
+
+			if (!bomb)
+			{
+				slog("Failed to make bomb 2 in Boss 2 Symbol Monster Failed!");
+			}
+
+			((MonsterData*)self->data)->symbolMonster2->_inUse = 0;
+			((MonsterData*)self->data)->symbolMonster2 = NULL;
+		}
+		//slog("Monster 2 dealt with!");
+
+		if (!((MonsterData*)self->data)->symbolMonster3)
+		{
+			;
+		}
+		else
+		{
+			bomb = bombEntityNew(((MonsterData*)self->data)->symbolMonster3->position, TEAM_ENEMY, bombDuration);
+
+			if (!bomb)
+			{
+				slog("Failed to make bomb 3 in Boss 2 Symbol Monster Failed!");
+			}
+
+			((MonsterData*)self->data)->symbolMonster3->_inUse = 0;
+			((MonsterData*)self->data)->symbolMonster3 = NULL;
+		}
+		//slog("Monster 3 dealt with!");
+
+		((MonsterData*)self->data)->phase = MP_IDLE;
+		((MonsterData*)self->data)->phaseCount++;
+		self->colorReal = GFC_COLOR_TRANSPARENT;
+
+		return;
+	}
+
+	if (((MonsterData*)self->data)->symbolOrder >= 3)//Hard coded 3 at the minute
+	{
+		//Attack is over!
+		((MonsterData*)self->data)->phase = MP_IDLE;
+		((MonsterData*)self->data)->phaseCount++;
+		self->colorReal = GFC_COLOR_TRANSPARENT;
+	}
 }
 
 /*void monsterManagerClose()
