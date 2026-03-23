@@ -359,7 +359,9 @@ void playerTouch(Entity* self, Entity* toucher)
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 		//slog("%s is touching something!",self->name);
-		if (toucher->team == TEAM_ENEMY && self->isInvul == 0) 
+		
+		
+		if (toucher->team == TEAM_ENEMY && toucher->layer !=EL_SYMBOLS &&  self->isInvul == 0) 
 		{
 			self->hp -= 1;
 			self->isInvul = 1;

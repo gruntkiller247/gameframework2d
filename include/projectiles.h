@@ -30,6 +30,9 @@ void moveProjectile(Entity* self,int direction);
 
 void moveProjectileMob(Entity* self, GFC_Vector2D position);
 
+/*
+	Handler for the cup event, explodes fake cup and kills it
+*/
 void cupExplode(Entity* self);
 
 

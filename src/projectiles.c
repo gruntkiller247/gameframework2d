@@ -12,6 +12,7 @@ typedef struct PD
 	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
 }Projectile_Data; //Currently cut content
 
+void symbolExplode(Entity* self);
 
 Entity* boss = NULL;
 
@@ -195,38 +196,88 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
-		if (self->role == ROLE_CUP)
+		switch (self->role)
 		{
-			//slog("I am a cup and the toucher's role is: %i", toucher->role);
-			//Real cup stuff
-			if (toucher->team = TEAM_PLAYER)
-			{
-				//slog("Player aligned thing touched the CUP!");
-				//slog("Real Cup interacted by Player!");
-				
+			case ROLE_CUP:
+				//slog("I am a cup and the toucher's role is: %i", toucher->role);
+				//Real cup stuff
+				if (toucher->team = TEAM_PLAYER)
+				{
+					//slog("Player aligned thing touched the CUP!");
+					//slog("Real Cup interacted by Player!");
+
+					if (boss)
+					{
+						cupStateUpdate(boss);
+					}
+
+
+					self->_inUse = 0;
+				}
+				break;
+
+			case ROLE_FAKECUP:
+				//Fake cup stuff
+				if (toucher->team = TEAM_PLAYER)
+				{
+
+					//slog("Player aligned thing touched the CUP!");
+					//slog("Fake Cup Interacted by Player!");
+					cupExplode(self);
+					
+				}
+				break;
+
+			case ROLE_SYMBOL1:
+				slog("I am symbol 1");
+
 				if (boss)
 				{
-					cupStateUpdate(boss);
+					if (getSymbol(boss) == 2)
+					{
+						symbolExplode(self);
+					}
+					else
+					{
+						//I am the correct Symbol!
+						correctSymbol(boss);
+						self->_inUse = 0;
+					}
 				}
-				
-				
-				self->_inUse = 0;
-			}
-		}
-		else if (self->role == ROLE_FAKECUP)
-		{
-			//Fake cup stuff
-			if (toucher->team = TEAM_PLAYER)
-			{
+				else
+				{
+					slog("No boss. I am a symbol 1 with no purpose!");
+				}
+				break;
 
-				//slog("Player aligned thing touched the CUP!");
-				//slog("Fake Cup Interacted by Player!");
-				cupExplode(self);
-				self->_inUse = 0;
-			}
+			case ROLE_SYMBOL2:
+				slog("I am Symbol 2");
+
+
+				if (boss)
+				{
+					if (getSymbol(boss) == 1)
+					{
+						symbolExplode(self);
+					}
+					else
+					{
+						//I am the correct Symbol!
+						correctSymbol(boss);
+						self->_inUse = 0;
+					}
+				}
+				else
+				{
+					slog("No boss. I am a symbol 2 with no purpose!");
+				}
+				break;
+
+			default:
+				break;
+				//Standard Projectile, deal damage then die handled by the player!
 		}
-		else
-			;
+
 	}
 
 
@@ -340,20 +391,38 @@ void moveProjectile(Entity* self, int direction)
 */
 void moveProjectileMob(Entity* self, GFC_Vector2D direction)
 {
+	if (!self)
+		return;
+
 	self->velocity.x += direction.x;
 	self->velocity.y += direction.y;
 }
 
 void gunnerUlt(Entity* self)
 {
+	if (!self)
+		return;
+
 	self->ultIs = 1;
 }
 
-/*
-	Handler for the cup event, explodes fake cup
-*/
+
 void cupExplode(Entity* self)
 {
+	if (!self)
+		return;
+
 	slog("Fake cup is exploding!");
 	Entity* bomb = bombEntityNew(self->position,TEAM_ENEMY,NULL);
+	self->_inUse = 0;
+}
+
+void symbolExplode(Entity* self)
+{
+	if (!self)
+		return;
+
+	slog("Bad Symbol is exploding!");
+	Entity* bomb = bombEntityNew(self->position, TEAM_ENEMY, NULL);
+	self->_inUse = 0;
 }

@@ -67,6 +67,9 @@ typedef struct MD
 	MonsterStates state;
 	MonsterPhase phase;
 	Uint8 phaseCount;
+	Uint8 symbolNum;
+	Entity* symbol1;
+	Entity* symbol2;
 }MonsterData;
 
 void monsterThink(Entity* self);
@@ -145,6 +148,9 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			monsterData->phase = MP_IDLE;
 			monsterData->phaseCount = 0;
 			self->layer = EL_BOSS;
+
+			monsterData->symbol1 = NULL;
+			monsterData->symbol2 = NULL;
 			setBoss(self);
 			break;
 
@@ -259,15 +265,16 @@ void monsterThink(Entity* self)
 			if (self->timerPrimary >= self->primaryCooldown)
 			{
 				//trashShoot(self, ((MonsterData*)self->data)->player);
+				
 
-				if (((MonsterData*)self->data)->phaseCount == 0)
+				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
 				{
 					slog("Boss is doing Cup Attack!");
 					((MonsterData*)self->data)->state = MP_CUP;
 					cupShoot(self);
 
 				}
-				else if (((MonsterData*)self->data)->phaseCount == 1)
+				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
 				{
 					slog("Boss is doing Symbol Attack!");
 					((MonsterData*)self->data)->state = MP_SYMBOLS;
@@ -275,7 +282,17 @@ void monsterThink(Entity* self)
 				}
 				else
 				{
-					slog("Boss 1 must be in IDLE state!");
+					slog("Boss 1 must be in IDLE state or waiting for a puzzle! phase count is %i", ((MonsterData*)self->data)->phaseCount);
+
+					if (((MonsterData*)self->data)->phase == MP_SYMBOLS || ((MonsterData*)self->data)->phase == MP_CUP)
+					{
+						self->isInvul = 1;
+					}
+
+					if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
+					{
+						((MonsterData*)self->data)->phaseCount = 0;
+					}
 
 				}
 				self->timerPrimary = 0;
@@ -396,20 +413,20 @@ void cupShoot(Entity* self)
 	switch (num)
 	{
 		case 0:
-			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance,self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
-			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w,self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
 			cup3 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
 			break;
 
 		case 1:
-			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
-			cup3 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
+			cup3 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			break;
 
 		default:
-			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
-			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_CUP);
+			cup1 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), TEAM_ENEMY, -1, ROLE_CUP);
+			cup2 = projectileEntityNew(self->position, TEAM_ENEMY, -1, ROLE_FAKECUP);
 			cup3 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_FAKECUP);
 			break;
 	}
@@ -438,33 +455,106 @@ void cupStateUpdate(Entity* self)
 {
 	//Set Boss state to IDLE, might have to check current state
 
+	if (!self)
+		return;
+
 	((MonsterData*)self->data)->state=MS_IDLE;
 	self->layer = EL_BOSS;
 	((MonsterData*)self->data)->phaseCount++; //Temporary to have the boss loop through attacks
 
-	slog("Cup has updated Boss's state!");
+	slog("Cup has updated Boss's state! phaseCount ++");
 }
 
 void symbols(Entity* self)
 {
-	Entity* symbol1;
-	Entity* symbol2;
 	int distance = 100;
+	int num;
 
-	symbol1 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
-	symbol2 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
+	if (!self)
+		return;
 
-	if (!symbol1 || !symbol2)
+	slog("Starting Symbol attack!");
+	((MonsterData*)self->data)->phase = MP_SYMBOLS;
+
+	/*
+		GFC_COLOR_DARKMAGENTA; 
+		GFC_COLOR_DARKYELLOW;
+	*/
+
+	if (((MonsterData*)self->data)->symbol1)
+	{
+		slog("Old symbol1, freeing!");
+		free(((MonsterData*)self->data)->symbol1);
+	}
+
+	if (((MonsterData*)self->data)->symbol2)
+	{
+		slog("Old symbol2, freeing!");
+		free(((MonsterData*)self->data)->symbol2);
+	}
+
+	slog("Creating new symbols!");
+	((MonsterData*)self->data)->symbol1 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
+	((MonsterData*)self->data)->symbol2 = projectileEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL2);
+
+	num = rand() % 2 + 1;
+
+	((MonsterData*)self->data)->symbolNum = num;
+
+	switch(num)
+	{
+		case 1:
+			self->colorReal = GFC_COLOR_DARKMAGENTA;
+			break;
+		default:
+			self->colorReal = GFC_COLOR_DARKYELLOW;
+	}
+
+	if (!((MonsterData*)self->data)->symbol1 || !((MonsterData*)self->data)->symbol2)
 	{
 		slog("Boss Symbol attack failed to spawn symbols!");
 
-		if (symbol1)
-			symbol1->_inUse = 0;
-		if (symbol2)
-			symbol2->_inUse = 0;
+		if (((MonsterData*)self->data)->symbol1)
+			((MonsterData*)self->data)->symbol1->_inUse = 0;
+
+		if (((MonsterData*)self->data)->symbol2)
+			((MonsterData*)self->data)->symbol2->_inUse = 0;
 		return;
 	}
 
+}
+
+Uint8 getSymbol(Entity* self)
+{
+	if (!self)
+		return NULL;
+
+	return ((MonsterData*)self->data)->symbolNum;
+}
+
+
+void correctSymbol(Entity* self)
+{
+	if (!self)
+		return;
+
+	self->colorReal = GFC_COLOR_TRANSPARENT;
+
+	if (((MonsterData*)self->data)->symbol1 != NULL)
+	{
+		((MonsterData*)self->data)->symbol1->_inUse = 0;
+		((MonsterData*)self->data)->symbol1 = NULL;
+	}
+
+	if (((MonsterData*)self->data)->symbol2 != NULL)
+	{
+		((MonsterData*)self->data)->symbol2->_inUse = 0;
+		((MonsterData*)self->data)->symbol2 = NULL;
+	}
+
+	((MonsterData*)self->data)->phaseCount++; 
+	((MonsterData*)self->data)->phase = MP_IDLE;
+	//Tempoary, see cup
 }
 
 /*void monsterManagerClose()

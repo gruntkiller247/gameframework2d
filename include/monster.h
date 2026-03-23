@@ -35,4 +35,14 @@ void cupStateUpdate(Entity* self);
 
 void symbols(Entity* self);
 
+/*
+	returns the current symbol set to explode for Symbol Attack
+*/
+Uint8 getSymbol(Entity* self);
+
+/*
+	Called by the projectile when the symbol is correct!
+*/
+void correctSymbol(Entity* self);
+
 #endif

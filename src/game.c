@@ -203,6 +203,8 @@ int main(int argc, char * argv[])
 
              boss = monsterEntityNew(gfc_vector2d(300, 100),ROLE_BOSS1);
              strcpy(boss->name, "POS");
+             boss->hp = 10;
+
              break;
 
          default:
