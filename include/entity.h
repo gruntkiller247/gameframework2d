@@ -114,9 +114,11 @@ typedef enum
 	EL_BOSS = 4,
 	EL_ITEM = 8,
 	EL_WORLD = 16,
-	EL_PROJECTILES =32,
+	EL_PROJECTILES = 32,
 	EL_ALL = 36,
-	EL_INVISIBLE = 64
+	EL_INVISIBLE = 64,
+	EL_ENEMY_PROJETILES = 128,
+	EL_SYMBOLS = 256
 }EntityLayers;
 
 typedef enum DS
@@ -147,6 +149,8 @@ typedef enum RN
 	ROLE_CUP,
 	ROLE_FAKECUP,
 	ROLE_BOMB,
+	ROLE_SYMBOL1,
+	ROLE_SYMBOL2,
 	ROLE_COUNT
 
 }RoleNames;

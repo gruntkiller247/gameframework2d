@@ -363,7 +363,7 @@ void playerTouch(Entity* self, Entity* toucher)
 		{
 			self->hp -= 1;
 			self->isInvul = 1;
-			slog("Player being touched %s. \nHP is now %i", toucher->name, self->hp);
+			slog("Player being touched %s. \nHP is now %i \nToucher team is: %i\n Toucher's role is %i", toucher->name, self->hp,toucher->team,toucher->role);
 
 		}
 
@@ -653,6 +653,9 @@ void playerBakerShoot(Entity* self, int direction)
 
 	//Same as gunner, shoots bombs that have a short range/life
 	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL);
+
+	slog("Baker shooting! Bomb team is %i", thing->team);
+
 	//thing->scale = gfc_vector2d(5, 5);
 	//thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
 	thing->damage = self->damage;
@@ -712,7 +715,7 @@ void playerBakerSpecial(Entity* self, int direction)
 			return;
 		}
 
-		slog("Created a bomb! It's velocitys are (%f,%f)", thing->velocity.x, thing->velocity.y);
+		//slog("Created a bomb! It's velocitys are (%f,%f)", thing->velocity.x, thing->velocity.y);
 	}
 
 }

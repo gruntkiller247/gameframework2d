@@ -30,6 +30,8 @@ void moveProjectile(Entity* self,int direction);
 
 void moveProjectileMob(Entity* self, GFC_Vector2D position);
 
+void cupExplode(Entity* self);
+
 
 
 #endif

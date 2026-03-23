@@ -51,11 +51,13 @@ typedef enum
 
 typedef enum
 {
-	MP_TRASH,
-	MP_IDLE,
-	MP_ATTACK,
-	MP_CUP,
-	MP_PUZZLE,
+	MP_TRASH = 0,//Default, should never change if trashmob
+	MP_IDLE,	//Default behavior for Boss: if equals this make them randomly select an attack from the stuff below!
+	MP_CUP,		//Spawn 3 cups and turn invisible/invul until real cup is killed!
+	MP_SYMBOLS, //Spawn 3 symbols(colored projectiles) Player must stand on the one the boss is colored! ->Boss is invul during this!
+	MP_AOE,
+	MP_SYMBOLS_MOBS,
+	MP_MATH,
 	MP_MAX
 }MonsterPhase;
 
@@ -74,6 +76,7 @@ void monsterTouch(Entity* self,Entity* toucher);
 
 void trashShoot(Entity* self, Entity* player);
 void cupShoot(Entity* self);
+void symbols(Entity* self);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -115,7 +118,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	self->primaryCooldown = 90;
 	self->timerPrimary = 0;
-	self->layer = EL_BOSS;
+	//self->layer = EL_BOSS;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
 	//if (data)
@@ -140,17 +143,20 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	{
 		case ROLE_BOSS1:
 			monsterData->phase = MP_IDLE;
-			monsterData->phaseCount = 3;
+			monsterData->phaseCount = 0;
+			self->layer = EL_BOSS;
 			setBoss(self);
 			break;
 
 		case ROLE_BOSS2:
 
+			self->layer = EL_BOSS;
 			setBoss(self);
 			break;
 
 		case ROLE_BOSS3:
 
+			self->layer = EL_BOSS;
 			setBoss(self);
 			break;
 
@@ -240,6 +246,8 @@ void monsterThink(Entity* self)
 		nt basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
 		*/
 
+		
+
 		if (!((MonsterData*)self->data)->player)
 		{
 			slog("I do not know about the player! %s");
@@ -252,10 +260,22 @@ void monsterThink(Entity* self)
 			{
 				//trashShoot(self, ((MonsterData*)self->data)->player);
 
-				if (((MonsterData*)self->data)->state != MP_CUP)
+				if (((MonsterData*)self->data)->phaseCount == 0)
 				{
+					slog("Boss is doing Cup Attack!");
 					((MonsterData*)self->data)->state = MP_CUP;
 					cupShoot(self);
+
+				}
+				else if (((MonsterData*)self->data)->phaseCount == 1)
+				{
+					slog("Boss is doing Symbol Attack!");
+					((MonsterData*)self->data)->state = MP_SYMBOLS;
+					symbols(self);
+				}
+				else
+				{
+					slog("Boss 1 must be in IDLE state!");
 
 				}
 				self->timerPrimary = 0;
@@ -274,7 +294,7 @@ void monsterThink(Entity* self)
 	}
 	else
 	{
-		slog("I should be invisible!");
+		//slog("I should be invisible!");
 	}
 	
 	//slog("Inside monster thinking. HP is %i", self->hp);
@@ -353,6 +373,9 @@ void trashShoot(Entity* self, Entity* player)
 
 }
 
+/*
+	Used by Boss 1 to spawn the 3 cups then turn invisible
+*/
 void cupShoot(Entity* self)
 {
 	//Idea is spawns 3 cup objects + temporary disables the boss
@@ -391,10 +414,58 @@ void cupShoot(Entity* self)
 			break;
 	}
 
+	if (!cup1 || !cup2 || !cup3)
+	{
+		slog("Boss cup attack failed to create all entities!");
+		if (cup1)
+			cup1->_inUse = 0;
 
+		if (cup2)
+			cup2->_inUse = 0;
+
+		if (cup3)
+			cup3->_inUse = 0;
+
+		return;
+	}
 
 }
 
+/*
+	Used by the boss 1's real cup to renable him once the cup dies
+*/
+void cupStateUpdate(Entity* self)
+{
+	//Set Boss state to IDLE, might have to check current state
+
+	((MonsterData*)self->data)->state=MS_IDLE;
+	self->layer = EL_BOSS;
+	((MonsterData*)self->data)->phaseCount++; //Temporary to have the boss loop through attacks
+
+	slog("Cup has updated Boss's state!");
+}
+
+void symbols(Entity* self)
+{
+	Entity* symbol1;
+	Entity* symbol2;
+	int distance = 100;
+
+	symbol1 = projectileEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
+	symbol2 = projectileEntityNew(gfc_vector2d(self->position.x + distance, self->position.y), TEAM_ENEMY, -1, ROLE_SYMBOL1);
+
+	if (!symbol1 || !symbol2)
+	{
+		slog("Boss Symbol attack failed to spawn symbols!");
+
+		if (symbol1)
+			symbol1->_inUse = 0;
+		if (symbol2)
+			symbol2->_inUse = 0;
+		return;
+	}
+
+}
 
 /*void monsterManagerClose()
 {

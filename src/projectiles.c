@@ -3,6 +3,8 @@
 #include "entity.h"
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
+#include "monster.h"
+#include "bomb.h"
 
 typedef struct PD
 {
@@ -34,6 +36,29 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 		slog("Data couldn't be made for projectile!");
 		return NULL;
 	}*/
+	switch (role)
+	{
+		case ROLE_FAKECUP:
+			self->layer = EL_ENEMY_PROJETILES;
+			break;
+
+		case ROLE_CUP:
+			self->layer = EL_ENEMY_PROJETILES;
+			break;
+
+		case ROLE_SYMBOL1:
+			self->layer = EL_SYMBOLS;
+			self->colorReal = GFC_COLOR_DARKMAGENTA;
+			break;
+
+		case ROLE_SYMBOL2:
+			self->layer = EL_SYMBOLS;
+			self->colorReal = GFC_COLOR_DARKYELLOW;
+			break;
+
+		default:
+			self->layer = EL_PROJECTILES;
+	}
 
 	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
 	self->position = position;
@@ -51,7 +76,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
 	self->team = team;
-	self->layer = EL_PROJECTILES;
+	
 
 	self->damage = 1; //hard code this for now, generic projectiles always deal 1! So does body contact!
 
@@ -166,14 +191,25 @@ void projectileTouch(Entity* self, Entity* toucher)
 	float toucherRight = toucherLeft + toucher->bounds.w;
 	float toucherTop = toucher->position.y + toucher->bounds.y;
 	float toucherBottom = toucherTop + toucher->bounds.h;
+	
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 		if (self->role == ROLE_CUP)
 		{
+			//slog("I am a cup and the toucher's role is: %i", toucher->role);
 			//Real cup stuff
 			if (toucher->team = TEAM_PLAYER)
 			{
+				//slog("Player aligned thing touched the CUP!");
+				//slog("Real Cup interacted by Player!");
+				
+				if (boss)
+				{
+					cupStateUpdate(boss);
+				}
+				
+				
 				self->_inUse = 0;
 			}
 		}
@@ -182,6 +218,10 @@ void projectileTouch(Entity* self, Entity* toucher)
 			//Fake cup stuff
 			if (toucher->team = TEAM_PLAYER)
 			{
+
+				//slog("Player aligned thing touched the CUP!");
+				//slog("Fake Cup Interacted by Player!");
+				cupExplode(self);
 				self->_inUse = 0;
 			}
 		}
@@ -310,9 +350,10 @@ void gunnerUlt(Entity* self)
 }
 
 /*
-	Handler for the cup event
+	Handler for the cup event, explodes fake cup
 */
-void cup(Entity* self)
+void cupExplode(Entity* self)
 {
-
+	slog("Fake cup is exploding!");
+	Entity* bomb = bombEntityNew(self->position,TEAM_ENEMY,NULL);
 }

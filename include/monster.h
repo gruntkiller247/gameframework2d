@@ -27,4 +27,12 @@ void lookAt(Entity* self, GFC_Vector2D position);
 
 void trashShoot(Entity* self,Entity* player);
 
+
+/*
+	Setter method used by the Cup attack that makes the boss visible again
+*/
+void cupStateUpdate(Entity* self);
+
+void symbols(Entity* self);
+
 #endif
