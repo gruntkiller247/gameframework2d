@@ -250,4 +250,9 @@ void setBoss(Entity* boss);
 	Returns Boss pointer. If NULL either no boss or that entity is the Boss
 */
 Entity* getBoss();
+
+/*
+	Returns an int that is the distance between 2 entity posiitons
+*/
+int getDistance(Entity* self, Entity* notSelf);
 #endif

@@ -303,7 +303,7 @@ void entityUpdateAll()
 }
 
 
-//IDK If these are needed?
+
 void entityTouch(Entity* self, Entity* toucher)
 {
 	if (!self || !toucher)
@@ -336,6 +336,7 @@ void entityTouch(Entity* self, Entity* toucher)
 void entityTouchAll()
 {
 	int c,d;
+	int touchDistance = 50;
 
 	for (c = 0; c < entityManager.entityMax; c++)
 	{
@@ -343,6 +344,7 @@ void entityTouchAll()
 			continue;
 		if (entityManager.entityList[c].team == TEAM_IGNORE)
 			continue;
+		
 		
 		//BITWISE & Using the layer system
 
@@ -363,8 +365,19 @@ void entityTouchAll()
 			if (entityManager.entityList[c].layer == EL_ITEM && entityManager.entityList[d].layer != EL_PLAYER)
 				continue;
 
+			if (entityManager.entityList[d].layer == EL_ITEM && entityManager.entityList[c].layer != EL_PLAYER)
+				continue;
+
 			if (entityManager.entityList[c].layer == EL_INVISIBLE || entityManager.entityList[d].layer == EL_INVISIBLE)
 				continue;
+
+			if (getDistance(&entityManager.entityList[c], &entityManager.entityList[d]) > touchDistance)
+			{
+				//Damn! This shit works well!
+				//slog("Entities are too far away to touch! %s and %s", entityManager.entityList[c].name, entityManager.entityList[d].name);
+				continue;
+			}
+				
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);
 
@@ -507,6 +520,18 @@ void setBoss(Entity* boss)
 Entity* getBoss() 
 {
 	return theBoss;
+}
+
+int getDistance(Entity* self, Entity* notSelf)
+{
+	//GFC_Vector2D position;
+	int distance;
+	//sqrt((x1-x2)^2 + (y1-y2)^2)
+	distance = sqrt( pow((self->position.x-notSelf->position.x),2) - pow((self->position.y - notSelf->position.y), 2));
+	/*position.x = self->position.x + distance;
+	position.y = self->position.y + distance;*/
+
+	return distance;
 }
 
 //endLine

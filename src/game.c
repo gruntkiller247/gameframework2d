@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <SDL_ttf.h>
-
-
 #include "gfc_input.h"
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
@@ -233,6 +231,8 @@ int main(int argc, char * argv[])
     int powerUpCounter = 0;
     int powerUpTime = 500;
     Entity* powerUpGame = NULL;
+
+    int distance;
 
     //SDL_GetTikcs returns milli seconds program has been running
 
@@ -542,6 +542,19 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseGFC_Color,
                 (int)mf);
+
+            if (!bossGame)
+            {
+                updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
+            }
+            else
+            {
+                updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
+                distance = getDistance(player, bossGame);
+
+                slog("Boss and Player are %i units away!", distance);
+            }
+                
 
             
             gf2d_graphics_next_frame();
