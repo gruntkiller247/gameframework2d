@@ -171,30 +171,30 @@ void playerThink(Entity* self)
 	//slog("TimerPrimary is %i,", self->timerPrimary);
 	//slog("primaryCooldown is %i,", self->primaryCooldown);
 
-	
+	//slog("Counter for Ult: %i", self->timerUlt);
 	if (gfc_input_key_pressed("v") && self->timerUlt >= self->ultCooldown)
 	{
-		//slog("Trying to use Gunner Ult!");
+		//slog("Trying to Ult!");
 		self->ultimate(self);
 		self->timerUlt = 0;
 	}
 
 
-	if (gfc_input_key_pressed("z") && self->timerSpecial >= self->specialCooldown)
+	if (gfc_input_key_held("z") && self->timerSpecial >= self->specialCooldown)
 	{
 		//slog("Trying to fire gunner special!");
 		self->timerSpecial = 0;
 
 
-		if (gfc_input_key_pressed("UP"))
+		if (gfc_input_key_held("UP"))
 		{
 			self->special(self, D_UP);
 		}
-		else if (gfc_input_key_pressed("DOWN"))
+		else if (gfc_input_key_held("DOWN"))
 		{
 			self->special(self, D_DOWN);
 		}	
-		else if (gfc_input_key_pressed("LEFT"))
+		else if (gfc_input_key_held("LEFT"))
 		{
 			self->special(self, D_LEFT);
 		}
