@@ -34,6 +34,11 @@ static SDL_Texture* textureBoss;
 static SDL_Rect dstRect;    //For the Player's Health UI
 static SDL_Rect dstRect2;   //For the Boss's Health UI
 
+static char fpsNum[100];
+static SDL_Surface* fpsSurface;
+static SDL_Texture* fpsTexture;
+static SDL_Rect fpsRect;
+
 Entity* bossGame = NULL;
 Entity* player = NULL;
 
@@ -119,11 +124,53 @@ void loadLevel(Uint8 level,Uint8 playerRole)
     }
 }
 
+void framerateUI(TTF_Font* font,SDL_Color color,SDL_Rect** frameBox)
+{
+    //gf2d_graphics_get_frames_per_second()
+
+    if (!font || !frameBox)
+    {
+        slog("FPS UI Not working!");
+        return;
+    }
+
+    snprintf(fpsNum, sizeof(fpsNum), "FPS: %i", (int)gf2d_graphics_get_frames_per_second());
+    fpsSurface = TTF_RenderText_Solid(font, fpsNum, color);
+
+    if (!fpsSurface)
+    {
+        slog("No fps surface to draw!");
+        return;
+    }
+
+    fpsTexture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), fpsSurface);
+
+
+    if (!fpsTexture)
+    {
+        slog("No fps texture to draw!");
+        return;
+    }
+
+    fpsRect.x = 0;
+    fpsRect.y = 680;
+    fpsRect.w = fpsSurface->w / 2;
+    fpsRect.h = fpsSurface->h / 2;
+    SDL_FreeSurface(fpsSurface);
+
+
+}
+
 void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color color, SDL_Rect** playerHPUI, SDL_Rect** bossHPUI)
 {
     if (!font || !playerHPUI)
     {
         slog("Font or player UI not working! Can't draw!");
+        return;
+    }
+
+    if (!playerHPUI)
+    {
         return;
     }
 
@@ -133,7 +180,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
         return;
     }
 
-    if (!bossGame)
+    if (!bossGame || !bossHPUI)
     {
         //slog("UI Has no boss!");
     }
@@ -142,8 +189,20 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
 
     snprintf(playerHP, sizeof(playerHP), "Player HP: %d", player->hp);
     surface = TTF_RenderText_Solid(font, playerHP, color);
+
+    if (!surface)
+    {
+        slog("No player surface to draw!");
+        return;
+    }
+
     texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surface);
 
+    if (!texture)
+    {
+        slog("No player texture to draw!");
+        return;
+    }
 
     dstRect.x = 10;
     dstRect.y = 10;
@@ -160,8 +219,20 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
         snprintf(bossHP, sizeof(bossHP), "Boss HP: %d", bossGame->hp);
 
         surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+
+        if (!surfaceBoss)
+        {
+            slog("No boss surface to draw!");
+            return;
+        }
+
         textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
 
+        if (!textureBoss)
+        {
+            slog("No boss texture to draw!");
+            return;
+        }
 
         dstRect2.x = 1000;
         dstRect2.y = 10;
@@ -171,7 +242,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
     }
         
 
-    snprintf(playerHP, sizeof(playerHP), "Player HP: %i", playerNumHP);
+    /*snprintf(playerHP, sizeof(playerHP), "Player HP: %i", playerNumHP);
     snprintf(bossHP, sizeof(bossHP), "Boss HP: %i", bossNumHP);
 
     surface = TTF_RenderText_Solid(font, playerHP, color);
@@ -180,7 +251,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
     dstRect.y = 10;
     dstRect.w = surface->w / 2;
     dstRect.h = surface->h / 2;
-    SDL_FreeSurface(surface);
+    SDL_FreeSurface(surface);*/
 
     if (!bossHPUI || !bossNumHP)
     {
@@ -221,8 +292,8 @@ int main(int argc, char * argv[])
     int paused = 0;
     
 
-    surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
-    textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
+    //surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
+    //textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
     
 
     int level = 1;
@@ -456,6 +527,7 @@ int main(int argc, char * argv[])
             else
                 updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
             
+            framerateUI(font,color,&fpsRect);
             //slog("UI updated");
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
@@ -464,8 +536,9 @@ int main(int argc, char * argv[])
             //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
             SDL_RenderCopy(gf2d_graphics_get_renderer(), textureBoss, NULL, &dstRect2);
+            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
             SDL_RenderPresent(gf2d_graphics_get_renderer());
-
+            
 
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
 
@@ -552,10 +625,13 @@ int main(int argc, char * argv[])
                 updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
                 distance = getDistance(player, bossGame);
 
-                slog("Boss and Player are %i units away!", distance);
+                //slog("Boss and Player are %i units away!", distance);
             }
-                
 
+            framerateUI(font, color, &fpsRect);
+             
+            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
+            SDL_RenderPresent(gf2d_graphics_get_renderer());
             
             gf2d_graphics_next_frame();
               
@@ -565,7 +641,7 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
 
-    //entityKillAll();
+    entityKillAll();
 
     /*if (player)
     {

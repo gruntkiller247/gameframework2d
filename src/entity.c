@@ -371,6 +371,7 @@ void entityTouchAll()
 			if (entityManager.entityList[c].layer == EL_INVISIBLE || entityManager.entityList[d].layer == EL_INVISIBLE)
 				continue;
 
+			//This will probably not work in the player leaves Quadrant 1. Currently they are locked to Q1.
 			if (getDistance(&entityManager.entityList[c], &entityManager.entityList[d]) > touchDistance)
 			{
 				//Damn! This shit works well!
@@ -527,7 +528,13 @@ int getDistance(Entity* self, Entity* notSelf)
 	//GFC_Vector2D position;
 	int distance;
 	//sqrt((x1-x2)^2 + (y1-y2)^2)
-	distance = sqrt( pow((self->position.x-notSelf->position.x),2) - pow((self->position.y - notSelf->position.y), 2));
+	// |x1-x2| + |y1-y2|
+	
+
+	distance = abs(self->position.x-notSelf->position.x) + abs(self->position.y - notSelf->position.y);
+	//distance = sqrt( pow((self->position.x-notSelf->position.x),2) - pow((self->position.y - notSelf->position.y), 2));
+	
+	
 	/*position.x = self->position.x + distance;
 	position.y = self->position.y + distance;*/
 

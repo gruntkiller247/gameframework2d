@@ -98,9 +98,9 @@ typedef enum
 	PU_NONE = -2,
 	PU_RANDOM = -1,
 	PU_HP_RECOVERY = 0,
-	PU_INVUL,			//Working, uses the hit invul system
-	PU_BOMB,			//Spawn a bomb at player's feet
-	PU_SPEED,			//Working
+	PU_INVUL,			
+	PU_BOMB,			
+	PU_SPEED,			
 	PU_FREE_ULT,			
 	PU_MAXNUMBER
 }PowerUps;
@@ -226,6 +226,9 @@ void entityKillAll();
 //Checks if an Entity is out of bounds, kills it if it is anything except a Player or Boss, otherwise moves them back inbounds
 void outOfBounds(Entity* self);
 
+/*
+	Helper method. Uses the Entity system to check if anything is out of bounds
+*/
 void entityBoundsCheckAll();
 
 
@@ -234,6 +237,9 @@ void entityBoundsCheckAll();
 */
 Entity* getPlayer();
 
+/*
+	Sets a global pointer to the player
+*/
 void setPlayer(Entity* player);
 
 /*
@@ -242,7 +248,7 @@ void setPlayer(Entity* player);
 void entityImageUpdate(Entity* self, char thing[]);
 
 /*
-	Returns a pointer to the boss or NULL
+	Sets a global pointer to the boss
 */
 void setBoss(Entity* boss);
 

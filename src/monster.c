@@ -94,10 +94,10 @@ typedef struct MD
 	Uint8 boss3AttackTimer;
 	Uint8 boss3AttackMaxTime;
 	Uint8 bossAttack;
-	Uint8 bossSnipeMax;
-	Uint8 bossSnipeCount;
-	Uint8 bossNukeMax;
-	Uint8 bossNukeCount;
+	Uint16 bossSnipeMax;
+	Uint16 bossSnipeCount;
+	Uint16 bossNukeMax;
+	Uint16 bossNukeCount;
 }MonsterData;
 
 Entity* theBoss = NULL;
@@ -218,6 +218,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 			monsterData->bossSnipeCount = 0;
 			monsterData->bossSnipeMax = 500;
+			//slog("Monster Data BossSnipeMax: %i",monsterData->bossSnipeMax);
 			
 			monsterData->bossNukeCount = 0;
 			monsterData->bossNukeMax = 50;
@@ -552,7 +553,8 @@ void trashShoot(Entity* self, Entity* player)
 	GFC_Vector2D angle = gfc_vector2d(player->position.x - self->position.x,player->position.y - self->position.y);
 	gfc_vector2d_normalize(&angle);
 
-	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, self->timeToLive, ROLE_PROJECTILE);
+	//self->timeToLive
+	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, -1, ROLE_PROJECTILE);
 	projectile->colorReal = GFC_COLOR_DARKMAGENTA;
 
 	moveProjectileMob(projectile,angle);
@@ -1049,7 +1051,9 @@ void boss3Attack(Entity* self)
 			trashShoot(self, getPlayer());
 			//((MonsterData*)self->data)->boss3AttackTimer = 0;
 			((MonsterData*)self->data)->bossSnipeCount++;
-			
+			//slog("BossSnipeCount: %i",((MonsterData*)self->data)->bossSnipeCount);
+			//slog("BossSnipeMax: %i", ((MonsterData*)self->data)->bossSnipeMax);
+
 			if (((MonsterData*)self->data)->bossSnipeCount >= ((MonsterData*)self->data)->bossSnipeMax)
 			{
 				((MonsterData*)self->data)->phase == MP_IDLE;
@@ -1101,6 +1105,7 @@ void boss3Attack(Entity* self)
 	{
 		//Start the attack
 		num = rand() % 10;
+		//slog("Starting Boss 3 Attack!");
 
 		if (num <= 2)
 		{
