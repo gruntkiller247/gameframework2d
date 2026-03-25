@@ -271,6 +271,7 @@ Entity* getBoss();
 
 /*
 	Returns an int that is the distance between 2 entity posiitons
+	Originally used for Touch Filtering. Deprciated due to bugs Manhatten distance created
 */
 int getDistance(Entity* self, Entity* notSelf);
 #endif

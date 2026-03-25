@@ -807,6 +807,8 @@ void symbols(Entity* self)
 			sym2->_inUse = 0;
 	}
 
+	//slog("Sym1 and 2 created!");
+
 	data->symbol1 = sym1;
 	data->symbol2 = sym2;
 

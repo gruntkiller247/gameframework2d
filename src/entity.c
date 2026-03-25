@@ -373,13 +373,18 @@ void entityTouchAll()
 			if (entityManager.entityList[c].layer == EL_INVISIBLE || entityManager.entityList[d].layer == EL_INVISIBLE)
 				continue;
 
+			/*if (entityManager.entityList[c].layer == EL_PLAYER && entityManager.entityList[d].layer == EL_SYMBOLS)
+			{
+				slog("Trying to touch player and symbols!");
+			}
+
 			//This will probably not work in the player leaves Quadrant 1. Currently they are locked to Q1.
 			if (getDistance(&entityManager.entityList[c], &entityManager.entityList[d]) > touchDistance)
 			{
 				//Damn! This shit works well!
 				//slog("Entities are too far away to touch! %s and %s", entityManager.entityList[c].name, entityManager.entityList[d].name);
 				continue;
-			}
+			}*/
 				
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);

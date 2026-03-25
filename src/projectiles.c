@@ -193,15 +193,26 @@ void projectileTouch(Entity* self, Entity* toucher)
 	float toucherTop = toucher->position.y + toucher->bounds.y;
 	float toucherBottom = toucherTop + toucher->bounds.h;
 	
-
+	slog("ProjectileTouch called! self role: %i, toucher role: %i", self->role, toucher->role);
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
+
+		if (toucher->layer == EL_PLAYER)
+		{
+			//slog("I am a projectile touching the player!");
+
+			if (self->role == ROLE_SYMBOL1 || self->role == ROLE_SYMBOL2)
+			{
+				slog("I am a symbol touching a player! in SYMBOLS");
+			}
+		}
+
 		switch (self->role)
 		{
 			case ROLE_CUP:
 				//slog("I am a cup and the toucher's role is: %i", toucher->role);
 				//Real cup stuff
-				if (toucher->team = TEAM_PLAYER)
+				if (toucher->team == TEAM_PLAYER)
 				{
 					//slog("Player aligned thing touched the CUP!");
 					//slog("Real Cup interacted by Player!");
@@ -218,7 +229,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 			case ROLE_FAKECUP:
 				//Fake cup stuff
-				if (toucher->team = TEAM_PLAYER)
+				if (toucher->team == TEAM_PLAYER)
 				{
 
 					//slog("Player aligned thing touched the CUP!");
@@ -229,18 +240,20 @@ void projectileTouch(Entity* self, Entity* toucher)
 				break;
 
 			case ROLE_SYMBOL1:
-				slog("I am symbol 1");
+				
 
 				if (boss)
 				{
 					if (getSymbol(boss) == 2)
 					{
 						symbolExplode(self);
+						slog("I am symbol 1");
 					}
 					else
 					{
 						//I am the correct Symbol!
 						correctSymbol(boss);
+						slog("I am symbol 1 COrrect");
 						self->_inUse = 0;
 					}
 				}
@@ -251,7 +264,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 				break;
 
 			case ROLE_SYMBOL2:
-				slog("I am Symbol 2");
+				
 
 
 				if (boss)
@@ -259,11 +272,13 @@ void projectileTouch(Entity* self, Entity* toucher)
 					if (getSymbol(boss) == 1)
 					{
 						symbolExplode(self);
+						slog("I am Symbol 2");
 					}
 					else
 					{
 						//I am the correct Symbol!
 						correctSymbol(boss);
+						slog("I am Symbol 2 Correct");
 						self->_inUse = 0;
 					}
 				}

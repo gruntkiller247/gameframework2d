@@ -466,19 +466,11 @@ int main(int argc, char * argv[])
                 {
                     slog("Spawning a power up!");
                     powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), -1);
-                    numPowerUps++;
+                    //numPowerUps++;
                 }
 
             }
-            else if (numPowerUps == 3)
-            {
-                slog("Power ups spawns maxed out!");
-            }
-            else
-            {
-                ;
-            }
-
+            
 
 
             //update Thinking Here
