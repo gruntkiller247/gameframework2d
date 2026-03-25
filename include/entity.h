@@ -36,6 +36,7 @@ typedef struct Entity_S
 
 	Uint8 team;						//ENUM For what team entity is on
 	int hp;
+	int maxHP;
 	int hitDelay;				   //Delay before the entity can take damage again
 	int hitTimer;
 	int isInvul;
@@ -92,6 +93,17 @@ typedef struct Entity_S
 
 	
 }Entity;
+
+typedef enum
+{
+	HS_HEALTHY,
+	HS_INJURED,
+	HS_NEAR_DEATH,
+	HS_COUNT
+
+}HealthStatesEnum;
+
+extern const double healthStates[HS_COUNT];
 
 typedef enum
 {

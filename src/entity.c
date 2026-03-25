@@ -7,6 +7,8 @@
 
 
 
+const double healthStates[HS_COUNT] = { 0.80, 0.40, 0.20 };
+
 typedef struct
 {
 	Entity* entityList;

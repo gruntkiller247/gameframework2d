@@ -39,28 +39,34 @@ void monsterManagerInit(Uint32 max)
 	slog("Initalized Monster System");
 }*/
 
-typedef enum
-{
-	MS_IDLE,
-	MS_HUNT,
-	MS_ATTACK,
-	MS_CUP,
-	MS_PAIN,
-	MS_DIE,
-	MS_MAX
-}MonsterStates;
 
 typedef enum
 {
-	MP_TRASH = 0,//Default, should never change if trashmob
-	MP_IDLE,	//Default behavior for Boss: if equals this make them randomly select an attack from the stuff below!
-	MP_CUP,		//Spawn 3 cups and turn invisible/invul until real cup is killed!
-	MP_SYMBOLS, //Spawn 3 symbols(colored projectiles) Player must stand on the one the boss is colored! ->Boss is invul during this!
-	MP_AOE,
-	MP_SYMBOLS_MOBS,
-	MP_MATH,
-	MP_MAX
+	MP_HEALTHY_ONCE,
+	MP_HEALTHY,
+	MP_INJURED_ONCE,
+	MP_INJURED,
+	MP_NEAR_DEATH_ONCE,
+	MP_NEAR_DEATH
+
 }MonsterPhase;
+
+typedef enum
+{
+	MS_TRASH = 0,//Default, should never change if trashmob
+	MS_IDLE,	//Default behavior for Boss: if equals this make them randomly select an attack from the stuff below!
+	MS_CUP,		//Spawn 3 cups and turn invisible/invul until real cup is killed!
+	MS_SYMBOLS, //Spawn 3 symbols(colored projectiles) Player must stand on the one the boss is colored! ->Boss is invul during this!
+	MS_AOE,
+	MS_SYMBOLS_MOBS,
+	MS_MATH,
+	MS_ATTACK,
+	MS_DEAD,
+	MS_PUZZLE_WAIT,
+	MS_PUZZLE1,		//Every Boss has 2 puzzles
+	MS_PUZZLE2,
+	MS_MAX
+}MonsterStates;
 
 typedef enum
 {
@@ -74,7 +80,9 @@ typedef struct MD
 	Entity* player;
 	MonsterStates state;
 	MonsterPhase phase;
-	Uint8 phaseCount;
+	Uint8 phaseCount;	//Does not keep track of the current phase, that is kept track by Monster Phases and checked in Think
+	void (*puzzle1)(Entity* self);
+	void (*puzzle2)(Entity* self);
 
 	Uint8 symbolNum;
 	Entity* symbol1;
@@ -146,9 +154,12 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	self->team = TEAM_ENEMY;
 	self->layer = EL_MONSTER;
 	
+	
 	self->role = role;
 
-	self->hp = 2;
+	self->hp = 10;
+	self->hp = self->maxHP;
+
 	self->damage = 1;
 
 	self->hitDelay = 300;
@@ -177,13 +188,17 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	monsterData->player = getPlayer();
 	monsterData->state = MS_IDLE;
+	monsterData->phase = MP_HEALTHY_ONCE;
 
 	switch (role)
 	{
 		case ROLE_BOSS1:
-			monsterData->phase = MP_IDLE;
+			monsterData->state = MS_IDLE;
 			monsterData->phaseCount = 0;
 			self->layer = EL_BOSS;
+
+			monsterData->puzzle1 = cupShoot;
+			monsterData->puzzle2 = symbols;
 
 			monsterData->symbol1 = NULL;
 			monsterData->symbol2 = NULL;
@@ -192,7 +207,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 		case ROLE_BOSS2:
 			self->layer = EL_BOSS;
-			monsterData->phase = MP_IDLE;
+			monsterData->state = MS_IDLE;
 			monsterData->phaseCount = 0;
 			self->timeToLive = 500;
 
@@ -214,7 +229,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			monsterData->boss3AttackMaxTime = 50;
 
 			monsterData->bossAttack = 0;
-			monsterData->phase = MP_IDLE;
+			monsterData->state = MS_IDLE;
 
 			monsterData->bossSnipeCount = 0;
 			monsterData->bossSnipeMax = 500;
@@ -231,7 +246,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			self->colorReal = GFC_COLOR_DARKRED;
 			self->layer = EL_MONSTER;
 			self->hp = 1;
-			monsterData->phase = MP_TRASH;
+			monsterData->state = MS_TRASH;
 			theBoss = getBoss();
 
 			break;
@@ -240,7 +255,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			self->colorReal = GFC_COLOR_DARKYELLOW;
 			self->layer = EL_MONSTER;
 			self->hp = 1;
-			monsterData->phase = MP_TRASH;
+			monsterData->state = MS_TRASH;
 			theBoss = getBoss();
 			break;
 
@@ -248,12 +263,12 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			self->colorReal = GFC_COLOR_DARKBLUE;
 			self->layer = EL_MONSTER;
 			self->hp = 1;
-			monsterData->phase = MP_TRASH;
+			monsterData->state = MS_TRASH;
 			theBoss = getBoss();
 			break;
 
 		default: //Trashmod
-			monsterData->phase = MP_TRASH;
+			monsterData->state = MS_TRASH;
 			self->layer = EL_MONSTER;
 			self->timeToLive = 800;
 			break;
@@ -301,10 +316,49 @@ void monsterUpdate(Entity* self)
 		return;
 
 	//slog("Updateing Monster!");
+	MonsterData* data = (MonsterData*)self->data;
+
+	if (!data)
+	{
+		slog("Monster Update: Monster has no data! Killing it!");
+		self->_inUse = 0;
+		return;
+	}
 
 	self->frame += 0.1;
 	if (self->frame >= 8)
 		self->frame = 0;
+
+	switch(data->state)
+	{
+		case NULL:
+			break;
+		case MS_ATTACK:
+
+			//Temporary Boss 1 stock attack
+			trashShoot(self,getPlayer());
+			data->state = MS_IDLE;
+			break;
+
+		case MS_IDLE:
+			break;
+
+		case MS_PUZZLE_WAIT:
+
+			break;
+		case MS_PUZZLE1:
+			data->puzzle1(self);
+
+			break;
+
+		case MS_PUZZLE2:
+			data->puzzle2(self);
+
+			break;
+
+		default:
+			slog("Boss Update State does not exist! Current state: %i",data->state);
+	}
 
 	//I hate writing code like this but debugging the wall of text made my migraine worse
 	float x = self->position.x + self->bounds.x;
@@ -330,8 +384,10 @@ void monsterThink(Entity* self)
 
 	if (!self)
 		return;
+	
+	MonsterData* data = (MonsterData*)self->data;
 
-	if (!((MonsterData*)self->data))
+	if (!data)
 	{
 		slog("Monster somehow has no data! Killing it!");
 		self->_inUse = 0;
@@ -343,45 +399,126 @@ void monsterThink(Entity* self)
 		//Boss 1 logic
 		
 
-		if (!((MonsterData*)self->data)->player)
+		if (!data->player)
 		{
 			slog("I do not know about the player!");
 
 		}
 		else
 		{
+			switch (data->phase)
+			{
+				case MP_HEALTHY_ONCE:
+					slog("Boss is currently Healthy Once!");
+					//Let the boss talk, animate, etc... play out
+					//Boss has none of that atm, so just make them healthy
+					data->phase = MP_HEALTHY;
+					break;
+
+				case MP_HEALTHY:
+					//Check if HP is below threshold, if yes return phase 2 entrance
+					slog("Boss is currently Healthy!");
+					if (self->hp <= (int)(self->maxHP * 0.8))
+					{
+						slog("Boss is no longer healthy!");
+						data->phase = MP_INJURED_ONCE;
+						data->state = MS_IDLE;
+					}
+					break;
+				case MP_INJURED_ONCE:
+					slog("Boss is currently Injured Once!");
+					//To be used by the Boss once to trigger puzzle 1
+					data->state = MS_PUZZLE1;
+					data->phase = MP_INJURED;
+					//To prevent the loop check if state == Puzzle 1 and phase != injured
+					break;
+				case MP_INJURED:
+					slog("Boss is currently Injured!");
+					//Check HP threshold
+					if (self->hp <= self->maxHP * healthStates[HS_INJURED])
+					{
+						data->phase = MP_NEAR_DEATH_ONCE;
+						data->state = MS_IDLE;
+					}
+					break;
+				case MP_NEAR_DEATH_ONCE:
+					//Do puzzle
+					slog("Boss is currently Near Death Once!");
+					data->state = MS_PUZZLE2;
+					data->phase = MP_NEAR_DEATH;
+
+					break;
+				case MP_NEAR_DEATH:
+					slog("Boss is currently Near Death!");
+					//Do normal boss stuff - Death is checked elsewhere
+
+					break;
+
+				default:
+					slog("No phase data from Boss!");
+
+			
+			}
+
+			slog("CUrrent boss phase is: %i", data->phase);
 			//slog("I know about the player!");
 			if (self->timerPrimary >= self->primaryCooldown)
 			{
 				//trashShoot(self, ((MonsterData*)self->data)->player);
 				
+				//idle == random attack
+				//Phase 2 Enter -> Puzzle 1 - At end go to phase 2
+				//Phase 3 Enter -> Puzzle 2 - At end go to phase 3
+				
 
-				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
+
+				if (data->state == MS_IDLE)
 				{
-					slog("Boss is doing Cup Attack!");
-					((MonsterData*)self->data)->state = MP_CUP;
-					cupShoot(self);
+					//If Monster is not in a puzzle phase - do some random attack!
+					//slog("__FILE__ __LINE__\nI am Boss 1 and My state is idle, but I am thinking about attacking!");
+					
+					slog("Boss 1 is changing state to Attack!");
+					data->state = MS_ATTACK;
+					
+					//Run this in Update!
+					//That attack updates the state to be the attacking state!
+				}
+				else if (data->state == MS_PUZZLE1)
+				{
+					//slog("Boss 1 is doing Cup Attack!");
+					//data->state = MS_CUP;
+
+					//Run this in Update!
+					//cupShoot(self);
 
 				}
-				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
+				else if (data->state == MS_PUZZLE2)
 				{
-					slog("Boss is doing Symbol Attack!");
-					((MonsterData*)self->data)->state = MP_SYMBOLS;
-					symbols(self);
+					//slog("Boss is doing Symbol Attack!");
+					//data->state = MS_SYMBOLS;
+					
+					//Run this in Update!
+					//symbols(self);
+				}
+				else if (data->state == MS_PUZZLE_WAIT)
+				{
+					slog("Boss 1 Think: Boss is waiting for a puzzle!");
 				}
 				else
 				{
-					slog("Boss 1 must be in IDLE state or waiting for a puzzle! phase count is %i", ((MonsterData*)self->data)->phaseCount);
+					//slog("Boss 1 must be in IDLE state or waiting for a puzzle! phase count is %i", ((MonsterData*)self->data)->phaseCount);
+					slog("Boss 1 is waiting for a puzzle to finish!");
 
-					if (((MonsterData*)self->data)->phase == MP_SYMBOLS || ((MonsterData*)self->data)->phase == MP_CUP)
+					if (data->state == MS_PUZZLE1 || data->state == MS_PUZZLE2)
 					{
 						self->isInvul = 1;
 					}
+					//Run this in Update
 
-					if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
+					/*if (((MonsterData*)self->data)->state == MS_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
 					{
 						((MonsterData*)self->data)->phaseCount = 0;
-					}
+					}*/
 
 				}
 				self->timerPrimary = 0;
@@ -406,13 +543,13 @@ void monsterThink(Entity* self)
 			if (self->timerPrimary >= self->primaryCooldown)
 			{
 				//slog("I should shoot!");
-				if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
+				if (((MonsterData*)self->data)->state == MS_IDLE && ((MonsterData*)self->data)->phaseCount == 0)
 				{
 					//((MonsterData*)self->data)->phaseCount++;
 					//slog("AOE!");
 					aoe(self);
 				}
-				else if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
+				else if (((MonsterData*)self->data)->state == MS_IDLE && ((MonsterData*)self->data)->phaseCount == 1)
 				{
 					//((MonsterData*)self->data)->phaseCount++;
 					symbolPattern(self);
@@ -421,12 +558,12 @@ void monsterThink(Entity* self)
 				{
 					
 					
-					if (((MonsterData*)self->data)->phase == MP_AOE || ((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
+					if (((MonsterData*)self->data)->state == MS_AOE || ((MonsterData*)self->data)->state == MS_SYMBOLS_MOBS)
 					{
 						self->isInvul = 1;
 					}
 
-					if (((MonsterData*)self->data)->phase == MP_SYMBOLS_MOBS)
+					if (((MonsterData*)self->data)->state == MS_SYMBOLS_MOBS)
 					{
 						//slog("Changing colors!");
 
@@ -443,7 +580,7 @@ void monsterThink(Entity* self)
 						((MonsterData*)self->data)->symbolMonsColor++;
 					}
 
-					if (((MonsterData*)self->data)->phase == MP_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
+					if (((MonsterData*)self->data)->state == MS_IDLE && ((MonsterData*)self->data)->phaseCount >= 2)
 					{
 						((MonsterData*)self->data)->phaseCount = 0;
 					}
@@ -489,6 +626,8 @@ void monsterThink(Entity* self)
 				symbolPatternAlert(theBoss, self->colorReal);
 			}
 		}
+		data->state = MS_DEAD;
+		//Run this in Update!
 		self->_inUse = 0;
 	}
 
@@ -563,6 +702,7 @@ void trashShoot(Entity* self, Entity* player)
 
 /*
 	Used by Boss 1 to spawn the 3 cups then turn invisible
+	Boss puzzle 1
 */
 void cupShoot(Entity* self)
 {
@@ -573,6 +713,7 @@ void cupShoot(Entity* self)
 
 	if (!self)
 		return;
+	slog("Boss 1 Puzzle 1");
 
 	self->layer = EL_INVISIBLE;
 
@@ -634,11 +775,14 @@ void cupStateUpdate(Entity* self)
 
 	((MonsterData*)self->data)->state=MS_IDLE;
 	self->layer = EL_BOSS;
-	((MonsterData*)self->data)->phaseCount++; //Temporary to have the boss loop through attacks
+	//((MonsterData*)self->data)->phaseCount++; //Temporary to have the boss loop through attacks
 
-	slog("Cup has updated Boss's state! phaseCount ++");
+	slog("Cup has updated Boss's state! ");//phaseCount ++");
 }
 
+/*
+	Boss 1 Puzzle 2
+*/
 void symbols(Entity* self)
 {
 	int distance = 100;
@@ -649,8 +793,8 @@ void symbols(Entity* self)
 	if (!self)
 		return;
 
-	slog("Starting Symbol attack!");
-	((MonsterData*)self->data)->phase = MP_SYMBOLS;
+	slog("Boss 1 Puzzle 2!");
+	//((MonsterData*)self->data)->state = MS_SYMBOLS;
 
 	/*
 		GFC_COLOR_DARKMAGENTA; 
@@ -744,7 +888,7 @@ void correctSymbol(Entity* self)
 	}
 
 	((MonsterData*)self->data)->phaseCount++; 
-	((MonsterData*)self->data)->phase = MP_IDLE;
+	((MonsterData*)self->data)->state = MS_IDLE;
 	//Tempoary, see cup
 }
 
@@ -801,7 +945,7 @@ void aoe(Entity* self)
 	pos = gfc_vector2d(self->position.x,self->position.y);
 	((MonsterData*)self->data)->aoeTimer = 0;
 	((MonsterData*)self->data)->phaseCount++;
-	((MonsterData*)self->data)->phase = MP_IDLE;
+	((MonsterData*)self->data)->state = MS_IDLE;
 
 	//Teleport the boss to the center of the arena 1200 x 720
 	//Then glow either green or red (left - right) 
@@ -925,7 +1069,7 @@ void symbolPattern(Entity* self)
 	((MonsterData*)self->data)->symbolMonster2 = mon2;
 	((MonsterData*)self->data)->symbolMonster3 = mon3;
 	
-	((MonsterData*)self->data)->phase = MP_SYMBOLS_MOBS;
+	((MonsterData*)self->data)->state = MS_SYMBOLS_MOBS;
 
 }
 
@@ -1002,7 +1146,7 @@ void symbolPatternAlert(Entity* self, GFC_Color color)
 		}
 		//slog("Monster 3 dealt with!");
 
-		((MonsterData*)self->data)->phase = MP_IDLE;
+		((MonsterData*)self->data)->state = MS_IDLE;
 		((MonsterData*)self->data)->phaseCount++;
 		self->colorReal = GFC_COLOR_TRANSPARENT;
 
@@ -1012,7 +1156,7 @@ void symbolPatternAlert(Entity* self, GFC_Color color)
 	if (((MonsterData*)self->data)->symbolOrder >= 3)//Hard coded 3 at the minute
 	{
 		//Attack is over!
-		((MonsterData*)self->data)->phase = MP_IDLE;
+		((MonsterData*)self->data)->state = MS_IDLE;
 		((MonsterData*)self->data)->phaseCount++;
 		self->colorReal = GFC_COLOR_TRANSPARENT;
 	}
@@ -1056,7 +1200,7 @@ void boss3Attack(Entity* self)
 
 			if (((MonsterData*)self->data)->bossSnipeCount >= ((MonsterData*)self->data)->bossSnipeMax)
 			{
-				((MonsterData*)self->data)->phase == MP_IDLE;
+				((MonsterData*)self->data)->state == MS_IDLE;
 				((MonsterData*)self->data)->boss3AttackTimer = 0;
 				((MonsterData*)self->data)->bossSnipeCount = 0;
 				return;
@@ -1075,7 +1219,7 @@ void boss3Attack(Entity* self)
 
 			if (((MonsterData*)self->data)->bossNukeCount >= ((MonsterData*)self->data)->bossNukeMax)
 			{
-				((MonsterData*)self->data)->phase == MP_IDLE;
+				((MonsterData*)self->data)->state == MS_IDLE;
 				((MonsterData*)self->data)->boss3AttackTimer = 0;
 				((MonsterData*)self->data)->bossNukeCount = 0;
 				N->_inUse = 0;
@@ -1090,7 +1234,7 @@ void boss3Attack(Entity* self)
 			
 		}
 
-		((MonsterData*)self->data)->phase == MP_IDLE;
+		((MonsterData*)self->data)->state == MS_IDLE;
 		((MonsterData*)self->data)->boss3AttackTimer = 0;
 		return;
 	}
@@ -1125,7 +1269,7 @@ void boss3Attack(Entity* self)
 		}
 		//slog("Boss3 attack has been primed!");
 		((MonsterData*)self->data)->boss3AttackTimer++;
-		((MonsterData*)self->data)->phase = MP_MATH;
+		((MonsterData*)self->data)->state = MS_MATH;
 	}
 
 	
