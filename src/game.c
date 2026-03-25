@@ -62,6 +62,7 @@ void loadLevel(Uint8 level,Uint8 playerRole)
         enemy = monsterEntityNew(gfc_vector2d(300, 100), ROLE_TRASHMOB);
         strcpy(enemy->name, "Mr Monster!");
         enemy->hp = 10;
+        setMonsterState(enemy, -1);
 
         //Entity* bomb;
         //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);

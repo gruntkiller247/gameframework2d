@@ -57,4 +57,9 @@ void correctSymbol(Entity* self);
 */
 void symbolPatternAlert(Entity* self, GFC_Color color);
 
+/*
+	Debug Function for testing State changes
+*/
+void setMonsterState(Entity* self, int newState);
+
 #endif
