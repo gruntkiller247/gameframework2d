@@ -405,12 +405,15 @@ void monsterUpdate(Entity* self)
 
 		case MS_PUZZLE_WAIT2:
 			self->isInvul = 1;
+			slog("Puzzle Wait 2!");
 
-			if (data->symbolMons)
+			
+
+			if (self->role != ROLE_BOSS1 && data->symbolMons)
 			{
 				//slog("Boss 2 Puzzle 2 Color swaping!");
-
-				data->symbolMonsColor++;
+				slog("SymbolMonsColor: %i",data->symbolMonsColor);
+				
 				//This is arbitray bullshit, but I could not think of another way to slow down the color swapping after
 				//I made this entire system faster!
 				if (data->symbolMonsColor <= 40)
@@ -431,12 +434,14 @@ void monsterUpdate(Entity* self)
 				}
 				else if(data->symbolMonsColor > 200)
 				{
-					
+					data->symbolMonsColor = 0;
 				}
 				else
 				{
-					data->symbolMonsColor = 0;
+					
 				}
+				data->symbolMonsColor++;
+
 			}
 			else
 				slog("Monster does not have knowledge of color array for Boss attack!");
@@ -502,13 +507,12 @@ void monsterThink(Entity* self)
 					data->phase = MP_HEALTHY;
 
 					//data->phase = MP_INJURED_ONCE;
-					data->phase = MP_NEAR_DEATH_ONCE;
+					//data->phase = MP_NEAR_DEATH_ONCE;
 					break;
 
 				case MP_HEALTHY:
 					//Check if HP is below threshold, if yes return phase 2 entrance
 					//slog("Boss is currently Healthy!");
-					//data->phase = MP_INJURED_ONCE;
 					//data->state = MS_IDLE;
 
 					if (!self->hp)
@@ -863,6 +867,7 @@ void aoe(Entity* self)
 	{
 		//Boss is ready to attack!
 		//End this attack
+		slog("Attacking!");
 		
 	}
 	else if (data->aoeTimer > 0)
@@ -895,10 +900,13 @@ void aoe(Entity* self)
 	}
 
 	self->colorReal = GFC_COLOR_TRANSPARENT;
+
+	//TO DO - Update Boss Position!
 	pos = gfc_vector2d(self->position.x,self->position.y);
+	
+	
 	data->aoeTimer = 0;
-	data->phaseCount++;
-	data->state = MS_IDLE;
+	//data->state = MS_IDLE;
 
 	//Teleport the boss to the center of the arena 1200 x 720
 	//Then glow either green or red (left - right) 
@@ -1034,7 +1042,10 @@ void symbolPattern(Entity* self)
 	data->symbolMonster2 = mon2;
 	data->symbolMonster3 = mon3;
 	
-	data->state = MS_PUZZLE_WAIT2;
+	if (self->role == ROLE_BOSS3)
+	{
+		data->state = MS_PUZZLE2;
+	}
 
 	
 
@@ -1265,8 +1276,7 @@ void randomPuzzle(Entity* self)
 		self->_inUse = 0;
 	}
 
-	data->puzzle1 = cupShoot;
-	data->puzzle2 = cupShoot;
+	num = 3;
 
 	switch (num)
 	{
@@ -1291,6 +1301,9 @@ void randomPuzzle(Entity* self)
 			slog("Rolled Symbol Pattern");
 			break;
 	}
+
+	num = rand() % 4;
+	num = 3;
 
 	switch (num)
 	{
