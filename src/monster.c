@@ -64,6 +64,7 @@ typedef enum
 	MS_ATTACK,
 	MS_DEAD,
 	MS_PUZZLE_WAIT,
+	MS_PUZZLE_WAIT2,
 	MS_PUZZLE1,		//Every Boss has 2 puzzles
 	MS_PUZZLE2,
 	MS_MAX
@@ -203,6 +204,8 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			monsterData->puzzle1 = cupShoot;
 			monsterData->puzzle2 = symbols;
 
+			monsterData->aoeTimer = 0;
+
 			monsterData->symbol1 = NULL;
 			monsterData->symbol2 = NULL;
 			setBoss(self);
@@ -231,8 +234,8 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			self->layer = EL_BOSS;
 			self->timeToLive = 500;
 
-			monsterData->puzzle1 = randomPuzzle;
-			monsterData->puzzle2 = randomPuzzle;
+			monsterData->puzzle1 = NULL;
+			monsterData->puzzle2 = NULL;
 
 			monsterData->boss3AttackTimer = 0;
 			monsterData->boss3AttackMaxTime = 50;
@@ -259,7 +262,13 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			monsterData->symbol1 = NULL;
 			monsterData->symbol2 = NULL;
 
+
+			self->data = monsterData;
+			randomPuzzle(self);
+
 			setBoss(self);
+
+			
 			break;
 
 		case ROLE_SYMBOL_ENEMY1:
@@ -384,20 +393,27 @@ void monsterUpdate(Entity* self)
 			self->isInvul = 1;
 			//slog("Waiting for Puzzle!");
 
+
 			if (data->aoeTimer && data->aoeTimer > 0 && data->aoeTimer <= data->aoeMaxTime+1)
 			{
 				//Either Boss 2 or 3 doing Boss2 Puzzle 1
 				data->state = MS_PUZZLE1;
-			}
+			}			
+			
+
+			break;
+
+		case MS_PUZZLE_WAIT2:
+			self->isInvul = 1;
 
 			if (data->symbolMons)
 			{
 				//slog("Boss 2 Puzzle 2 Color swaping!");
-				
+
 				data->symbolMonsColor++;
 				//This is arbitray bullshit, but I could not think of another way to slow down the color swapping after
 				//I made this entire system faster!
-				if (data->symbolMonsColor <= 40) 
+				if (data->symbolMonsColor <= 40)
 				{
 					self->colorReal = data->symbolMons[0];
 				}
@@ -413,7 +429,11 @@ void monsterUpdate(Entity* self)
 				{
 					self->colorReal = data->symbolMons[3];
 				}
-				else 
+				else if(data->symbolMonsColor > 200)
+				{
+					
+				}
+				else
 				{
 					data->symbolMonsColor = 0;
 				}
@@ -430,7 +450,7 @@ void monsterUpdate(Entity* self)
 
 		case MS_PUZZLE2:
 			data->puzzle2(self);
-			data->state = MS_PUZZLE_WAIT;
+			data->state = MS_PUZZLE_WAIT2;
 
 			break;
 
@@ -481,8 +501,8 @@ void monsterThink(Entity* self)
 					//Boss has none of that atm, so just make them healthy
 					data->phase = MP_HEALTHY;
 
+					//data->phase = MP_INJURED_ONCE;
 					data->phase = MP_NEAR_DEATH_ONCE;
-					//data->phase = MP_NEAR_DEATH_ONCE;
 					break;
 
 				case MP_HEALTHY:
@@ -634,6 +654,10 @@ void cupShoot(Entity* self)
 		return;
 	//slog("Boss 1 Puzzle 1");
 
+	if (self->layer == EL_INVISIBLE) 
+		return;
+
+
 	self->layer = EL_INVISIBLE;
 
 	int num = rand() % 3;
@@ -690,6 +714,7 @@ void cupStateUpdate(Entity* self)
 		return;
 
 	((MonsterData*)self->data)->state=MS_IDLE;
+	//((MonsterData*)self->data)->phase=((MonsterData*)self->data)->phase++;
 	self->layer = EL_BOSS;
 
 
@@ -716,8 +741,6 @@ void symbols(Entity* self)
 	{
 		return;
 	}
-
-	//slog("Boss 1 Puzzle 2!");
 	
 
 	if (data->symbol1)
@@ -853,7 +876,7 @@ void aoe(Entity* self)
 	{
 		//Give the player time to react to the attack + change boss color to either Red or Green
 
-		slog("Boss 2 Puzzle 1 Happening!");
+		//slog("Boss 2 Puzzle 1 Happening!");
 		num = rand() % 2 + 1;
 		data->aoeSide = num;
 
@@ -939,7 +962,7 @@ void symbolPattern(Entity* self)
 
 	if (!data->symbolMons)
 	{
-		;
+		;//slog("Monster has no data for SymbolMons: Good!");
 	}
 	else
 	{
@@ -947,7 +970,7 @@ void symbolPattern(Entity* self)
 		((MonsterData*)self->data)->symbolMons = NULL;
 	}
 
-	slog("Boss 2 Puzzle 2!");
+	//slog("Boss 2 Puzzle 2!");
 
 	mon1 = monsterEntityNew(gfc_vector2d(self->position.x - distance, self->position.y), ROLE_SYMBOL_ENEMY1);
 	mon2 = monsterEntityNew(gfc_vector2d(self->position.x + distance + self->bounds.w, self->position.y), ROLE_SYMBOL_ENEMY2);
@@ -972,6 +995,7 @@ void symbolPattern(Entity* self)
 	shuffler[0] = mon1->colorReal;
 	shuffler[1] = mon2->colorReal;
 	shuffler[2] = mon3->colorReal;
+	shuffler[3] = self->colorReal;
 	
 
 
@@ -998,20 +1022,21 @@ void symbolPattern(Entity* self)
 
 			return;
 		}
-		memcpy(data->symbolMons, shuffler, sizeof(GFC_Color) * 3);
+		memcpy(data->symbolMons, shuffler, sizeof(GFC_Color) * 4);
 	}
 	else
 	{
-		memcpy(data->symbolMons, shuffler, sizeof(GFC_Color) * 3);
+		//data->symbolMons = malloc(sizeof(GFC_Color) * 4);
+		memcpy(data->symbolMons, shuffler, sizeof(GFC_Color) * 4);
 	}
 
 	data->symbolMonster1 = mon1;
 	data->symbolMonster2 = mon2;
 	data->symbolMonster3 = mon3;
 	
-	data->state = MS_PUZZLE_WAIT;
+	data->state = MS_PUZZLE_WAIT2;
 
-	data->symbolMons[3] = self->colorReal;
+	
 
 }
 
@@ -1093,6 +1118,7 @@ void symbolPatternAlert(Entity* self, GFC_Color color)
 		((MonsterData*)self->data)->state = MS_IDLE;
 		self->colorReal = GFC_COLOR_TRANSPARENT;
 
+		free(((MonsterData*)self->data)->symbolMons);
 		return;
 	}
 
@@ -1101,6 +1127,7 @@ void symbolPatternAlert(Entity* self, GFC_Color color)
 		//Attack is over!
 		((MonsterData*)self->data)->state = MS_IDLE;
 		self->colorReal = GFC_COLOR_TRANSPARENT;
+		free(((MonsterData*)self->data)->symbolMons);
 	}
 }
 
@@ -1218,28 +1245,75 @@ void boss3Attack(Entity* self)
 /*
 	Used by Boss 3 to random choose a puzzle to do
 */
-void randomPuzzle(Entity self)
+void randomPuzzle(Entity* self)
 {
 	int num;
 	num = rand() % 4;
+	MonsterData* data;
+	slog("Random!");
+
+	if (!self)
+	{
+		slog("Can't randomize Boss 3 as it's NULL! Killing it!");
+		self->_inUse = 0;
+	}
+
+	data = (MonsterData*)self->data;
+	if (!data)
+	{
+		slog("Boss 3 has no data! Killing it!");
+		self->_inUse = 0;
+	}
+
+	data->puzzle1 = cupShoot;
+	data->puzzle2 = cupShoot;
 
 	switch (num)
 	{
 		case 0:
 
+			data->puzzle1 = cupShoot;
+			slog("Rolled CupShoot");
 			break;
 
 		case 1:
-
+			data->puzzle1 = symbols;
+			slog("Rolled Symbols!");
 			break;
 
 		case 2:
-
+			data->puzzle1 = aoe;
+			slog("Rolled AOE");
 			break;
 
 		default:
-
+			data->puzzle1 = symbolPattern;
+			slog("Rolled Symbol Pattern");
 			break;
+	}
+
+	switch (num)
+	{
+	case 0:
+
+		data->puzzle2 = cupShoot;
+		slog("Rolled CupShoot");
+		break;
+
+	case 1:
+		data->puzzle2 = symbols;
+		slog("Rolled Symbols!");
+		break;
+
+	case 2:
+		data->puzzle2 = aoe;
+		slog("Rolled AOE");
+		break;
+
+	default:
+		data->puzzle2 = symbolPattern;
+		slog("Rolled Symbol Pattern");
+		break;
 	}
 }
 
@@ -1269,20 +1343,5 @@ void setMonsterState(Entity* self, int newState)
 {
 	((MonsterData*)self->data)->state = newState;
 }
-
-/*void monsterManagerClose()
-{
-	if (!monsterManager.monsterMax)
-		return NULL;
-
-	int c;
-	for (c = 0; c < monsterManager.monsterMax; c++)
-	{
-		entityFree(&monsterManager.monsterList[c]);
-	}
-
-	memset(&monsterManager, 0, sizeof(MonsterManager));
-	slog("Closed Entity System");
-}*/
 
 

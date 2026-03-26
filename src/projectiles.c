@@ -203,7 +203,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 
 			if (self->role == ROLE_SYMBOL1 || self->role == ROLE_SYMBOL2)
 			{
-				slog("I am a symbol touching a player! in SYMBOLS");
+				//slog("I am a symbol touching a player! in SYMBOLS");
 			}
 		}
 
@@ -247,13 +247,13 @@ void projectileTouch(Entity* self, Entity* toucher)
 					if (getSymbol(boss) == 2)
 					{
 						symbolExplode(self);
-						slog("I am symbol 1");
+						//slog("I am symbol 1");
 					}
 					else
 					{
 						//I am the correct Symbol!
 						correctSymbol(boss);
-						slog("I am symbol 1 COrrect");
+						//slog("I am symbol 1 COrrect");
 						self->_inUse = 0;
 					}
 				}
@@ -272,13 +272,13 @@ void projectileTouch(Entity* self, Entity* toucher)
 					if (getSymbol(boss) == 1)
 					{
 						symbolExplode(self);
-						slog("I am Symbol 2");
+						//slog("I am Symbol 2");
 					}
 					else
 					{
 						//I am the correct Symbol!
 						correctSymbol(boss);
-						slog("I am Symbol 2 Correct");
+						//slog("I am Symbol 2 Correct");
 						self->_inUse = 0;
 					}
 				}
