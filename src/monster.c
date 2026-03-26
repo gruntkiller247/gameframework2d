@@ -86,6 +86,12 @@ typedef struct MD
 	void (*puzzle1)(Entity* self);
 	void (*puzzle2)(Entity* self);
 
+	int canMove;
+	int lastDirection;
+	int currentDirection;
+	Uint8 moveTimer;
+	Uint8 moveMaxTime;
+
 	Uint8 symbolNum;
 	Entity* symbol1;
 	Entity* symbol2;
@@ -126,8 +132,9 @@ void symbolPatternAlert(Entity* self, GFC_Color color);
 void boss3Attack(Entity* self);
 void visualizeHitbox(Entity* self);
 void randomPuzzle(Entity* self);
-
-
+void moveRandom(Entity* self, int direction);
+void move(Entity* self,int direction);
+void moveStop(Entity* self);
 
 Entity* monsterEntityNew(GFC_Vector2D position,int role)
 {
@@ -150,7 +157,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	self->touch = monsterTouch;
 
 	self->velocity = gfc_vector2d(0, 0);
-	self->topSpeed = gfc_vector2d(100, 100);
+	self->topSpeed = gfc_vector2d(10, 10);
 	self->rotation = 0;
 
 	self->bounds = gfc_rect(30, 30, 72, 72);
@@ -172,6 +179,8 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	self->primaryCooldown = 90;
 	self->timerPrimary = 0;
+
+
 	//self->layer = EL_BOSS;
 
 	//self->data = gfc_allocate_array(sizeOf(struct MonsterData), 1);
@@ -193,6 +202,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	monsterData->player = getPlayer();
 	monsterData->state = MS_IDLE;
 	monsterData->phase = MP_HEALTHY_ONCE;
+	monsterData->canMove = 1;
 
 	switch (role)
 	{
@@ -304,8 +314,14 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 			break;
 	}
 		
+	monsterData->moveMaxTime = 200;
+	monsterData->moveTimer = 0;
+
+	monsterData->lastDirection = rand()% D_MAX;
+	monsterData->currentDirection = rand() % D_MAX;
 
 	self->data = monsterData;
+
 
 
 	return self;
@@ -463,6 +479,16 @@ void monsterUpdate(Entity* self)
 			slog("Boss Update State does not exist! Current state: %i",data->state);
 	}
 
+	if (data->canMove && data->moveTimer >= data->moveMaxTime)
+	{
+		data->moveTimer = 0;
+		slog("Boss is moving!");
+		move(self, data->currentDirection);
+		//moveStop(self);
+	}
+	else
+		data->moveTimer++;
+	
 	visualizeHitbox(self);
 }
 
@@ -582,6 +608,65 @@ void monsterThink(Entity* self)
 	{
 		//Trash Mob/Random mobs spawned in Behavior
 	}
+
+	//Movement Think
+	
+	switch(data->lastDirection)
+	{
+		case D_NORTH:
+
+			moveRandom(self,D_NORTH);
+
+			break;
+
+		case D_NORTHEAST:
+			moveRandom(self, D_NORTHEAST);
+			break;
+
+		case D_EAST:
+			moveRandom(self, D_EAST);
+			break;
+
+		case D_SOUTHEAST:
+			moveRandom(self, D_SOUTHEAST);
+			break;
+
+		case D_SOUTH:
+			moveRandom(self, D_SOUTH);
+			break;
+
+		case D_SOUTHWEST:
+			moveRandom(self, D_SOUTHWEST);
+			break;
+
+		case D_WEST:
+			moveRandom(self, D_WEST);
+			break;
+
+		case D_NORTHWEST:
+			moveRandom(self, D_NORTHWEST);
+			break;
+
+		default:
+			slog("Monster does not have Last Direction!");
+	}
+
+	if (self->velocity.y)
+	{
+		self->position.y += self->velocity.y;
+	}
+
+	if (self->velocity.x)
+	{
+		self->position.x += self->velocity.x;
+	}
+
+	if (self->velocity.y || self->velocity.x)
+	{
+		gfc_vector2d_normalize(&self->velocity);
+	}
+	
+
 	
 	if (self->hp <= 0)
 	{
@@ -1357,4 +1442,187 @@ void setMonsterState(Entity* self, int newState)
 	((MonsterData*)self->data)->state = newState;
 }
 
+/*
+	Code that actually moves the Monster
+*/
+void move(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	slog("Monster is trying to move! Direction is %i",direction);
+
+	switch (direction)
+	{
+	case(D_NORTH):
+		self->velocity.y -= self->topSpeed.y;
+		//slog("Moving North!");
+		break;
+
+	case(D_NORTHEAST):
+		self->velocity.y -= self->topSpeed.y;
+		self->velocity.x += self->topSpeed.x;
+		//slog("Moving North East!");
+		break;
+
+	case(D_EAST):
+		self->velocity.x += self->topSpeed.x;
+		//slog("Moving East!");
+		break;
+
+	case(D_SOUTHEAST):
+		self->velocity.y += self->topSpeed.y;
+		self->velocity.x += self->topSpeed.x;
+		//slog("Moving South East!");
+		break;
+
+	case(D_SOUTH):
+		self->velocity.y += self->topSpeed.y;
+		//slog("Moving South");
+		break;
+
+	case(D_SOUTHWEST):
+		self->velocity.y += self->topSpeed.y;
+		self->velocity.x -= self->topSpeed.x;
+		//slog("Moving South West!");
+		break;
+
+	case(D_WEST):
+		self->velocity.x -= self->topSpeed.x;
+		//slog("Moving West!");
+		break;
+
+	case(D_NORTHWEST):
+		self->velocity.y -= self->topSpeed.y;
+		self->velocity.x -= self->topSpeed.x;
+		//slog("Moving North West!");
+		break;
+
+	default:
+
+		slog("No real direction given for monster movement!");
+		return;
+
+
+	}
+	return;
+}
+
+
+/*
+	Sets the monster's current direction to a random direction with weight given to their current direction area
+	Note: DOES NOT RANDOMLY MOVE THE MONSTER: It is weighted
+*/
+void moveRandom(Entity* self, int direction)
+{
+	if (!self)
+		return;
+
+	int nums[23];
+	int c, rnum;
+	int leftNum, rightNum;
+
+	//The direction we are already going, N (0), is weighted 4x
+	for (c = 0; c < 4; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = direction;
+	}
+
+	leftNum = direction - 1;
+	rightNum = direction + 1;
+
+	//If the input is N, then we go to -1, we mean NW (7)
+	if (leftNum < 0)
+		leftNum += D_MAX;
+
+	if (rightNum > 7)
+		rightNum -= D_MAX;
+
+	for (c; c < 8; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = leftNum;
+	}
+
+	for (c; c < 12; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = rightNum;
+	}
+
+	leftNum = direction - 2;
+	rightNum = direction + 2;
+
+	if (leftNum < 0)
+		leftNum += D_MAX;
+
+	if (rightNum > 7)
+		rightNum -= D_MAX;
+	
+	for (c; c < 15; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = leftNum;
+	}
+
+	for (c; c < 18; c++)
+	{
+		//log("C is: %i ", c);
+		nums[c] = rightNum;
+	}
+
+	leftNum = direction - 3;
+	rightNum = direction + 3;
+
+	if (leftNum < 0)
+		leftNum += D_MAX;
+
+	if (rightNum > 7)
+		rightNum -= D_MAX;
+
+	for (c; c < 20; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = leftNum;
+	}
+
+	for (c; c < 22; c++)
+	{
+		//slog("C is: %i ", c);
+		nums[c] = rightNum;
+	}
+
+	//This is now the center num aka behind
+	rightNum = direction + 4;
+
+	if (leftNum < 0)
+		leftNum += D_MAX;
+
+	if (rightNum > 7)
+		rightNum -= D_MAX;
+
+	nums[c] = rightNum;		//This should be 23
+
+
+	for (c = 0; c < sizeof(nums) / sizeof(nums[0]); c++)
+	{
+		//slog("Value of array %i",nums[c]);
+		//slog("Value of C: %i\n Value of array: %i",c,nums[c]);
+	}
+
+	rnum = nums[rand() % 23];
+
+	//slog("The movement direction rolled is: %i", rnum);
+	((MonsterData*)self->data)->currentDirection = rnum;
+
+}
+/*
+	Stops the Monster from moving
+*/
+void moveStop(Entity* self) 
+{
+	self->velocity.x = 0;
+	self->velocity.y = 0;
+}
 

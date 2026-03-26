@@ -135,14 +135,16 @@ typedef enum
 
 typedef enum DS
 {
-	D_NORTH,
+	D_NONE = -1,
+	D_NORTH = 0,
 	D_NORTHEAST,
 	D_EAST,
 	D_SOUTHEAST,
 	D_SOUTH,
 	D_SOUTHWEST,
 	D_WEST,
-	D_NORTHWEST
+	D_NORTHWEST,
+	D_MAX
 
 }Directions;
 
