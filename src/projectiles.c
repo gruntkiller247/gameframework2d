@@ -193,7 +193,7 @@ void projectileTouch(Entity* self, Entity* toucher)
 	float toucherTop = toucher->position.y + toucher->bounds.y;
 	float toucherBottom = toucherTop + toucher->bounds.h;
 	
-	slog("ProjectileTouch called! self role: %i, toucher role: %i", self->role, toucher->role);
+	
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 
