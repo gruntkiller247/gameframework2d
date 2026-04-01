@@ -237,6 +237,7 @@
     <ClInclude Include="..\include\world.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\levels\debugLevel.level" />
     <None Include="testLevel.level" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

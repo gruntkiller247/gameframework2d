@@ -14,6 +14,7 @@
 #include "projectiles.h"
 #include "bomb.h"
 #include "powerup.h"
+#include "level.h"
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
@@ -42,6 +43,22 @@ static SDL_Rect fpsRect;
 Entity* bossGame = NULL;
 Entity* player = NULL;
 
+
+
+void fillEntityManager()
+{
+    int c;
+    Entity* thing;
+
+    for (c = 0; c < 5000; c++)
+    {
+
+            thing = bombEntityNew(gfc_vector2d(100, 100),TEAM_PLAYER,NULL);
+        
+
+    }
+}
+
 void loadLevel(Uint8 level,Uint8 playerRole)
 {
     entityKillAll();
@@ -51,6 +68,12 @@ void loadLevel(Uint8 level,Uint8 playerRole)
 
     switch (level)
     {
+    case -1:
+        slog("Testing data driven level!");
+        dataLoadLevel("level1.level");
+    case 0:
+        slog("Loadding main menu!");
+
     case  1:
         slog("Loading Testing Level");
         /*Entity* projectile;
@@ -292,12 +315,13 @@ int main(int argc, char * argv[])
 
     int paused = 0;
     
+    Level* currentLevel;
 
     //surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
     //textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
     
 
-    int level = 1;
+    int level = -1;
     int numPowerUps = 0;
     int powerUpSpawning = 0;
     int powerUpCounter = 0;
@@ -337,7 +361,7 @@ int main(int argc, char * argv[])
         slog("FONT DID NOT LOAD!");
     
     
-    entityManagerInit(2048);
+    entityManagerInit(16384);//2^14
     gfc_input_init("config/input.gfc");
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -350,86 +374,12 @@ int main(int argc, char * argv[])
 
 
     
-    level = 1;
-    loadLevel(level,playerRole);
-    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
-    strcpy(player->name, "Player");
-
     
+    /*loadLevel(level, playerRole);
+    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
+    strcpy(player->name, "Player");*/
 
-    /*switch (level)
-    {
-    case  1:
-        slog("Loading Testing Level");
-        /*Entity* projectile;
-           projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
-           projectile->team = TEAM_IGNORE;
-           strcpy(projectile->name, "TEST_PROJECTILE");
-
-        Entity* enemy;
-        enemy = monsterEntityNew(gfc_vector2d(300, 100), ROLE_TRASHMOB);
-        strcpy(enemy->name, "Mr Monster!");
-        enemy->hp = 10;
-
-        //Entity* bomb;
-        //bomb = bombEntityNew(gfc_vector2d(500,0),TEAM_PLAYER,-1);
-        //bomb->team = TEAM_IGNORE;
-        //strcpy(bomb->name, "TEST_BOMB!");
-
-        Entity* powerup;
-        powerup = powerUpEntityNew(gfc_vector2d(200, 500), PU_FREE_ULT);
-        strcpy(powerup->name, "Free Ult Power Up");
-
-        Entity* powerup2;
-        powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), PU_SPEED);
-        strcpy(powerup2->name, "Speed Power Up");
-
-        Entity* powerup3;
-        powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), PU_BOMB);
-        strcpy(powerup3->name, "Bomb Power Up");
-
-        Entity* powerup4;
-        powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), PU_HP_RECOVERY);
-        strcpy(powerup4->name, "HP Power Up");
-
-        Entity* powerup5;
-        powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), PU_INVUL);
-        strcpy(powerup5->name, "Invul Power Up");
-        break;
-
-    case 2:
-        slog("Loading Boss 1");
-        //powerUpSpawning = 1;
-
-        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS1);
-        strcpy(boss->name, "POS");
-        boss->hp = 10;
-
-        break;
-
-    case 3:
-        slog("Loading Boss 2");
-        //powerUpSpawning = 1;
-
-        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS2);
-        strcpy(boss->name, "POS2");
-        boss->hp = 10;
-
-        break;
-
-    case 4:
-        slog("Loading Boss 3");
-        //powerUpSpawning = 1;
-
-        boss = monsterEntityNew(gfc_vector2d(300, 100), ROLE_BOSS3);
-        strcpy(boss->name, "POS3");
-        boss->hp = 10;
-
-        break;
-
-    default:
-        slog("No Level Loaded!");
-    }*/
+    currentLevel = dataLoadLevel("levels/debugLevel.level");
 
     powerUpSpawning = 1;
 
@@ -447,7 +397,7 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-        if (!paused)
+        if (!paused && level != 0)
         {
             if (gfc_input_key_pressed("g"))
             {
@@ -482,7 +432,7 @@ int main(int argc, char * argv[])
             gf2d_graphics_clear_screen();// clears drawing buffers
             // all drawing should happen betweem clear_screen and next_frame
                 //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+            //gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
 
 
             entityManagerDrawAll();
@@ -536,7 +486,7 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
 
         }
-        else
+        else if(level !=0)
         {
             if (gfc_input_key_pressed("g"))
             {
@@ -594,6 +544,11 @@ int main(int argc, char * argv[])
                 loadLevel(level, playerRole);
             }
 
+            if (gfc_input_key_pressed("m"))
+            {
+                fillEntityManager();
+            }
+
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
             entityManagerDrawAll();
@@ -629,10 +584,40 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();
               
         }
+        else
+        {
+            //Main menu
+            
+            gf2d_graphics_clear_screen();
+            mf += 0.1;
+            if (mf >= 16.0)mf = 0;
+
+            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+            gf2d_sprite_draw(
+                mouse,
+                gfc_vector2d(mx, my),
+                NULL,
+                NULL,
+                NULL,
+                NULL,
+                &mouseGFC_Color,
+                (int)mf);
+            gf2d_graphics_next_frame();
+
+            //Audio done through sdl2 mixer
+            //Oggs for music
+            //wavs for effects
+            //background is mixed music
+
+            //Must be initalized
+            // Mix_PlayMusic -1 == loop forever 0 == 1
+            //Mix_loadMus
+        }
        
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+ 
 
     entityKillAll();
 

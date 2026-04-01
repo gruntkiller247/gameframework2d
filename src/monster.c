@@ -315,7 +315,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	}
 		
 	monsterData->moveMaxTime = 200;
-	monsterData->moveTimer = 0;
+	monsterData->moveTimer = monsterData->moveMaxTime;
 
 	monsterData->lastDirection = rand()% D_MAX;
 	monsterData->currentDirection = rand() % D_MAX;
@@ -1518,7 +1518,89 @@ void moveRandom(Entity* self, int direction)
 	if (!self)
 		return;
 
-	int nums[23];
+	int num, temp, directionNew;
+	num = (rand() % 120) + 1;
+	
+
+	if (num <= 10) 
+	{
+		//1-10 
+		//10% chance to do a 180
+		directionNew = direction + 4;
+
+
+
+	}
+	else if (num <= 30)
+	{
+		//11-40
+		//30% chance to move back right or back left
+		temp = rand() % 2;
+		if (temp)
+		{
+			//Back Right
+			directionNew = direction + 3;
+
+		}
+		else
+		{
+			//Back Left
+			directionNew = direction - 3;
+		}
+		
+	}
+	else if (num <= 60)
+	{
+		//Left or Right
+		temp = rand() % 2;
+		if (temp)
+		{
+			//Right
+			directionNew = direction + 2;
+
+		}
+		else
+		{
+			//Left
+			directionNew = direction - 2;
+		}
+
+	}
+	else if (num <= 100)
+	{
+		//Move front right or front left
+		temp = rand() % 2;
+		if (temp)
+		{
+			//Front Right
+			directionNew = direction + 1;
+
+		}
+		else
+		{
+			//Front Left
+			directionNew = direction + 1;
+		}
+	}
+	else
+	{
+		//Move Straight
+		directionNew = direction;
+	}
+
+	if (directionNew < 0)
+		directionNew += D_MAX;
+	else if (directionNew > D_MAX - 1)
+		directionNew -= D_MAX;
+
+
+
+	((MonsterData*)self->data)->currentDirection = directionNew;
+	slog("The movement direction rolled is: %i", directionNew);
+
+	
+	//The cursed algorhytm - O(23) vs chad O(1)
+	/*int nums[23];
 	int c, rnum;
 	int leftNum, rightNum;
 
@@ -1536,7 +1618,7 @@ void moveRandom(Entity* self, int direction)
 	if (leftNum < 0)
 		leftNum += D_MAX;
 
-	if (rightNum > 7)
+	if (rightNum > D_MAX-1)
 		rightNum -= D_MAX;
 
 	for (c; c < 8; c++)
@@ -1557,7 +1639,7 @@ void moveRandom(Entity* self, int direction)
 	if (leftNum < 0)
 		leftNum += D_MAX;
 
-	if (rightNum > 7)
+	if (rightNum > D_MAX-1)
 		rightNum -= D_MAX;
 	
 	for (c; c < 15; c++)
@@ -1578,7 +1660,7 @@ void moveRandom(Entity* self, int direction)
 	if (leftNum < 0)
 		leftNum += D_MAX;
 
-	if (rightNum > 7)
+	if (rightNum > D_MAX-1)
 		rightNum -= D_MAX;
 
 	for (c; c < 20; c++)
@@ -1599,7 +1681,7 @@ void moveRandom(Entity* self, int direction)
 	if (leftNum < 0)
 		leftNum += D_MAX;
 
-	if (rightNum > 7)
+	if (rightNum > D_MAX-1)
 		rightNum -= D_MAX;
 
 	nums[c] = rightNum;		//This should be 23
@@ -1614,9 +1696,12 @@ void moveRandom(Entity* self, int direction)
 	rnum = nums[rand() % 23];
 
 	//slog("The movement direction rolled is: %i", rnum);
-	((MonsterData*)self->data)->currentDirection = rnum;
+	((MonsterData*)self->data)->currentDirection = rnum;*/
+	
 
 }
+
+
 /*
 	Stops the Monster from moving
 */

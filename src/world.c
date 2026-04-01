@@ -3,13 +3,14 @@
 #include "gf2d_graphics.h"
 #include "simple_logger.h"
 
-/*typedef struct World_S
+/*typedef struct
 {
 	Sprite* background; //Background image
 	Sprite* tileSet; //Sprite containing world's tiles
 	Uint8* tileMap; //
 	Uint32 tileHeight; //height of tiles
 	Uint32 tileWidth; //width of tiles
+	Uint32* tileLayer; //IDK
 }World;*/
 
 /*
@@ -51,6 +52,8 @@ void worldFree(World* world)
 {
 	if (!world)
 		return;
+
+	
 
 	gf2d_sprite_free(world->background);
 	gf2d_sprite_free(world->tileSet);
@@ -112,11 +115,11 @@ void worldTileLayerBuild(World* world)
 	{
 		gf2d_sprite_free(world->tileLayer);
 	}
-	world->tileLayer = gf2d_sprite_new();
+	//world->tileLayer = gf2d_sprite_new();
 
-	world->tileLayer->surface = gf2d_graphics_create_surface(world->tileWidth * world->tileSet->frame_w, world->tileHeight * world->tileSet->frame_h);
+	//world->tileLayer->surface = gf2d_graphics_create_surface(world->tileWidth * world->tileSet->frame_w, world->tileHeight * world->tileSet->frame_h);
 
-	if (!world->tileLayer->surface)
+	//if (!world->tileLayer->surface)
 	{
 		slog("Failed to create tileLayer surface!");
 		return;
@@ -142,9 +145,9 @@ void worldTileLayerBuild(World* world)
 
 		}
 	}
-	world->tileLayer->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_render(), world->tileLayer->surface);
+	//world->tileLayer->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_render(), world->tileLayer->surface);
 
-	if (!world->tileLayer->texture)
+	//if (!world->tileLayer->texture)
 	{
 		slog("Failed to convert world tile layer to texture");
 		return;

@@ -14,7 +14,9 @@ void bombUpdate(Entity* self);
 void bombFree(Entity* self);
 
 
-
+/*
+	-1 timeToLive = no die, NULL = 5 seconds
+*/
 Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 {
 	Entity* self;

@@ -13,8 +13,8 @@
 typedef struct Entity_S
 {
 	Uint8 _inUse;								//No Touch
-	Uint8* id;									//What Number Entity I am
-	Uint32* layer;								//What layer I am on
+	Uint64* id;									//What Number Entity I am
+	Uint64* layer;								//What layer I am on
 
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
@@ -151,7 +151,8 @@ typedef enum DS
 
 typedef enum RN
 {
-	ROLE_PLAYER_GUNNER,
+	ROLE_ERROR = 0,
+	ROLE_PLAYER_GUNNER = 1,
 	ROLE_PLAYER_BAKER,
 	ROLE_PLAYER_GAMBLER,
 	ROLE_PLAYER_WARRIOR,//Deprciated

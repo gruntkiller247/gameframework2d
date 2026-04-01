@@ -301,5 +301,8 @@
     <None Include="testLevel.level">
       <Filter>Levels</Filter>
     </None>
+    <None Include="..\levels\debugLevel.level">
+      <Filter>Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

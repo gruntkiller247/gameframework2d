@@ -548,4 +548,6 @@ int getDistance(Entity* self, Entity* notSelf)
 	return distance;
 }
 
+
+
 //endLine

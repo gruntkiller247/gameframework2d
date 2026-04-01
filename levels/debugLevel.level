@@ -1,0 +1,37 @@
+{
+	"level": 
+	{
+		"background": "images/backgrounds/cat.jpg",
+		"entities": 
+		[
+			{
+				"name": "test_monster",
+				"role": "ROLE_TRASHMOB",
+				"positionX": 100,
+				"positionY":  100
+
+			},
+			{
+				"name": "test_monster2",
+				"role": "ROLE_TRASHMOB",
+				"positionX": 200,
+				"positionY": 200
+			},
+			{
+				"name": "player",
+				"role": "ROLE_PLAYER_GUNNER",
+				"positionX": 300,
+				"positionY": 300
+			},
+			{
+				"name": "Test_Projectile",
+				"role": "ROLE_PROJECTILE",
+				"team": "TEAM_PLAYER",
+				"time":  -1,
+				"positionX": 300,
+				"positionY": 300
+			}
+
+		]
+	}
+}

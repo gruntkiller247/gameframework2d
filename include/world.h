@@ -4,6 +4,9 @@
 #include "gf2d_sprite.h"
 
 
+//Taken from Kehoe's videos, poorly understood and thus depreciated - Use Level.h
+
+
 typedef struct World_S
 {
 	Sprite* background; //Background image
@@ -18,7 +21,7 @@ typedef struct World_S
 * @brief allocate a new empty world
 * @param NULL on error or a blank world
 */
-World* worldNew();
+World* worldNew(Uint32 height, Uint32 width);
 
 
 /*
