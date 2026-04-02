@@ -203,13 +203,13 @@ Level* dataLoadLevel(const char* levelName)
 
 		role = getRole(sj_object_get_string(entity, "role"));
 
-		if (sj_object_get_int(entity, "positionY", tempY) == 0)
+		if (sj_object_get_int(entity, "positionY", &tempY) == 0)
 		{
 			slog("Error finding position Y");
 			goto fail;
 		}
 
-		if (sj_object_get_int(entity, "positionX", tempX) == 0)
+		if (sj_object_get_int(entity, "positionX", &tempX) == 0)
 		{
 			slog("Error finding postion X");
 			goto fail;
@@ -387,6 +387,11 @@ Level* dataLoadLevel(const char* levelName)
 
 			default:
 				slog("Role parsed error, no entity created from JSON file!");
+		}
+
+		if (temp)
+		{
+			temp->position = gfc_vector2d(tempX,tempY);
 		}
 	}
 
