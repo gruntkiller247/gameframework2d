@@ -51,7 +51,7 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 	self->team = team;
 	self->layer = EL_PROJECTILES;
 	
-	strcpy(self->name, "BOMB!");
+	//strcpy(self->name, "BOMB!");
 
 	if (!timeToLive)
 	{
@@ -76,6 +76,7 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive)
 
 	self->move = 0;
 
+	
 	return self;
 }
 
@@ -92,7 +93,7 @@ void bombThink(Entity* self)
 {
 	if (!self)
 		return;
-
+	
 	if (self->ultIs > 0 && self->ultIs <= 50)
 	{
 		//self->scale = gfc_vector2d(self->ultIs, self->ultIs);
@@ -225,14 +226,15 @@ void bombFree(Entity* self)
 
 void explode(Entity* self)
 {
-	Entity* N = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* NE = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* E = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* SE = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* S = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* SW = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* W = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
-	Entity* NW = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
+	slog("I AM TRYING TO EXPLODE");
+	Entity* N = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* NE = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* E = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* SE = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* S = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* SW = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* W = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
+	Entity* NW = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, &self->timeToLive, ROLE_PROJECTILE);
 
 
 	if (!N || !NE || !E || !SE || !S || !SW || !W || !NW)

@@ -396,7 +396,7 @@ int main(int argc, char * argv[])
     }
 
 
-    
+   
     player=getPlayer();
    
     
@@ -441,7 +441,6 @@ int main(int argc, char * argv[])
             //slog("Thunk");
 
 
-
             gf2d_graphics_clear_screen();// clears drawing buffers
             // all drawing should happen betweem clear_screen and next_frame
                 //backgrounds drawn first
@@ -450,6 +449,7 @@ int main(int argc, char * argv[])
 
             entityManagerDrawAll();
             //slog("Drawn");
+
 
             //UI elements last
             gf2d_sprite_draw(
@@ -464,7 +464,7 @@ int main(int argc, char * argv[])
 
 
             entityTouchAll();
-            //slog("Touched");
+            //slog("Touched");  
 
             entityUpdateAll();
             //slog("Updated");

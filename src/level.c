@@ -276,9 +276,6 @@ Level* dataLoadLevel(const char* levelName)
 
 				sj_object_get_int(entity, "time", &time);
 
-				//slog("JSON Projectile reading time is: %i", time);
-				//slog("JSON Projectile reading team is: %i", teamEnum);
-
 				temp = projectileEntityNew(*position, teamEnum,time,role);
 
 				if (!temp)
@@ -292,11 +289,15 @@ Level* dataLoadLevel(const char* levelName)
 				break;
 
 			case ROLE_BOMB:
-				sj_object_get_int(entity, "time", time);
-				sj_object_get_int(entity, "team", team);
+				teamEnum = getTeam(sj_object_get_string(entity, "team"));
 
+				//slog("Bomb Team is: %i", teamEnum);
 
-				temp=bombEntityNew(*position,&team,time);
+				sj_object_get_int(entity, "time", &time);
+
+				//slog("Bomb Time is: %i", time);
+
+				temp=bombEntityNew(*position, teamEnum,time);
 
 				if (!temp)
 				{
@@ -400,7 +401,7 @@ Level* dataLoadLevel(const char* levelName)
 		}
 	}
 
-	//slog("Read the entire JSON!");
+	slog("Loaded Level JSON!");
 	//sj_free(background);
 	//sj_free(entities);
 	//sj_free(ljson);
