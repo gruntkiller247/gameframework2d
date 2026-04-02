@@ -84,6 +84,24 @@ void levelSetHeight(int maxHeight, int maxWidth)
 	viewWidth = maxWidth;
 }
 
+int getTeam(const char* team)
+{
+	if (!team)
+	{
+		slog("Team has a bad pointer!");
+		return TEAM_NONE;
+	}
+
+		if (strcmp(team, "TEAM_PLAYER") == 0)
+			return TEAM_PLAYER;
+		else if (strcmp(team, "TEAM_ENEMY") == 0)
+			return TEAM_ENEMY;
+		else if (strcmp(team, "TEAM_ITEM") == 0)
+			return TEAM_ITEM;
+		else
+			return TEAM_NONE;
+}
+
 /*
 	Helper function to parse the JSON to get the correct enum role
 */
@@ -131,10 +149,12 @@ Level* dataLoadLevel(const char* levelName)
 	Entity* temp = NULL;
 	const char* name = NULL;
 	const char* background= NULL;
-	int *team =0, *time=0;
+	const char* team = NULL;
+	int time= 0;
 	int c=0,role=0,entityMax=0;
 	int tempX =0 , tempY =0;
 	int tempInt = -1;
+	int teamEnum = -1;
 
 
 	if (!levelName)
@@ -219,7 +239,7 @@ Level* dataLoadLevel(const char* levelName)
 			goto fail;
 		}
 		
-		slog("Position of thing from json X:%i Y:%i", tempX, tempY);
+		//slog("Position of thing from json X:%i Y:%i", tempX, tempY);
 		
 
 		position = gfc_vector2d_new(tempX, tempY);
@@ -250,14 +270,16 @@ Level* dataLoadLevel(const char* levelName)
 
 				break;
 			case ROLE_PROJECTILE:
-				 sj_object_get_int(entity, "time", time);
-				 sj_object_get_int(entity, "team", team);
+				
+				teamEnum=getTeam(sj_object_get_string(entity, "team"));
+				
 
+				sj_object_get_int(entity, "time", &time);
 
-				 slog("JSON Projectile reading time is: %i", time);
-				 slog("JSON Projectile reading team is: %i", team);
+				//slog("JSON Projectile reading time is: %i", time);
+				//slog("JSON Projectile reading team is: %i", teamEnum);
 
-				temp = projectileEntityNew(*position, &team,time,role);
+				temp = projectileEntityNew(*position, teamEnum,time,role);
 
 				if (!temp)
 				{
@@ -378,7 +400,7 @@ Level* dataLoadLevel(const char* levelName)
 		}
 	}
 
-	slog("Read the entire JSON!");
+	//slog("Read the entire JSON!");
 	//sj_free(background);
 	//sj_free(entities);
 	//sj_free(ljson);

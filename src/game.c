@@ -380,15 +380,17 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");*/
 
     currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
-    sprite = gf2d_sprite_load_image(currentLevel->background);
+    
 
     if (!currentLevel)
     {
         slog("No level could be loaded! Loading error handling level!");
+        sprite= gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
         loadLevel(1,ROLE_PLAYER_GAMBLER);
     }
     else
     {
+        sprite = gf2d_sprite_load_image(currentLevel->background);
         if (currentLevel->spawnPowerUps)
             powerUpSpawning = 1;
     }

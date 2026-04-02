@@ -85,24 +85,21 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 	
 	if (!timeToLive)
 	{
-		//Let the projectile live forever!
-		self->timerDeath = -1;
+		slog("No time to live in Projectiles!\nIn constructor!");
+		self->timeToLive = 5;
+		self->timerDeath = 0;
 		
-		//slog("No time to live in Projectiles!\nIn constructor!");
-		//self->timeToLive = 5;
-		//self->timerDeath = 0;
 		/*data->timeToLive = 5;
 		data->timerDeath = 0;*/
 	}
 	else if (timeToLive == -1)
 	{
-		//Depreciated, but left for legacy code
 		//data->timerDeath = -1;
 		self->timerDeath = -1;
 	}
 	else
 	{
-		self->timeToLive = timeToLive;
+		self->timeToLive = *timeToLive;
 		self->timerDeath = 0;
 		//data->timeToLive = timeToLive;
 		//data-> timerDeath = 0;
@@ -110,8 +107,6 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 		
 
 	//slog("Timerdeath: %i",self->timerDeath);
-	slog("Projectile's timeToLive is: %i", self->timeToLive);
-	slog("Projectile's team is: %i", self->team);
 	strcpy(self->name, "PROJECTILE");
 
 	return self;
