@@ -124,11 +124,10 @@ Level* dataLoadLevel(const char* levelName)
 	SJson* ljson = NULL;
 	SJson* entity = NULL;
 	SJson* entities = NULL;
-	SJson* background = NULL;
 	GFC_Vector2D* position;
 	Entity* temp = NULL;
 	const char* name = NULL;
-	const char* backgroundReal= NULL;
+	const char* background= NULL;
 	int team =0, time=0;
 	int c=0,role=0,entityMax=0;
 	int tempX =0 , tempY =0;
@@ -160,8 +159,7 @@ Level* dataLoadLevel(const char* levelName)
 	}
 
 	
-	//Do background
-	/*background = sj_object_get_value(ljson, "background");
+	background=sj_object_get_string(ljson, "background");
 
 	if (!background)
 	{
@@ -169,16 +167,11 @@ Level* dataLoadLevel(const char* levelName)
 		goto fail;
 	}
 	
-	
-	backgroundReal= sj_object_get_value_as_string(ljson, "background");
-
-	if (!backgroundReal)
-	{
-		slog("Failed to get filepath string from background JSON!");
+	level->background = _strdup(background);
+	if (!level->background) {
+		slog("Failed to allocate memory for background string!");
 		goto fail;
 	}
-
-	level->background= sj_object_get_value_as_string(ljson, "background");*/
 
 
 	entities = sj_object_get_value(ljson, "entities");
@@ -410,8 +403,6 @@ Level* dataLoadLevel(const char* levelName)
 fail:
 	//slog("Hit a fail condition!");
 
-	if (background)
-		sj_free(background);
 
 	if (entities)
 		sj_free(entities);

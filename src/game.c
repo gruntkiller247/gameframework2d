@@ -380,7 +380,7 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");*/
 
     currentLevel = dataLoadLevel("levels/debugLevel.level");
-    sprite = currentLevel->background;
+    sprite = gf2d_sprite_load_image(currentLevel->background);
 
     powerUpSpawning = 1;
 
