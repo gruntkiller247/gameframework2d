@@ -7,6 +7,7 @@
 #include "player.h"
 #include "projectiles.h"
 #include "bomb.h"
+#include "powerup.h"
 
 
 static int viewWidth = 1200;
@@ -131,9 +132,26 @@ int getRole(const char* role)
 		return ROLE_PLAYER_BAKER;
 	else if (strcmp(role, "ROLE_PLAYER_GUNNER") == 0)
 		return ROLE_PLAYER_GUNNER;
+	else if (strcmp(role, "ROLE_PU_BOMB") == 0)
+		return ROLE_PU_BOMB;
+	else if (strcmp(role, "ROLE_PU_FREE_ULT") == 0)
+		return ROLE_PU_FREE_ULT;
+	else if (strcmp(role, "ROLE_PU_HP_RECOVERY") == 0)
+		return ROLE_PU_HP_RECOVERY;
+	else if (strcmp(role, "ROLE_PU_INVUL") == 0)
+		return ROLE_PU_INVUL;
+	else if (strcmp(role, "ROLE_PU_SPEED") == 0)
+		return ROLE_PU_SPEED;
+	else if (strcmp(role, "ROLE_PU_RANDOM") == 0)
+		return ROLE_PU_RANDOM;
 	else
+	{
+		slog("Get Role returning Error Role");
 		return ROLE_ERROR;
-	
+		
+		
+	}
+		
 }
 /*
 	TO DO: Add the ablitity to read power ups!
@@ -151,7 +169,7 @@ Level* dataLoadLevel(const char* levelName)
 	const char* background= NULL;
 	const char* team = NULL;
 	int time= 0;
-	int c=0,role=0,entityMax=0;
+	int c=0, role=0, entityMax=0;
 	int tempX =0 , tempY =0;
 	int tempInt = -1;
 	int teamEnum = -1;
@@ -224,8 +242,10 @@ Level* dataLoadLevel(const char* levelName)
 		//Manually give that entity their name and position
 		//slog("Loop %i!", c);
 		entity = sj_array_get_nth(entities, c);
-
+		
+		
 		role = getRole(sj_object_get_string(entity, "role"));
+		//slog("JSON: Entity role: %i", role);
 
 		if (sj_object_get_int(entity, "positionY", &tempY) == 0)
 		{
@@ -391,6 +411,43 @@ Level* dataLoadLevel(const char* levelName)
 					strcpy(temp->name, name);
 				break;
 
+			case ROLE_PU_RANDOM:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+				
+			case ROLE_PU_HP_RECOVERY:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+
+			case ROLE_PU_INVUL:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+
+			case ROLE_PU_BOMB:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+			
+			case ROLE_PU_SPEED:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+			
+			case ROLE_PU_FREE_ULT:
+
+				temp = powerUpEntityNew(*position, role);
+
+				break;
+					
+
 			default:
 				slog("Role parsed error, no entity created from JSON file!");
 		}
@@ -402,6 +459,7 @@ Level* dataLoadLevel(const char* levelName)
 	}
 
 	slog("Loaded Level JSON!");
+
 	//sj_free(background);
 	//sj_free(entities);
 	//sj_free(ljson);
@@ -425,8 +483,6 @@ fail:
 
 	if (ljson)
 		sj_free(ljson);
-
-
 
 	if (json)
 		sj_free(json);

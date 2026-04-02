@@ -226,7 +226,7 @@ void bombFree(Entity* self)
 
 void explode(Entity* self)
 {
-	slog("I AM TRYING TO EXPLODE");
+	//slog("I AM TRYING TO EXPLODE");
 	Entity* N = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
 	Entity* NE = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);
 	Entity* E = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), self->team, self->timeToLive, ROLE_PROJECTILE);

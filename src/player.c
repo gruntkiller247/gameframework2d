@@ -15,14 +15,14 @@
 
 typedef struct PD
 {
-	float timerPrimary;				//Timer that counts up to cooldown
-	float primaryCooldown;			//Time until primary attack can be fired
-	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
+	void (*fire)(struct Entity_S* fire, int direction);			//Describes how the entity attacks
+	void (*special)(struct Entity_S* special, int direction);	//Describes how the entity uses their special attack
+	void (*ultimate)(struct Entity_S* ultimate);				//Describes how the entity uses their ultimate
 
-	int timerDeath;				//Timer to count up to timeToLive
-	int timeToLive;				//Time to Live for projectiles like things. Can be NULL;
+	int ultLength;												//Lenght of time the gambler's ULT last for
 
-}Player_Data; //Currently Cut content until I can fix this
+
+}PlayerData; //Currently Cut content until I can fix this
 
 
 static int baseSpeedMod = 3;
@@ -38,13 +38,13 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 		slog("Failed to spawn a player!");
 	}
 
-	/*Player_Data* data = malloc(sizeof(Player_Data));
+	PlayerData* data = malloc(sizeof(PlayerData));
 
 	if (!data)
 	{
-		//return NULL;
-		//slog("Failed to allocate memory for player's data!");
-	}*/
+		slog("Failed to allocate memory for player's data!");
+		return NULL;
+	}
 
 
 	//This will be all the baseline stats for the player. Class specific stuff will be in the class function call
@@ -60,7 +60,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->update = playerUpdate;
 	self->touch = playerTouch;
 
-	self->currentPowerUp = PU_NONE;
+	self->currentPowerUp = ROLE_PU_NONE;
 
 	self->velocity = gfc_vector2d(1,1);
 	self->topSpeed = gfc_vector2d(100, 100);
@@ -103,54 +103,38 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	{
 		case ROLE_PLAYER_GUNNER:
 			self->role = role;
-			self->fire = playerGunnerShoot;
-			self->special = playerGunnerSpecial;
-			self->ultimate = playerGunnerUltimate;
+			data->fire = playerGunnerShoot;
+			data->special = playerGunnerSpecial;
+			data->ultimate = playerGunnerUltimate;
 			break;
 
 		case ROLE_PLAYER_BAKER:
 			self->role = role;
 			self->bombAmount = 20;
 			self->bombTLL = 100;
-			self->fire = playerBakerShoot;
-			self->special = playerBakerSpecial;
-			self->ultimate = playerBakerUlt;
+			data->fire = playerBakerShoot;
+			data->special = playerBakerSpecial;
+			data->ultimate = playerBakerUlt;
 		
 			break;
 
 		case ROLE_PLAYER_GAMBLER:
 			self->role = role;
 			self->ultIs = 0;
-			self->fire = playerGamblerShoot;
-			self->special = playerGamblerSpecial;
-			self->ultimate = playerGamblerUlt;
-			self->ultLength = 10;
+			data->fire = playerGamblerShoot;
+			data->special = playerGamblerSpecial;
+			data->ultimate = playerGamblerUlt;
+			data->ultLength = 10;
 
 
 			break;
-
-
-		case ROLE_PLAYER_WARRIOR:
-		slog("Player is a non implemted class! You will probably crash!");
-		break;
 
 		default:
 		slog("Player has no role!");
 
 	}
 
-
-
-	
-	/*
-	data->timerPrimary = 0;
-	data->primaryCooldown = 50;
-	
-	data->basicPlayerProjectileLife = 1000;
-
 	self->data = data;
-	*/
-
 	setPlayer(self);
 
 	return self;
@@ -165,6 +149,15 @@ void playerThink(Entity* self)
 	if (!self)
 		return;
 
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+	{
+		slog("Player lost their data! Killing them!");
+		self->_inUse = 0;
+		return;
+	}
+
 	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
 	self->timerPrimary += 1;
 	self->timerSpecial += 1;
@@ -176,7 +169,7 @@ void playerThink(Entity* self)
 	if (gfc_input_key_pressed("v") && self->timerUlt >= self->ultCooldown)
 	{
 		//slog("Trying to Ult!");
-		self->ultimate(self);
+		data->ultimate(self);
 		self->timerUlt = 0;
 	}
 
@@ -189,19 +182,19 @@ void playerThink(Entity* self)
 
 		if (gfc_input_key_held("UP"))
 		{
-			self->special(self, D_UP);
+			data->special(self, D_NORTH);
 		}
 		else if (gfc_input_key_held("DOWN"))
 		{
-			self->special(self, D_DOWN);
+			data->special(self, D_SOUTH);
 		}	
 		else if (gfc_input_key_held("LEFT"))
 		{
-			self->special(self, D_LEFT);
+			data->special(self, D_WEST);
 		}
 		else
 		{
-			self->special(self, D_RIGHT);
+			data->special(self, D_EAST);
 		}
 	}
 
@@ -209,28 +202,28 @@ void playerThink(Entity* self)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		self->fire(self,D_UP);
+		data->fire(self,D_NORTH);
 	}
 
 	if (gfc_input_key_pressed("DOWN") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		self->fire(self,D_DOWN);
+		data->fire(self,D_SOUTH);
 	}
 
 	if (gfc_input_key_pressed("LEFT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		self->fire(self,D_LEFT);
+		data->fire(self,D_WEST);
 	}
 	
 	if (gfc_input_key_pressed("RIGHT") && self->timerPrimary >= self->primaryCooldown)
 	{
 		self->timerPrimary = 0;
 		//slog("Should be shooting a thing!");
-		self->fire(self,D_RIGHT);
+		data->fire(self,D_EAST);
 	}
 
 
@@ -284,7 +277,7 @@ void playerThink(Entity* self)
 	}
 
 	//player powerup checker
-	if (self->currentPowerUp != PU_NONE)
+	if (self->currentPowerUp != ROLE_PU_NONE)
 	{
 		if (self->powerUpTimer < self->powerUpMaxTime)
 			self->powerUpTimer += 1;
@@ -292,26 +285,27 @@ void playerThink(Entity* self)
 		{
 			//Kill the powered up state!
 			slog("Disabling the power up!");
+			//slog("Current role for powerup is: %i", self->currentPowerUp);
 
 			switch (self->currentPowerUp)
 			{
-			case PU_FREE_ULT:
+			case ROLE_PU_FREE_ULT:
 
 				break;
 
-			case PU_INVUL:
+			case ROLE_PU_INVUL:
 
 				break;
 
-			case PU_HP_RECOVERY:
+			case ROLE_PU_HP_RECOVERY:
 
 				break;
 
-			case PU_SPEED:
+			case ROLE_PU_SPEED:
 				self->velocity = gfc_vector2d(1, 1);
 				break;
 
-			case PU_BOMB:
+			case ROLE_PU_BOMB:
 
 				break;
 
@@ -323,7 +317,7 @@ void playerThink(Entity* self)
 
 
 			self->powerUpTimer = 0;
-			self->currentPowerUp = PU_NONE;
+			self->currentPowerUp = ROLE_PU_NONE;
 		}
 	}
 	else if (self->velocity.y || self->velocity.x)
@@ -370,7 +364,7 @@ void playerTouch(Entity* self, Entity* toucher)
 
 		}
 
-		if (toucher->team == TEAM_ITEM && self->currentPowerUp == PU_NONE)
+		if (toucher->team == TEAM_ITEM && self->currentPowerUp == ROLE_PU_NONE)
 		{
 			self->currentPowerUp = toucher->currentPowerUp;
 			toucher->_inUse = 0;
@@ -387,6 +381,14 @@ void playerUpdate(Entity* self)
 		return;
 
 	//slog("Updateing Player!");
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+	{
+		slog("Player lost their data! Killing them!");
+		self->_inUse = 0;
+		return;
+	}
 
 	self->frame += 0.1;
 
@@ -398,7 +400,7 @@ void playerUpdate(Entity* self)
 	{
 		slog("Gambler Ult is on!");
 
-		if (self->timerUlt >= self->ultLength)
+		if (self->timerUlt >= data->ultLength)
 		{
 			self->ultIs == 0;
 			
@@ -438,9 +440,6 @@ void playerFree(Entity* self)
 	if (self->data)
 		free(self->data);
 
-	/*if (self->color)
-		free(self->color);*/
-
 	free(self);
 }
 
@@ -465,25 +464,25 @@ void playerShoot(Entity* self,int direction)
 
 	//slog("INSIDER! Last shot rotation: %i", self->lastShotRotation);
 	
-	if (direction == D_LEFT)
+	if (direction == D_WEST)
 	{
 		thing->velocity.x -= 10;
 		//180: right - d
 		//slog("Fireing Left!");
 	}
-	else if(direction == D_RIGHT)
+	else if(direction == D_EAST)
 	{
 		thing->velocity.x += 10;
 		//0: left - a
 		//slog("Fireing Right!");
 	}
-	else if(direction == D_DOWN)
+	else if(direction == D_SOUTH)
 	{
 		thing->velocity.y += 10;
 		//270 down - s
 		//slog("Fireing down!");
 	}
-	else if (direction == D_UP)
+	else if (direction == D_NORTH)
 	{
 		thing->velocity.y -= 10;
 		//90 up
@@ -545,7 +544,7 @@ void playerGunnerShoot(Entity* self, int direction)
 
 	switch (direction)
 	{
-		case(D_LEFT):
+		case(D_WEST):
 			thing->velocity.x -= 10;
 
 
@@ -556,7 +555,7 @@ void playerGunnerShoot(Entity* self, int direction)
 			thing3->velocity.y += 5;
 			break;
 
-		case(D_RIGHT):
+		case(D_EAST):
 			thing->velocity.x+=10;
 
 			thing2->velocity.x += 10;
@@ -566,7 +565,7 @@ void playerGunnerShoot(Entity* self, int direction)
 			thing3->velocity.y -= 5;
 			break;
 
-		case(D_DOWN):
+		case(D_SOUTH):
 			thing->velocity.y += 10;
 
 			thing2->velocity.y += 10;
@@ -576,7 +575,7 @@ void playerGunnerShoot(Entity* self, int direction)
 			thing3->velocity.x += 5;
 			break;
 
-		case(D_UP):
+		case(D_NORTH):
 			thing->velocity.y -= 10;
 
 			thing2->velocity.y -= 10;
@@ -608,31 +607,31 @@ void playerGunnerSpecial(Entity* self,int direction)
 
 	switch (direction)
 	{
-	case(D_LEFT):
+	case(D_WEST):
 		thing->velocity.x -= 10;
 		
 		break;
 
-	case(D_RIGHT):
+	case(D_EAST):
 		thing->velocity.x += 10;
 		
 
 		break;
 
-	case(D_DOWN):
+	case(D_SOUTH):
 		thing->velocity.y += 10;
 
 		
 		break;
 
-	case(D_UP):
+	case(D_NORTH):
 		thing->velocity.y -= 10;
 
 		
 		break;
 
 	default:
-		slog("Something went wrong during Gunner Shoot!");
+		slog("Something went wrong during Gunner SPECIAL!");
 	}
 }
 
@@ -666,24 +665,24 @@ void playerBakerShoot(Entity* self, int direction)
 
 	switch (direction)
 	{
-	case(D_LEFT):
+	case(D_WEST):
 		thing->velocity.x -= 10;
 
 		break;
 
-	case(D_RIGHT):
+	case(D_EAST):
 		thing->velocity.x += 10;
 
 
 		break;
 
-	case(D_DOWN):
+	case(D_SOUTH):
 		thing->velocity.y += 10;
 
 
 		break;
 
-	case(D_UP):
+	case(D_NORTH):
 		thing->velocity.y -= 10;
 
 
@@ -775,24 +774,24 @@ void playerGamblerShoot(Entity* self, Uint8 direction)
 
 	switch (direction)
 	{
-	case(D_LEFT):
+	case(D_WEST):
 		thing->velocity.x -= 10;
 
 		break;
 
-	case(D_RIGHT):
+	case(D_EAST):
 		thing->velocity.x += 10;
 
 
 		break;
 
-	case(D_DOWN):
+	case(D_SOUTH):
 		thing->velocity.y += 10;
 
 
 		break;
 
-	case(D_UP):
+	case(D_NORTH):
 		thing->velocity.y -= 10;
 
 
@@ -839,7 +838,7 @@ void playerPowerUps(Entity* self, Entity* powerup)
 
 	switch (role)
 	{
-		case PU_FREE_ULT:
+		case ROLE_PU_FREE_ULT:
 			if (rand() % 4 == 1)
 			{
 				self->timerUlt = self->ultCooldown;
@@ -848,35 +847,42 @@ void playerPowerUps(Entity* self, Entity* powerup)
 			else
 				slog("Player was unlucky! No ult for you!");
 
+			self->currentPowerUp = ROLE_PU_NONE;
+
 			break;
 
-		case PU_INVUL:
+		case ROLE_PU_INVUL:
 			self->isInvul = 1;
-			
+			self->currentPowerUp = ROLE_PU_NONE;
+
 			slog("Player picked up invul powerup!");
 			break;
 
-		case PU_HP_RECOVERY:
+		case ROLE_PU_HP_RECOVERY:
 			self->hp += 1;
+			self->currentPowerUp = ROLE_PU_NONE;
 			break;
 
-		case PU_SPEED:
+		case ROLE_PU_SPEED:
 			self->velocity = gfc_vector2d(5,5);
 
 			//self->topSpeed = gfc_vector2d(5, 5);
-			
+			self->currentPowerUp = ROLE_PU_SPEED;
 			slog("Player picked up speed powerup!");
 
 			break;
 
-		case PU_BOMB:
+		case ROLE_PU_BOMB:
 
 			makeBomb(self);
+			self->currentPowerUp = ROLE_PU_NONE;
 			break;
 
 		default:
 			slog("Player picked up a bad powerup!");
+			self->currentPowerUp = ROLE_PU_NONE;
 			return;
 
 	}
+	//self->currentPowerUp = ROLE_PU_NONE;
 }

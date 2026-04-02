@@ -31,9 +31,9 @@ void roleSelect(Entity* self, int className)
 
 		//break;
 
-	case ROLE_PLAYER_WARRIOR:
+	//case ROLE_PLAYER_WARRIOR:
 
-		break;
+		//break;
 
 	default:
 

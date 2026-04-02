@@ -237,6 +237,7 @@
     <ClInclude Include="..\include\world.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\JSONs\player.json" />
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
     <None Include="..\levels\mainMenu.level" />

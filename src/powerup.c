@@ -25,8 +25,8 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 		return NULL;
 	}
 
-	if(role == PU_RANDOM)
-		role = rand() % PU_MAXNUMBER;
+	if(role == ROLE_PU_RANDOM)
+		role = ROLE_PU_MIN+1 + rand() % (ROLE_PU_MAX-1-ROLE_PU_MIN);
 
 	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
 	self->position = position;
@@ -43,31 +43,31 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 	self->layer = EL_ITEM;
 	self->role = role;
 
-	//TO DO: Add all power ups + functionality
-	//Add color based on powerup!
+	self->powerUpMaxTime = 0;
+	
 	switch (role)
 	{
-		case PU_FREE_ULT:
+		case ROLE_PU_FREE_ULT:
 			self->colorReal = GFC_COLOR_GREY;
 			self->ultPowerup = 1;
 			break;
 
-		case PU_INVUL:
+		case ROLE_PU_INVUL:
 			self->colorReal = GFC_COLOR_BLUE;
 
 			break;
 
-		case PU_HP_RECOVERY:
+		case ROLE_PU_HP_RECOVERY:
 			self->colorReal = GFC_COLOR_RED;
 			break;
 
-		case PU_SPEED:
+		case ROLE_PU_SPEED:
 			//self->powerUpTimer = 0;
 			self->colorReal = GFC_COLOR_CYAN;
 			self->powerUpMaxTime = 400;
 			break;
 
-		case PU_BOMB:
+		case ROLE_PU_BOMB:
 			
 			break;
 

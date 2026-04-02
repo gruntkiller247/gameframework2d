@@ -22,6 +22,9 @@
     <Filter Include="Helper Sources">
       <UniqueIdentifier>{8134c8e7-a78c-4a2c-8f52-15e59fedf429}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JSONs">
+      <UniqueIdentifier>{000b1b0f-b5ce-4991-8709-99b4c9683b42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c">
@@ -309,6 +312,9 @@
     </None>
     <None Include="..\levels\mainMenu.level">
       <Filter>Levels</Filter>
+    </None>
+    <None Include="..\JSONs\player.json">
+      <Filter>JSONs</Filter>
     </None>
   </ItemGroup>
 </Project>

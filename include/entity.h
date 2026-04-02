@@ -12,6 +12,7 @@
 
 typedef struct Entity_S
 {
+	//All Entities Require
 	Uint8 _inUse;								//No Touch
 	Uint64* id;									//What Number Entity I am
 	Uint64* layer;								//What layer I am on
@@ -30,9 +31,9 @@ typedef struct Entity_S
 	void	(*free)(struct Entity_S* self);	
 	void	*data;
 	void	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
-
-	//GFC_Color* color;
 	GFC_Color colorReal;
+
+	int role;
 
 	Uint8 team;						//ENUM For what team entity is on
 	int hp;
@@ -48,11 +49,7 @@ typedef struct Entity_S
 
 	//Clean these up and put them in children class at some point
 	//ROLE STUFF HERE -First 3 are the Player's stuff
-	int role;	//Might be used
-
-	void (*fire)(struct Entity_S* fire,int direction); //Describes how the entity attacks
-	void (*special)(struct Entity_S* special, int direction); //Describes how the entity uses their special attack
-	void (*ultimate)(struct Entity_S* ultimate); //Describes how the entity uses their ultimate
+	//Might be used
 	
 	
 	//This stuff is for the powerup on the player
@@ -73,7 +70,7 @@ typedef struct Entity_S
 	int move;
 
 	//Player Gambler specail values
-	int ultLength;
+
 
 
 	int timerDeath;				//Timer to count up to timeToLive
@@ -105,7 +102,7 @@ typedef enum
 
 extern const double healthStates[HS_COUNT];
 
-typedef enum
+/*typedef enum
 {
 	PU_NONE = -2,
 	PU_RANDOM = -1,
@@ -115,7 +112,7 @@ typedef enum
 	PU_SPEED,			
 	PU_FREE_ULT,			
 	PU_MAXNUMBER
-}PowerUps;
+}PowerUps;*/
 
 
 typedef enum
@@ -155,7 +152,6 @@ typedef enum RN
 	ROLE_PLAYER_GUNNER = 1,
 	ROLE_PLAYER_BAKER,
 	ROLE_PLAYER_GAMBLER,
-	ROLE_PLAYER_WARRIOR,//Deprciated
 	ROLE_TRASHMOB,
 	ROLE_BOSS1,
 	ROLE_BOSS2,
@@ -163,12 +159,23 @@ typedef enum RN
 	ROLE_PROJECTILE,
 	ROLE_CUP,
 	ROLE_FAKECUP,
+
 	ROLE_BOMB,
 	ROLE_SYMBOL1,
 	ROLE_SYMBOL2,
 	ROLE_SYMBOL_ENEMY1,
 	ROLE_SYMBOL_ENEMY2,
 	ROLE_SYMBOL_ENEMY3,
+	ROLE_PU_NONE,
+	ROLE_PU_RANDOM,
+	ROLE_PU_MIN,		
+	ROLE_PU_HP_RECOVERY,
+	
+	ROLE_PU_INVUL,
+	ROLE_PU_BOMB,
+	ROLE_PU_SPEED,
+	ROLE_PU_FREE_ULT,
+	ROLE_PU_MAX,        
 	ROLE_COUNT
 
 }RoleNames;
@@ -183,15 +190,6 @@ typedef enum
 	TEAM_ITEM
 }Teams;
 
-//I do not know why this exist, but it should probably be depriciated! - Used by the Player - deprciate Later for the above one
-typedef enum
-{
-	D_UP,
-	D_DOWN,
-	D_LEFT,
-	D_RIGHT,
-
-}Directions;
 
 
 /*

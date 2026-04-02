@@ -17,6 +17,7 @@
 #include "level.h"
 
 #define MY_FONT "fonts/FreeSans.ttf"
+#define showSlog if (functionSlogs == 1)
 
 //Static bullshit
 //Window Size
@@ -93,23 +94,23 @@ void loadLevel(Uint8 level,Uint8 playerRole)
         //strcpy(bomb->name, "TEST_BOMB!");
 
         Entity* powerup;
-        powerup = powerUpEntityNew(gfc_vector2d(200, 500), PU_FREE_ULT);
+        powerup = powerUpEntityNew(gfc_vector2d(200, 500), ROLE_PU_FREE_ULT);
         strcpy(powerup->name, "Free Ult Power Up");
 
         Entity* powerup2;
-        powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), PU_SPEED);
+        powerup2 = powerUpEntityNew(gfc_vector2d(100, 500), ROLE_PU_SPEED);
         strcpy(powerup2->name, "Speed Power Up");
 
         Entity* powerup3;
-        powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), PU_BOMB);
+        powerup3 = powerUpEntityNew(gfc_vector2d(300, 500), ROLE_PU_BOMB);
         strcpy(powerup3->name, "Bomb Power Up");
 
         Entity* powerup4;
-        powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), PU_HP_RECOVERY);
+        powerup4 = powerUpEntityNew(gfc_vector2d(400, 500), ROLE_PU_HP_RECOVERY);
         strcpy(powerup4->name, "HP Power Up");
 
         Entity* powerup5;
-        powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), PU_INVUL);
+        powerup5 = powerUpEntityNew(gfc_vector2d(500, 500), ROLE_PU_INVUL);
         strcpy(powerup5->name, "Invul Power Up");
         break;
 
@@ -329,6 +330,7 @@ int main(int argc, char * argv[])
     Entity* powerUpGame = NULL;
 
     int distance;
+    int functionSlogs = 1;
 
     //SDL_GetTikcs returns milli seconds program has been running
 
@@ -381,6 +383,11 @@ int main(int argc, char * argv[])
 
     currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
     
+    showSlog
+    {
+        slog("Past level Loaded!");
+    }
+        
 
     if (!currentLevel)
     {
@@ -428,7 +435,7 @@ int main(int argc, char * argv[])
                 if (rand() % 10000 == 1)
                 {
                     slog("Spawning a power up!");
-                    powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), -1);
+                    powerUpGame = powerUpEntityNew(gfc_vector2d(rand() % 1200, rand() % 720), ROLE_PU_RANDOM);
                     //numPowerUps++;
                 }
 
@@ -635,6 +642,9 @@ int main(int argc, char * argv[])
             //Must be initalized
             // Mix_PlayMusic -1 == loop forever 0 == 1
             //Mix_loadMus
+
+            //Need to add forms of persistants between the levels
+            //Probably add points
         }
        
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition

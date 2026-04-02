@@ -187,7 +187,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	//if (data)
 
 
-	strcpy(self->name, "MONSTER");
+	//strcpy(self->name, "MONSTER");
 
 	MonsterData* monsterData = malloc(sizeof(MonsterData));
 	//MonsterPhase* monsterPhase = malloc(sizeof(MonsterPhase));

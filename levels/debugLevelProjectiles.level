@@ -38,6 +38,13 @@
 				"time": 100,
 				"positionX": 400,
 				"positionY": 400
+			},
+			{
+				"name": "Powerup",
+				"role": "ROLE_PU_SPEED",
+				"team": "TEAM_ITEM",
+				"positionX": 300,
+				"positionY": 200
 			}
 
 		]
