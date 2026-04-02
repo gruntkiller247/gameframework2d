@@ -53,7 +53,7 @@ void fillEntityManager()
     for (c = 0; c < 5000; c++)
     {
 
-            thing = bombEntityNew(gfc_vector2d(100, 100),TEAM_PLAYER,NULL);
+            thing = bombEntityNew(gfc_vector2d(100, 100),TEAM_PLAYER,0);
         
 
     }

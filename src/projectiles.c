@@ -17,7 +17,7 @@ void symbolExplode(Entity* self);
 Entity* boss = NULL;
 
 
-Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,int role)
+Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,int role)
 {
 	Entity* self;
 	self = entityNew();
@@ -83,7 +83,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 
 	boss = getBoss();
 	
-	if (!timeToLive)
+	if (timeToLive == 0)
 	{
 		slog("No time to live in Projectiles!\nIn constructor!");
 		self->timeToLive = 5;
@@ -99,7 +99,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive,i
 	}
 	else
 	{
-		self->timeToLive = *timeToLive;
+		self->timeToLive = timeToLive;
 		self->timerDeath = 0;
 		//data->timeToLive = timeToLive;
 		//data-> timerDeath = 0;
@@ -427,7 +427,7 @@ void cupExplode(Entity* self)
 		return;
 
 	slog("Fake cup is exploding!");
-	Entity* bomb = bombEntityNew(self->position,TEAM_ENEMY,NULL);
+	Entity* bomb = bombEntityNew(self->position,TEAM_ENEMY,0);
 	self->_inUse = 0;
 }
 
@@ -437,6 +437,6 @@ void symbolExplode(Entity* self)
 		return;
 
 	slog("Bad Symbol is exploding!");
-	Entity* bomb = bombEntityNew(self->position, TEAM_ENEMY, NULL);
+	Entity* bomb = bombEntityNew(self->position, TEAM_ENEMY, 0);
 	self->_inUse = 0;
 }

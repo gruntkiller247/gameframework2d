@@ -10,7 +10,7 @@
 #include "gfc_vector.h"
 
 
-Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int* timeToLive, int role);
+Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive, int role);
 
 void projectileThink(Entity* self);
 
