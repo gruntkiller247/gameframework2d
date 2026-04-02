@@ -10,6 +10,7 @@ typedef struct Level_L
 	Uint64 height;	//Height of the level
 	GFC_List* levelMap; //Binary representation of the map
 	Sprite* background; //Background image
+	Uint8 spawnPowerUps; //Whether or not the level can randomly spawn power ups - on by default - not read by JSON ATM
 } Level;
 
 /*
@@ -30,6 +31,8 @@ void levelDraw(Level* self);
 /*
 	Recieves a filepath to the json level to load
 	returns the level and its data
+	Creates the entities:
+	   Player, Monsters, projectiles, and bombs
 */
 Level* dataLoadLevel(const char* levelName);
 

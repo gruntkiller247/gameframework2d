@@ -42,6 +42,7 @@ Level* levelNew(Uint64 height, Uint64 width)
 	level->width = width;
 	level->levelMap = gfc_list_new();
 	level->background = NULL;
+	level->spawnPowerUps = 1;
 }
 
 void levelFree(Level* level)

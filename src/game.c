@@ -382,10 +382,11 @@ int main(int argc, char * argv[])
     currentLevel = dataLoadLevel("levels/debugLevel.level");
     sprite = gf2d_sprite_load_image(currentLevel->background);
 
-    powerUpSpawning = 1;
+    if(currentLevel->spawnPowerUps)
+        powerUpSpawning = 1;
 
     
-   
+    player=getPlayer();
    
     
     /*main game loop*/
@@ -466,14 +467,18 @@ int main(int argc, char * argv[])
            
             if (!bossGame)
             {
-                //ACTUAL NOTE! THERE IS AN CRASHING PROBLEM WITH UPDATEUI AFTER DATA DRIVING THE LEVEL!
-                //slog("THERE IS AN ERROR HERE! NEED TO FIX IT!");
-                //updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
+                
+                if (!player)
+                    slog("NO PLAYER!");
+                else
+                    updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
             }
             else
             {
-                
-                updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
+                if (!player)
+                    slog("NO PLAYER!");
+                else
+                    updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
             }
                 
             
