@@ -73,7 +73,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 
 
 	self->basicPlayerProjectileLife = 1000;
-	self -> maxHP = 3;
+	self->maxHP = 3;
 	self->hp = self->maxHP;
 
 	self->hitDelay = 300;

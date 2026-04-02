@@ -307,5 +307,8 @@
     <None Include="..\levels\debugLevelProjectiles.level">
       <Filter>Levels</Filter>
     </None>
+    <None Include="..\levels\mainMenu.level">
+      <Filter>Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -239,6 +239,7 @@
   <ItemGroup>
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
+    <None Include="..\levels\mainMenu.level" />
     <None Include="testLevel.level" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

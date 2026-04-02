@@ -379,11 +379,20 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");*/
 
-    currentLevel = dataLoadLevel("levels/debugLevel.level");
+    currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
     sprite = gf2d_sprite_load_image(currentLevel->background);
 
-    if(currentLevel->spawnPowerUps)
-        powerUpSpawning = 1;
+    if (!currentLevel)
+    {
+        slog("No level could be loaded! Loading error handling level!");
+        loadLevel(1,ROLE_PLAYER_GAMBLER);
+    }
+    else
+    {
+        if (currentLevel->spawnPowerUps)
+            powerUpSpawning = 1;
+    }
+
 
     
     player=getPlayer();

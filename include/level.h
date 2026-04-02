@@ -36,5 +36,10 @@ void levelDraw(Level* self);
 */
 Level* dataLoadLevel(const char* levelName);
 
+/*
+	Loads the main menu for the game!
+*/
+Level* dataLoadMainMenu(const char* levelPath);
+
 #endif
 

@@ -117,7 +117,9 @@ int getRole(const char* role)
 		return ROLE_ERROR;
 	
 }
-
+/*
+	TO DO: Add the ablitity to read power ups!
+*/
 Level* dataLoadLevel(const char* levelName)
 {
 	Level* level = NULL;
@@ -129,9 +131,10 @@ Level* dataLoadLevel(const char* levelName)
 	Entity* temp = NULL;
 	const char* name = NULL;
 	const char* background= NULL;
-	int team =0, time=0;
+	int *team =0, *time=0;
 	int c=0,role=0,entityMax=0;
 	int tempX =0 , tempY =0;
+	int tempInt = -1;
 
 
 	if (!levelName)
@@ -248,22 +251,13 @@ Level* dataLoadLevel(const char* levelName)
 				break;
 			case ROLE_PROJECTILE:
 				 sj_object_get_int(entity, "time", time);
-
-				if (!time)
-				{
-					slog("Failed to load projectile's time to die!");
-					goto fail;
-				}
-
 				 sj_object_get_int(entity, "team", team);
 
-				if (!team)
-				{
-					slog("Failed to load projectile's team!");
-					goto fail;
-				}
 
-				temp = projectileEntityNew(*position, team,time,role);
+				 slog("JSON Projectile reading time is: %i", time);
+				 slog("JSON Projectile reading team is: %i", team);
+
+				temp = projectileEntityNew(*position, &team,time,role);
 
 				if (!temp)
 				{
@@ -277,22 +271,10 @@ Level* dataLoadLevel(const char* levelName)
 
 			case ROLE_BOMB:
 				sj_object_get_int(entity, "time", time);
-
-				if (!time)
-				{
-					slog("Failed to load bomb's time to die!");
-					goto fail;
-				}
-
 				sj_object_get_int(entity, "team", team);
 
-				if (!team)
-				{
-					slog("Failed to load projectile's team!");
-					goto fail;
-				}
 
-				temp=bombEntityNew(*position,team,time);
+				temp=bombEntityNew(*position,&team,time);
 
 				if (!temp)
 				{
@@ -409,6 +391,11 @@ Level* dataLoadLevel(const char* levelName)
 fail:
 	//slog("Hit a fail condition!");
 
+	if (level)
+		levelFree(level);
+
+	if (temp)
+		temp->_inUse = 0;
 
 	if (entities)
 		sj_free(entities);
@@ -423,4 +410,17 @@ fail:
 
 	return NULL;
 
+}
+
+Level* dataLoadMainMenu(const char* levelPath)
+{
+	if (!levelPath)
+	{
+		slog("No filepath to main menu!");
+		return NULL;
+	}
+
+
+	fail:
+		return NULL;
 }
