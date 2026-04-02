@@ -482,7 +482,7 @@ void monsterUpdate(Entity* self)
 	if (data->canMove && data->moveTimer >= data->moveMaxTime)
 	{
 		data->moveTimer = 0;
-		slog("Boss is moving!");
+		//slog("Boss is moving!");
 		move(self, data->currentDirection);
 		//moveStop(self);
 	}
@@ -1450,7 +1450,7 @@ void move(Entity* self, int direction)
 	if (!self)
 		return;
 
-	slog("Monster is trying to move! Direction is %i",direction);
+	//slog("Monster is trying to move! Direction is %i",direction);
 
 	switch (direction)
 	{
@@ -1596,7 +1596,7 @@ void moveRandom(Entity* self, int direction)
 
 
 	((MonsterData*)self->data)->currentDirection = directionNew;
-	slog("The movement direction rolled is: %i", directionNew);
+	//slog("The movement direction rolled is: %i", directionNew);
 
 	
 	//The cursed algorhytm - O(23) vs chad O(1)

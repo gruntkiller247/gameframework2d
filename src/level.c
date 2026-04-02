@@ -88,6 +88,11 @@ void levelSetHeight(int maxHeight, int maxWidth)
 */
 int getRole(const char* role)
 {
+	if (!role)
+	{
+		slog("Role has a bad pointer!");
+		return ROLE_ERROR;
+	}
 
 	if (strcmp(role, "ROLE_TRASHMOB") == 0)
 		return ROLE_TRASHMOB;
@@ -118,12 +123,15 @@ Level* dataLoadLevel(const char* levelName)
 	SJson* json = NULL;
 	SJson* ljson = NULL;
 	SJson* entity = NULL;
-	GFC_List* entities = NULL;
+	SJson* entities = NULL;
+	SJson* background = NULL;
 	GFC_Vector2D* position;
 	Entity* temp = NULL;
 	const char* name = NULL;
-	int team, time;
-	int c,role;
+	const char* backgroundReal= NULL;
+	int team =0, time=0;
+	int c=0,role=0,entityMax=0;
+	int tempX =0 , tempY =0;
 
 
 	if (!levelName)
@@ -138,7 +146,7 @@ Level* dataLoadLevel(const char* levelName)
 
 	if (!json)
 	{
-		slog("Failed to load level!");
+		slog("Failed to load level's JSON!");
 		return NULL;
 	}
 
@@ -151,9 +159,26 @@ Level* dataLoadLevel(const char* levelName)
 		return NULL;
 	}
 
-	sj_free(json);
+	
+	//Do background
+	/*background = sj_object_get_value(ljson, "background");
 
-	entities = gfc_list_new();
+	if (!background)
+	{
+		slog("Background failed to load!");
+		goto fail;
+	}
+	
+	
+	backgroundReal= sj_object_get_value_as_string(ljson, "background");
+
+	if (!backgroundReal)
+	{
+		slog("Failed to get filepath string from background JSON!");
+		goto fail;
+	}
+
+	level->background= sj_object_get_value_as_string(ljson, "background");*/
 
 
 	entities = sj_object_get_value(ljson, "entities");
@@ -169,16 +194,45 @@ Level* dataLoadLevel(const char* levelName)
 	{
 		slog("Entities list is 0?");
 		sj_free(ljson);
+		sj_free(entities);
 		return NULL;
 			
 	}
 	
-	for (c = 0; c < gfc_list_get_count(entities); c++)
+	entityMax = sj_array_get_count(entities);
+
+	for (c = 0; c < entityMax; c++)
 	{
 		//Switch through each roll to make the entity/monster/player that should be made per item
 		//Manually give that entity their name and position
+		//slog("Loop %i!", c);
+		entity = sj_array_get_nth(entities, c);
+
 		role = getRole(sj_object_get_string(entity, "role"));
-		position = gfc_vector2d_new(sj_get_integer_value(entity,"positionX"), sj_get_integer_value(entity, "positionY"));
+
+		if (sj_object_get_int(entity, "positionY", tempY) == 0)
+		{
+			slog("Error finding position Y");
+			goto fail;
+		}
+
+		if (sj_object_get_int(entity, "positionX", tempX) == 0)
+		{
+			slog("Error finding postion X");
+			goto fail;
+		}
+		
+		slog("Position of thing from json X:%i Y:%i", tempX, tempY);
+		
+
+		position = gfc_vector2d_new(tempX, tempY);
+
+		if (!position)
+		{
+			slog("Position is NULL!");
+			goto fail;
+		}
+
 		name = sj_object_get_string(entity,"name");
 
 		switch (role)
@@ -189,6 +243,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -198,20 +253,20 @@ Level* dataLoadLevel(const char* levelName)
 
 				break;
 			case ROLE_PROJECTILE:
-				time = sj_get_integer_value(entity, "time");
+				 sj_object_get_int(entity, "time", time);
 
 				if (!time)
 				{
 					slog("Failed to load projectile's time to die!");
-					break;
+					goto fail;
 				}
 
-				team = sj_get_integer_value(entity, "team");
+				 sj_object_get_int(entity, "team", team);
 
 				if (!team)
 				{
 					slog("Failed to load projectile's team!");
-					break;
+					goto fail;
 				}
 
 				temp = projectileEntityNew(*position, team,time,role);
@@ -219,6 +274,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -226,20 +282,20 @@ Level* dataLoadLevel(const char* levelName)
 				break;
 
 			case ROLE_BOMB:
-				time = sj_get_integer_value(entity, "time");
+				sj_object_get_int(entity, "time", time);
 
 				if (!time)
 				{
-					slog("Failed to load projectile's time to die!");
-					break;
+					slog("Failed to load bomb's time to die!");
+					goto fail;
 				}
 
-				team = sj_get_integer_value(entity, "team");
+				sj_object_get_int(entity, "team", team);
 
 				if (!team)
 				{
 					slog("Failed to load projectile's team!");
-					break;
+					goto fail;
 				}
 
 				temp=bombEntityNew(*position,team,time);
@@ -247,6 +303,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -260,6 +317,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -272,6 +330,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -284,6 +343,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -296,6 +356,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -310,6 +371,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -323,6 +385,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (!temp)
 				{
 					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
 				}
 
 				if (name)
@@ -334,6 +397,33 @@ Level* dataLoadLevel(const char* levelName)
 		}
 	}
 
+	slog("Read the entire JSON!");
+	//sj_free(background);
+	//sj_free(entities);
+	//sj_free(ljson);
+	sj_free(json);
+	
+	
+
 	return level;
+
+fail:
+	//slog("Hit a fail condition!");
+
+	if (background)
+		sj_free(background);
+
+	if (entities)
+		sj_free(entities);
+
+	if (ljson)
+		sj_free(ljson);
+
+
+
+	if (json)
+		sj_free(json);
+
+	return NULL;
 
 }

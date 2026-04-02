@@ -22,6 +22,14 @@
 				"role": "ROLE_PLAYER_GUNNER",
 				"positionX": 300,
 				"positionY": 300
+			},
+			{
+				"name": "Test_Projectile",
+				"role": "ROLE_PROJECTILE",
+				"team": "TEAM_PLAYER",
+				"time": -1,
+				"positionX": 300,
+				"positionY": 300
 			}
 
 		]

@@ -367,7 +367,7 @@ int main(int argc, char * argv[])
     
 
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/cat.jpg");
+    //sprite = gf2d_sprite_load_image("images/backgrounds/cat.jpg");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
@@ -380,11 +380,12 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");*/
 
     currentLevel = dataLoadLevel("levels/debugLevel.level");
+    sprite = currentLevel->background;
 
     powerUpSpawning = 1;
 
     
-
+   
    
     
     /*main game loop*/
@@ -432,7 +433,7 @@ int main(int argc, char * argv[])
             gf2d_graphics_clear_screen();// clears drawing buffers
             // all drawing should happen betweem clear_screen and next_frame
                 //backgrounds drawn first
-            //gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
 
 
             entityManagerDrawAll();
@@ -465,16 +466,22 @@ int main(int argc, char * argv[])
            
             if (!bossGame)
             {
-                updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
+                //ACTUAL NOTE! THERE IS AN CRASHING PROBLEM WITH UPDATEUI AFTER DATA DRIVING THE LEVEL!
+                //slog("THERE IS AN ERROR HERE! NEED TO FIX IT!");
+                //updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
             }
             else
+            {
+                
                 updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
+            }
+                
             
             framerateUI(font,color,&fpsRect);
             //slog("UI updated");
 
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
-
+            
 
             //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
@@ -484,7 +491,7 @@ int main(int argc, char * argv[])
             
 
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
-
+            //slog("1 cycle!");
         }
         else if(level !=0)
         {
