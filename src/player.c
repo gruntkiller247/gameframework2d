@@ -1,7 +1,6 @@
 
 #include <stdio.h>
-#include <time.h>
-
+#include <simple_json.h>
 #include "simple_logger.h"
 #include "entity.h"
 #include "player.h"
@@ -13,6 +12,8 @@
 #include "bomb.h"
 #include <stdlib.h>
 
+const char* playerFile = "JSONs/player.json";
+
 typedef struct PD
 {
 	void (*fire)(struct Entity_S* fire, int direction);			//Describes how the entity attacks
@@ -22,7 +23,18 @@ typedef struct PD
 	int ultLength;												//Lenght of time the gambler's ULT last for
 	int basicPlayerProjectileLife;								//Projectile timer to live cap for the Player
 
+	//Player Baker special values
+	int bombTLL;
+	int bombAmount;
 
+
+	int timerSpecial;			//The thing that counts up
+	int specialCooldown;		//The thing that is counted to
+	int specialDamage;
+
+	int timerUlt;
+	int ultCooldown;
+	int ultDamage;
 
 }PlayerData;
 
@@ -48,95 +60,39 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 		return NULL;
 	}
 
-
-	//This will be all the baseline stats for the player. Class specific stuff will be in the class function call
-	strcpy(self->name,"The Player");
 	self->role = role;
+	self->data = data;
 
-	self->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
-	self->position = position;
+	//The generic stuff that is not updated by the JSON
 	self->frame = 0;
-
 	self->think = playerThink;
 	self->free = playerFree;
 	self->update = playerUpdate;
 	self->touch = playerTouch;
-
-	self->currentPowerUp = ROLE_PU_NONE;
-
-	self->velocity = gfc_vector2d(1,1);
-	self->topSpeed = gfc_vector2d(100, 100);
 	self->rotation = 0;
-
-	self->bounds = gfc_rect(30, 30, 72, 72);
-
+	self->currentPowerUp = ROLE_PU_NONE;
 	self->team = TEAM_PLAYER;
 	self->layer = EL_PLAYER;
-
-
-	data->basicPlayerProjectileLife = 1000;
-	self->maxHP = 3;
+	self->bounds = gfc_rect(30, 30, 72, 72);  //Make it a sphere later!
 	self->hp = self->maxHP;
-
-	self->hitDelay = 300;
 	self->hitTimer = 0;
 	self->isInvul = 0;
-
-	self->damage = 1;
-
-	//Player Roll Stuff
-	//int role = roleSelect(self,ROLE_PLAYER_GUNNER);
-
-
-	//Gunner numbers
 	self->timerPrimary = 0;
-	self->primaryCooldown = 50;
-
-	self->timerSpecial = 0;
-	self->specialCooldown = 100;
-	self->specialDamage = 3;
-
-	self->timerUlt = 0;
-	self->ultCooldown = 100;
-	self->ultDamage = 5;
 	self->ultIs = 0;
-	
-	switch (role)
+
+	data->timerSpecial = 0;
+	data->timerUlt = 0;
+
+	slog("Trying to load the player!");
+	loadPlayer(self);
+
+	if (!data)
 	{
-		case ROLE_PLAYER_GUNNER:
-			self->role = role;
-			data->fire = playerGunnerShoot;
-			data->special = playerGunnerSpecial;
-			data->ultimate = playerGunnerUltimate;
-			break;
-
-		case ROLE_PLAYER_BAKER:
-			self->role = role;
-			self->bombAmount = 20;
-			self->bombTLL = 100;
-			data->fire = playerBakerShoot;
-			data->special = playerBakerSpecial;
-			data->ultimate = playerBakerUlt;
-		
-			break;
-
-		case ROLE_PLAYER_GAMBLER:
-			self->role = role;
-			self->ultIs = 0;
-			data->fire = playerGamblerShoot;
-			data->special = playerGamblerSpecial;
-			data->ultimate = playerGamblerUlt;
-			data->ultLength = 10;
-
-
-			break;
-
-		default:
-		slog("Player has no role!");
-
+		slog("Player failed to get created!");
+		return NULL;
 	}
 
-	self->data = data;
+
 	setPlayer(self);
 
 	return self;
@@ -162,24 +118,24 @@ void playerThink(Entity* self)
 
 	//slog("Player Position: X = %f Y= %f", self->position.x, self->position.y);
 	self->timerPrimary += 1;
-	self->timerSpecial += 1;
-	self->timerUlt += 1;
+	data->timerSpecial += 1;
+	data->timerUlt += 1;
 	//slog("TimerPrimary is %i,", self->timerPrimary);
 	//slog("primaryCooldown is %i,", self->primaryCooldown);
 
 	//slog("Counter for Ult: %i", self->timerUlt);
-	if (gfc_input_key_pressed("v") && self->timerUlt >= self->ultCooldown)
+	if (gfc_input_key_pressed("v") && data->timerUlt >= data->ultCooldown)
 	{
 		//slog("Trying to Ult!");
 		data->ultimate(self);
-		self->timerUlt = 0;
+		data->timerUlt = 0;
 	}
 
 
-	if (gfc_input_key_held("z") && self->timerSpecial >= self->specialCooldown)
+	if (gfc_input_key_held("z") && data->timerSpecial >= data->specialCooldown)
 	{
 		//slog("Trying to fire gunner special!");
-		self->timerSpecial = 0;
+		data->timerSpecial = 0;
 
 
 		if (gfc_input_key_held("UP"))
@@ -407,7 +363,7 @@ void playerUpdate(Entity* self)
 	{
 		slog("Gambler Ult is on!");
 
-		if (self->timerUlt >= data->ultLength)
+		if (data->timerUlt >= data->ultLength)
 		{
 			self->ultIs == 0;
 			
@@ -627,7 +583,7 @@ void playerGunnerSpecial(Entity* self,int direction)
 	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(5,5);
 	thing->bounds= gfc_rect(0, 0, 32*5, 32*5);
-	thing->damage = self->specialDamage;
+	thing->damage = data->specialDamage;
 
 	switch (direction)
 	{
@@ -661,11 +617,20 @@ void playerGunnerSpecial(Entity* self,int direction)
 
 void playerGunnerUltimate(Entity* self)
 {
+	if (!self)
+		return;
+
+
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
 	//slog("Firing Gunner Ult!");
 	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x * -1 + self->bounds.x * -2, self->position.y * -1 + self->bounds.y * -2), TEAM_PLAYER, -1, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(0, 0);
 	thing->bounds = gfc_rect(0, 0, 32*0, 32*0);
-	thing->damage = self->ultDamage;
+	thing->damage = data->ultDamage;
 	thing->ultIs = 1;
 
 	//return thing;
@@ -677,8 +642,13 @@ void playerBakerShoot(Entity* self, int direction)
 	if (!self)
 		return;
 
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
 	//Same as gunner, shoots bombs that have a short range/life
-	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL);
+	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->bombTLL);
 
 	slog("Baker shooting! Bomb team is %i", thing->team);
 
@@ -727,12 +697,22 @@ void playerBakerSpecial(Entity* self, int direction)
 	Entity* thing;
 	int c;
 
-	for (c = 0; c <= self->bombAmount; c++)
+	if (!self)
+		return;
+
+
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
+
+	for (c = 0; c <= data->bombAmount; c++)
 	{
 		rX = (self->position.x) + (float)rand() / RAND_MAX * (self->bounds.w * 2);
 		rY = (self->position.y) + (float)rand() / RAND_MAX * (self->bounds.h * 2);
 
-		thing = bombEntityNew(gfc_vector2d((int)rX, (int)rY), TEAM_PLAYER, self->bombTLL*2);
+		thing = bombEntityNew(gfc_vector2d((int)rX, (int)rY), TEAM_PLAYER, data->bombTLL*2);
 		//thing->move = -1;
 
 		if (!thing)
@@ -749,11 +729,19 @@ void playerBakerSpecial(Entity* self, int direction)
 void playerBakerUlt(Entity* self)
 {
 	slog("Baker Ult");
+
+	if (!self)
+		return;
+
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
 	
-	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->bombTLL*2);
+	Entity* thing = bombEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->bombTLL*2);
 	thing->scale = gfc_vector2d(0, 0);
 	thing->bounds = gfc_rect(0, 0, 32 * 0, 32 * 0);
-	thing->damage = self->ultDamage;
+	thing->damage = data->ultDamage;
 	thing->ultIs = 1;
 	//thing->move = 1;
 
@@ -861,6 +849,11 @@ void playerPowerUps(Entity* self, Entity* powerup)
 	if (!self || !powerup)
 		return;
 
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
 	int role = powerup->role;
 
 	self->powerUpMaxTime = powerup->powerUpMaxTime;
@@ -870,7 +863,7 @@ void playerPowerUps(Entity* self, Entity* powerup)
 		case ROLE_PU_FREE_ULT:
 			if (rand() % 4 == 1)
 			{
-				self->timerUlt = self->ultCooldown;
+				data->timerUlt = data->ultCooldown;
 				slog("Player is lucky, giving them a free ult!");
 			}
 			else
@@ -914,4 +907,522 @@ void playerPowerUps(Entity* self, Entity* powerup)
 
 	}
 	//self->currentPowerUp = ROLE_PU_NONE;
+}
+
+/*
+	Loads the player from JSON File
+*/
+void loadPlayer(Entity* self)
+{
+	if (!self)
+	{
+		slog("Cannot load player as self did not get created!");
+		return;
+	}
+
+	PlayerData* data = (PlayerData*)self->data;
+
+
+	if (!data)
+	{
+		slog("Player failed to create their data!");
+		self->_inUse = 0;
+		return;
+	}
+
+	if (!playerFile)
+	{
+		slog("No refrence to player JSON file!");
+		self->_inUse = 0;
+		self->data = NULL;
+		return;
+	}
+
+	SJson* json = NULL;
+	SJson* pjson = NULL;
+	SJson* roleData = NULL;
+	SJson* listRoles = NULL;
+	const char* name = NULL;
+	const char* spriteFile = NULL;
+
+	int posX = -1;
+	int posY = -1;
+	int velX = -1;
+	int velY = -1;
+	int maxVelY = -1;
+	int maxVelX = -1;
+	int basic = -1;
+	int maxHP = -1;
+	int hitDelay = -1;
+	int damage = -1;
+
+	int primaryCooldown = -1;
+	int specialCooldown = -1;
+	int specialDamage = -1;
+	int ultCooldown = -1;
+	int ultDamage = -1;
+
+	const char* playerFire = NULL;
+	const char* playerSpecial = NULL;
+	const char* playerUlt = NULL;
+
+	int bombAmount = -1;
+	int bombTLL = -1;
+	int ultIs = -1;
+	int ultLength = -1;
+
+	
+	json = sj_load(playerFile);
+	
+
+	if (!json)
+	{
+		slog("Failed to load player's JSON file!");
+		goto fail;
+	}
+
+	pjson = sj_object_get_value(json, "player");
+
+	
+
+	if (!pjson)
+	{
+		slog("Failed to load the player's data from JSON!");
+		goto fail;
+	}
+
+	listRoles = sj_object_get_value(pjson, "role");
+
+	if (!listRoles)
+	{
+		slog("Failed to get list of roles!");
+		goto fail;
+	}
+
+	
+
+	name = sj_object_get_string(pjson, "name");
+
+	
+
+	if (!name)
+	{
+		slog("Player has no name! Giving default!");
+		strcpy(self->name, "Player");
+	}
+	strcpy(self->name,name);
+
+	spriteFile = sj_object_get_string(pjson, "sprite");
+
+	if (!spriteFile)
+	{
+		slog("Player has no sprite!");
+		goto fail;
+	}
+
+	
+
+	self->sprite= gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
+
+	if (sj_object_get_int(pjson, "positionY", &posY) == 0)
+	{
+		slog("Error finding Player position Y");
+		goto fail;
+	}
+
+	if (sj_object_get_int(pjson, "positionX", &posX) == 0)
+	{
+		slog("Error finding Player postion X");
+		goto fail;
+	}
+
+	self->position = gfc_vector2d(posX, posY);
+
+
+
+	if (sj_object_get_int(pjson, "velocityY", &velY) == 0)
+	{
+		slog("Error finding Player velocity Y");
+		goto fail;
+	}
+
+	if (sj_object_get_int(pjson, "velocityX", &velX) == 0)
+	{
+		slog("Error finding Player velocity X");
+		goto fail;
+	}
+
+	self->velocity = gfc_vector2d(velX, velY);
+
+
+	if (sj_object_get_int(pjson, "topVelocityY", &maxVelY) == 0)
+	{
+		slog("Error finding Player max velocity Y");
+		goto fail;
+	}
+
+	if (sj_object_get_int(pjson, "topVelocityX", &maxVelX) == 0)
+	{
+		slog("Error finding Player max velocity X");
+		goto fail;
+	}
+
+	self->topSpeed = gfc_vector2d(maxVelX, maxVelY);
+
+
+	if (sj_object_get_int(pjson, "basicPlayerProjectileLife", &basic) == 0)
+	{
+		slog("Error finding Player basic Projectile Life!");
+		goto fail;
+	}
+
+	data->basicPlayerProjectileLife = basic;
+
+	if (sj_object_get_int(pjson, "maxHP", &maxHP) == 0)
+	{
+		slog("Error finding Player maxHP!");
+		goto fail;
+	}
+
+	self->maxHP = maxHP;
+	self->hp = maxHP;
+
+
+	if (sj_object_get_int(pjson, "hitDelay", &hitDelay) == 0)
+	{
+		slog("Error getting player's hit delay!");
+		goto fail;
+	}
+
+	self->hitDelay = hitDelay;
+
+
+	if (sj_object_get_int(pjson, "damage", &damage) == 0)
+	{
+		slog("Error getting player's damage!");
+		goto fail;
+	}
+
+	self->damage = damage;
+
+	
+
+
+	switch (self->role)
+	{
+		case ROLE_PLAYER_GUNNER:
+
+			roleData = sj_array_get_nth(listRoles, 0);
+
+			if (!roleData)
+			{
+				slog("Could not find role data for Player!");
+				goto fail;
+			}
+
+			if (sj_object_get_int(roleData, "primaryCooldown", &primaryCooldown) == 0)
+			{
+				slog("Error getting player primaryCooldown");
+				goto fail;
+			}
+
+			self->primaryCooldown = primaryCooldown;
+
+			if (sj_object_get_int(roleData, "specialCooldown", &specialCooldown) == 0)
+			{
+				slog("Error getting player specialCooldown");
+				goto fail;
+			}
+
+			data->specialCooldown = specialCooldown;
+
+			if (sj_object_get_int(roleData, "specialDamage", &specialDamage) == 0)
+			{
+				slog("Error getting player specialDamage");
+				goto fail;
+			}
+
+			data->specialDamage = specialDamage;
+
+			if (sj_object_get_int(roleData, "ultCooldown", &ultCooldown) == 0)
+			{
+				slog("Error getting player ultCooldown");
+				goto fail;
+			}
+
+			data->ultCooldown = ultCooldown;
+
+			if (sj_object_get_int(roleData, "ultDamage", &ultDamage) == 0)
+			{
+				slog("Error getting player ultDamage");
+				goto fail;
+			}
+
+			data->ultDamage = ultDamage;
+			
+			playerFire = sj_object_get_string(roleData, "fire");
+
+			if (!playerFire)
+			{
+				slog("Error getting playerFire");
+				goto fail;
+			}
+
+			if (strcmp(playerFire, "playerGunnerShoot"))
+				data->fire = playerGunnerShoot;
+
+			playerSpecial = sj_object_get_string(roleData, "special");
+
+			if (!playerSpecial)
+			{
+				slog("Error getting playerSpecial");
+				goto fail;
+			}
+
+			if (strcmp(playerSpecial, "playerGunnerSpecial"))
+				data->fire = playerGunnerSpecial;
+
+			playerUlt = sj_object_get_string(roleData, "ultimate");
+
+			if (!playerUlt)
+			{
+				slog("Error getting playerUlt");
+				goto fail;
+			}
+
+			if (strcmp(playerUlt, "playerGunnerUltimate"))
+				data->fire = playerGunnerUltimate;
+
+			break;
+
+		case ROLE_PLAYER_BAKER:
+
+			//Magic number for Baker: Look at Player's JSON
+			roleData = sj_array_get_nth(listRoles, 1);
+
+			if (!roleData)
+			{
+				slog("Could not find role data for Player!");
+				goto fail;
+			}
+
+			if (sj_object_get_int(roleData, "primaryCooldown", &primaryCooldown) == 0)
+			{
+				slog("Error getting player primaryCooldown");
+				goto fail;
+			}
+
+
+			self->primaryCooldown = primaryCooldown;
+
+			if (sj_object_get_int(roleData, "specialCooldown", &specialCooldown) == 0)
+			{
+				slog("Error getting player specialCooldown");
+				goto fail;
+			}
+
+			data->specialCooldown = specialCooldown;
+
+			if (sj_object_get_int(roleData, "specialDamage", &specialDamage) == 0)
+			{
+				slog("Error getting player specialDamage");
+				goto fail;
+			}
+
+			data->specialDamage = specialDamage;
+
+			if (sj_object_get_int(roleData, "ultCooldown", &ultCooldown) == 0)
+			{
+				slog("Error getting player ultCooldown");
+				goto fail;
+			}
+
+			data->ultCooldown = ultCooldown;
+
+			if (sj_object_get_int(roleData, "ultDamage", &ultDamage) == 0)
+			{
+				slog("Error getting player ultDamage");
+				goto fail;
+			}
+
+			data->ultDamage = ultDamage;
+
+
+			playerFire = sj_object_get_string(roleData, "fire");
+
+			if (!playerFire)
+			{
+				slog("Error getting playerFire");
+				goto fail;
+			}
+
+			if (strcmp(playerFire, "playerBakerShoot"))
+				data->fire = playerBakerShoot;
+
+			playerSpecial = sj_object_get_string(roleData, "special");
+
+			if (!playerSpecial)
+			{
+				slog("Error getting playerSpecial");
+				goto fail;
+			}
+
+			if (strcmp(playerSpecial, "playerBakerSpecial"))
+				data->fire = playerBakerSpecial;
+
+			playerUlt = sj_object_get_string(roleData, "ultimate");
+
+			if (!playerUlt)
+			{
+				slog("Error getting playerUlt");
+				goto fail;
+			}
+
+			if (strcmp(playerUlt, "playerBakerUlt"))
+				data->fire = playerBakerUlt;
+
+
+			if (sj_object_get_int(roleData, "bombAmount", &bombAmount) == 0)
+			{
+				slog("Error getting player bombAmount");
+				goto fail;
+			}
+
+			data->bombAmount = bombAmount;
+
+			if (sj_object_get_int(roleData, "bombTLL", &bombTLL) == 0)
+			{
+				slog("Error getting player bombTLL");
+				goto fail;
+			}
+
+			data->bombTLL = bombTLL;
+
+			break;
+
+		case ROLE_PLAYER_GAMBLER:
+
+			roleData = sj_array_get_nth(listRoles, 2);
+
+			if (!roleData)
+			{
+				slog("Could not find role data for Player!");
+				goto fail;
+			}
+
+			if (sj_object_get_int(roleData, "primaryCooldown", &primaryCooldown) == 0)
+			{
+				slog("Error getting player primaryCooldown");
+				goto fail;
+			}
+
+			self->primaryCooldown = primaryCooldown;
+
+			if (sj_object_get_int(roleData, "specialCooldown", &specialCooldown) == 0)
+			{
+				slog("Error getting player specialCooldown");
+				goto fail;
+			}
+
+			data->specialCooldown = specialCooldown;
+
+			if (sj_object_get_int(roleData, "specialDamage", &specialDamage) == 0)
+			{
+				slog("Error getting player specialDamage");
+				goto fail;
+			}
+
+			data->specialDamage = specialDamage;
+
+			if (sj_object_get_int(roleData, "ultCooldown", &ultCooldown) == 0)
+			{
+				slog("Error getting player ultCooldown");
+				goto fail;
+			}
+
+			data->ultCooldown = ultCooldown;
+
+			if (sj_object_get_int(roleData, "ultDamage", &ultDamage) == 0)
+			{
+				slog("Error getting player ultDamage");
+				goto fail;
+			}
+
+			data->ultDamage = ultDamage;
+
+			playerFire = sj_object_get_string(roleData, "fire");
+
+			if (!playerFire)
+			{
+				slog("Error getting playerFire");
+				goto fail;
+			}
+
+			if (strcmp(playerFire, "playerGamblerShoot"))
+				data->fire = playerGamblerShoot;
+
+			playerSpecial = sj_object_get_string(roleData, "special");
+
+			if (!playerSpecial)
+			{
+				slog("Error getting playerSpecial");
+				goto fail;
+			}
+
+			if (strcmp(playerSpecial, "playerGamblerSpecial"))
+				data->fire = playerGamblerSpecial;
+
+			playerUlt = sj_object_get_string(roleData, "ultimate");
+
+			if (!playerUlt)
+			{
+				slog("Error getting playerUlt");
+				goto fail;
+			}
+
+			if (strcmp(playerUlt, "playerGamblerUlt"))
+				data->fire = playerGamblerUlt;
+
+
+			if (sj_object_get_int(roleData, "ultIs", &ultIs) == 0)
+			{
+				slog("Error getting player ultIs");
+				goto fail;
+			}
+
+			self->ultIs = ultIs;
+
+			if (sj_object_get_int(roleData, "ultLength", &ultLength) == 0)
+			{
+				slog("Error getting player ultLength");
+				goto fail;
+			}
+
+			data->ultLength = ultLength;
+
+			break;
+
+		default:
+			slog("Error! Player has no role! ");
+			goto fail;
+	}
+
+
+	slog("Read player JSON!");
+	sj_free(json);
+	return;
+
+	fail:
+		slog("Something went wrong loading the player!");
+
+		if (self)
+			self->_inUse = 0;
+
+		if (self->data)
+			data = NULL;
+
+		if (json)
+			sj_free(json);
+
+		return;
 }

@@ -1,9 +1,64 @@
 {
-  "player":
-   [
+  "player": 
+  {
+
+    "sprite": "images/ed210.png",
+    "name": "Player",
+    "positionX": 300,
+    "positionY": 300,
+
+    "velocityX": 1,
+    "velocityY": 1,
+    "topVelocityX": 100,
+    "topVelocityY": 100,
+    "basicPlayerProjectileLife": 1000,
+    "maxHP": 3,
+    "hitDelay": 300,
+    "damage": 1,
+
+    "role": 
+    [
       {
-        "sprite": "images/ed210.png"
+        "role": "ROLE_PLAYER_GUNNER",
+        "primaryCooldown": 50,
+        "specialCooldown": 100,
+        "specialDamage": 3,
+        "ultCooldown": 100,
+        "ultDamage": 5,
+        "fire": "playerGunnerShoot",
+        "special": "playerGunnerSpecial",
+        "ultimate": "playerGunnerUltimate"
+
+      },
+      {
+        "role": "ROLE_PLAYER_BAKER",
+        "primaryCooldown": 50,
+        "specialCooldown": 100,
+        "specialDamage": 3,
+        "ultCooldown": 100,
+        "ultDamage": 5,
+        "bombAmount": 20,
+        "bombTLL": 100,
+        "fire": "playerBakerShoot",
+        "special": "playerBakerSpecial",
+        "ultimate":  "playerBakerUlt"
+      },
+      {
+        "role": "ROLE_PLAYER_GAMBLER",
+        "primaryCooldown": 50,
+        "specialCooldown": 100,
+        "specialDamage": 3,
+        "ultCooldown": 100,
+        "ultDamage": 5,
+        "ultIs": 0,
+        "fire": "playerGamblerShoot",
+        "special": "playerGamblerSpecial",
+        "ultimate": "playerGamblerUlt",
+        "ultLength":  10
+
       }
-      
-   ]
+    ]
+
+
+  }
 }

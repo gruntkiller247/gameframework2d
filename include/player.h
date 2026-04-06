@@ -59,4 +59,6 @@ void playerPowerUps(Entity* self,Entity* powerup);
 
 //void playerMove(Entity* self, int direction);
 
+void loadPlayer(Entity* self);
+
 #endif

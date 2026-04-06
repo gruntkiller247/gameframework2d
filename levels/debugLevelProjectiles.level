@@ -19,7 +19,7 @@
 			},
 			{
 				"name": "player",
-				"role": "ROLE_PLAYER_GUNNER",
+				"role": "ROLE_PLAYER_BAKER",
 				"positionX": 300,
 				"positionY": 300
 			},
@@ -38,7 +38,7 @@
 				"time": 100,
 				"positionX": 400,
 				"positionY": 400,
-				"delay":  100
+				"delay":  0
 			},
 			{
 				"name": "Powerup",

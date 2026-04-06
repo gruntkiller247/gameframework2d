@@ -44,7 +44,7 @@ typedef struct Entity_S
 	int damage;
 	
 	
-	//Stuff that is doubled used by various things
+	//Stuff that is doubled used by various things - should probably seperate at some point
 	int isSpecialBomb;
 	int currentPowerUp;
 	int powerUpMaxTime;
@@ -54,31 +54,19 @@ typedef struct Entity_S
 	//This stuff is for the powerup on the player
 
 
-	//This stuff is for the player
-	int timerPrimary;				//Timer that counts up to cooldown
-	int primaryCooldown;			//Time until primary attack can be fired
-	//int amPowered;					//Flag toggled when in a powered up state, only allowed 1 power up at a time!
+	//This stuff is for the entities: Assumed most entities required at least 1 timer. Use these before making more! - Clean up later and seperate maybe
+
+	int timerPrimary;			//Timer that counts up to cooldown
+	int primaryCooldown;		//Time until primary attack can be fired
 	
-	//Player Baker special values
-	int bombTLL;
-	int bombAmount;
-	int move;
-
-	//Player Gambler specail values
-
+	//For the bomb entity 
+	int move;					//Indicates whether the bomb should be able to move: 0 no; 1 yes
 
 
 	int timerDeath;				//Timer to count up to timeToLive
 	int timeToLive;				//Time to Live for projectiles like things. Can be NULL; Used for Player projectiles + Bombs
 
-	int timerSpecial;			//The thing that counts up
-	int specialCooldown;		//The thing that is counted to
-	int specialDamage;
-
-	int timerUlt;
-	int ultCooldown;
-	int ultDamage;
-	int ultIs;					//This should only be touched by the projectile class when the gunner ults
+	int ultIs;					//This should only be touched by the projectile class when the gunner ults. Indicates if the projectile is a gunner ult - probably needs a rework
 
 	
 	int delay;					//Used to delay an entities spawn: To be used in the level editor

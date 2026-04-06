@@ -312,7 +312,7 @@ int main(int argc, char * argv[])
     srand(time(NULL));
     TTF_Font* font = NULL;
     SDL_Color color = { 255, 255, 255, 255 };
-    Uint8 playerRole = ROLE_PLAYER_GUNNER;
+    Uint8 playerRole = ROLE_PLAYER_BAKER;
 
     int paused = 0;
     
