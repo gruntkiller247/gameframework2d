@@ -19,7 +19,7 @@
 			},
 			{
 				"name": "player",
-				"role": "ROLE_PLAYER_BAKER",
+				"role": "ROLE_PLAYER_GUNNER",
 				"positionX": 300,
 				"positionY": 300
 			},

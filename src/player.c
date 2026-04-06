@@ -619,15 +619,15 @@ void playerGunnerUltimate(Entity* self)
 {
 	if (!self)
 		return;
-
+	
 
 	PlayerData* data = (PlayerData*)self->data;
 
 	if (!data)
 		return;
 
-	//slog("Firing Gunner Ult!");
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x * -1 + self->bounds.x * -2, self->position.y * -1 + self->bounds.y * -2), TEAM_PLAYER, -1, ROLE_PROJECTILE);
+	slog("Firing Gunner Ult!");
+	Entity* thing = projectileEntityNew(gfc_vector2d(0,0), TEAM_PLAYER, -1, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(0, 0);
 	thing->bounds = gfc_rect(0, 0, 32*0, 32*0);
 	thing->damage = data->ultDamage;
@@ -1168,8 +1168,13 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerFire, "playerGunnerShoot"))
+			if (strcmp(playerFire, "playerGunnerShoot") == 0)
 				data->fire = playerGunnerShoot;
+			else
+			{
+				slog("Error parsing Gunner Shoot");
+				goto fail;
+			}
 
 			playerSpecial = sj_object_get_string(roleData, "special");
 
@@ -1179,8 +1184,13 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerSpecial, "playerGunnerSpecial"))
-				data->fire = playerGunnerSpecial;
+			if (strcmp(playerSpecial, "playerGunnerSpecial") == 0)
+				data->special = playerGunnerSpecial;
+			else
+			{
+				slog("Error parsing Gunner Special");
+				goto fail;
+			}
 
 			playerUlt = sj_object_get_string(roleData, "ultimate");
 
@@ -1190,14 +1200,17 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerUlt, "playerGunnerUltimate"))
-				data->fire = playerGunnerUltimate;
+			if (strcmp(playerUlt, "playerGunnerUltimate") == 0)
+				data->ultimate = playerGunnerUltimate;
+			else
+			{
+				slog("Error parsing Gunner Ult");
+				goto fail;
+			}
 
 			break;
 
 		case ROLE_PLAYER_BAKER:
-
-			//Magic number for Baker: Look at Player's JSON
 			roleData = sj_array_get_nth(listRoles, 1);
 
 			if (!roleData)
@@ -1248,18 +1261,33 @@ void loadPlayer(Entity* self)
 			data->ultDamage = ultDamage;
 
 
-			playerFire = sj_object_get_string(roleData, "fire");
 
+
+
+			playerFire = sj_object_get_string(roleData, "fire");
+			
 			if (!playerFire)
 			{
 				slog("Error getting playerFire");
 				goto fail;
 			}
+			slog("Player fire: %s", playerFire);
 
-			if (strcmp(playerFire, "playerBakerShoot"))
+			if (strcmp(playerFire, "playerBakerShoot") == 0)
 				data->fire = playerBakerShoot;
+			else
+			{
+				slog("Error Baker shoot!");
+				goto fail;
+			}
+
+
+
+
 
 			playerSpecial = sj_object_get_string(roleData, "special");
+
+			slog("Player special: %s", playerSpecial);
 
 			if (!playerSpecial)
 			{
@@ -1267,10 +1295,23 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerSpecial, "playerBakerSpecial"))
-				data->fire = playerBakerSpecial;
+			if (strcmp(playerSpecial, "playerBakerSpecial") == 0)
+				data->special = playerBakerSpecial;
+			else
+			{
+				slog("Error Baker specail!");
+				goto fail;
+			}
+			
+
+
+
+
+
 
 			playerUlt = sj_object_get_string(roleData, "ultimate");
+
+			slog("Player ult: %s", playerUlt);
 
 			if (!playerUlt)
 			{
@@ -1278,8 +1319,18 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerUlt, "playerBakerUlt"))
-				data->fire = playerBakerUlt;
+			if (strcmp(playerUlt, "playerBakerUlt") == 0)
+				data->ultimate = playerBakerUlt;
+			else
+			{
+				slog("Error Baker ULT!");
+				goto fail;
+			}
+
+
+
+
+
 
 
 			if (sj_object_get_int(roleData, "bombAmount", &bombAmount) == 0)
@@ -1358,8 +1409,13 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerFire, "playerGamblerShoot"))
+			if (strcmp(playerFire, "playerGamblerShoot") == 0)
 				data->fire = playerGamblerShoot;
+			else
+			{
+				slog("Error parsing Gabmler Shoot");
+				goto fail;
+			}
 
 			playerSpecial = sj_object_get_string(roleData, "special");
 
@@ -1369,8 +1425,13 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerSpecial, "playerGamblerSpecial"))
-				data->fire = playerGamblerSpecial;
+			if (strcmp(playerSpecial, "playerGamblerSpecial") == 0)
+				data->special = playerGamblerSpecial;
+			else
+			{
+				slog("Error parsing Gabmler Shoot");
+				goto fail;
+			}
 
 			playerUlt = sj_object_get_string(roleData, "ultimate");
 
@@ -1380,8 +1441,13 @@ void loadPlayer(Entity* self)
 				goto fail;
 			}
 
-			if (strcmp(playerUlt, "playerGamblerUlt"))
-				data->fire = playerGamblerUlt;
+			if (strcmp(playerUlt, "playerGamblerUlt") == 0)
+				data->ultimate = playerGamblerUlt;
+			else
+			{
+				slog("Error parsing Gabmler Shoot");
+				goto fail;
+			}
 
 
 			if (sj_object_get_int(roleData, "ultIs", &ultIs) == 0)
