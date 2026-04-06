@@ -37,7 +37,8 @@
 				"team": "TEAM_ENEMY",
 				"time": 100,
 				"positionX": 400,
-				"positionY": 400
+				"positionY": 400,
+				"delay":  100
 			},
 			{
 				"name": "Powerup",

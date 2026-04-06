@@ -1,3 +1,9 @@
 {
-
+  "player":
+   [
+      {
+        "sprite": "images/ed210.png"
+      }
+      
+   ]
 }

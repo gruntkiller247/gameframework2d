@@ -20,9 +20,11 @@ typedef struct PD
 	void (*ultimate)(struct Entity_S* ultimate);				//Describes how the entity uses their ultimate
 
 	int ultLength;												//Lenght of time the gambler's ULT last for
+	int basicPlayerProjectileLife;								//Projectile timer to live cap for the Player
 
 
-}PlayerData; //Currently Cut content until I can fix this
+
+}PlayerData;
 
 
 static int baseSpeedMod = 3;
@@ -72,7 +74,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->layer = EL_PLAYER;
 
 
-	self->basicPlayerProjectileLife = 1000;
+	data->basicPlayerProjectileLife = 1000;
 	self->maxHP = 3;
 	self->hp = self->maxHP;
 
@@ -280,7 +282,11 @@ void playerThink(Entity* self)
 	if (self->currentPowerUp != ROLE_PU_NONE)
 	{
 		if (self->powerUpTimer < self->powerUpMaxTime)
+		{
 			self->powerUpTimer += 1;
+			//slog("Power up timer: %i",self->powerUpTimer);
+		}
+			
 		else
 		{
 			//Kill the powered up state!
@@ -302,6 +308,7 @@ void playerThink(Entity* self)
 				break;
 
 			case ROLE_PU_SPEED:
+				slog("SPEED!");
 				self->velocity = gfc_vector2d(1, 1);
 				break;
 
@@ -451,8 +458,14 @@ void playerShoot(Entity* self,int direction)
 {
 	if (!self)
 		return;
+	PlayerData* data = (PlayerData*)self->data;
 
-	Entity* thing = projectileEntityNew( gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), TEAM_PLAYER,self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	if (!data)
+	{
+		return;
+	}
+
+	Entity* thing = projectileEntityNew( gfc_vector2d(self->position.x+self->bounds.x,self->position.y+self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 
 	if (!thing)
 	{
@@ -526,9 +539,14 @@ void playerGunnerShoot(Entity* self, int direction)
 	if (!self)
 		return;
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
-	Entity* thing2 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
-	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	Entity* thing2 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	//thing->damage = 2;
 
 
@@ -600,7 +618,13 @@ void playerGunnerSpecial(Entity* self,int direction)
 		return;
 	//slog("Firing gunner special!");
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
+
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	thing->scale = gfc_vector2d(5,5);
 	thing->bounds= gfc_rect(0, 0, 32*5, 32*5);
 	thing->damage = self->specialDamage;
@@ -740,7 +764,12 @@ void playerGamblerShoot(Entity* self, Uint8 direction)
 	if (!self)
 		return;
 
-	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, self->basicPlayerProjectileLife, ROLE_PROJECTILE);
+	PlayerData* data = (PlayerData*)self->data;
+
+	if (!data)
+		return;
+
+	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 
 	//slog("Gambler Shooting");
 

@@ -173,6 +173,8 @@ Level* dataLoadLevel(const char* levelName)
 	int tempX =0 , tempY =0;
 	int tempInt = -1;
 	int teamEnum = -1;
+	int delay = -1;
+
 
 
 	if (!levelName)
@@ -271,6 +273,11 @@ Level* dataLoadLevel(const char* levelName)
 		}
 
 		name = sj_object_get_string(entity,"name");
+
+		if(sj_object_get_int(entity, "delay", &delay) == 0);
+		{
+			slog("Either error getting a delay value, or delay is 0!");
+		}
 
 		switch (role)
 		{
@@ -455,6 +462,9 @@ Level* dataLoadLevel(const char* levelName)
 		if (temp)
 		{
 			temp->position = gfc_vector2d(tempX,tempY);
+			
+			temp->delay = delay;
+			temp->delayTimer = 0;
 		}
 	}
 

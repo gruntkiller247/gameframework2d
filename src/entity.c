@@ -171,6 +171,12 @@ void entityDraw(Entity* self)
 		return;
 	}
 
+	if (self->delayTimer < self->delay)
+	{
+		slog("Entity %s is on a delay!: ", self->name);
+		return;
+	}
+
 
 	if (self->layer == EL_INVISIBLE)
 	{
@@ -235,6 +241,13 @@ void entityThink(Entity* self)
 	if (!self)
 		return;
 
+	if (self->delayTimer < self->delay)
+	{
+		//slog("Entity %s is on a delay!: ", self->name);
+		self->delayTimer++;
+		return;
+	}
+
 	/**if (self->name && strcmp(self->name, "Matt") != 0 && strcmp(self->name, "") != 0)
 	{
 		slog("Making %s Think!", self->name);
@@ -274,6 +287,11 @@ void entityUpdate(Entity* self)
 	if (!self)
 		return;
 
+	if (self->delayTimer < self->delay)
+	{
+		slog("Entity %s is on a delay!: ", self->name);
+		return;
+	}
 
 	if (self->update)
 	{
@@ -355,6 +373,9 @@ void entityTouchAll()
 			if (!entityManager.entityList[d]._inUse)
 				continue;
 
+			if (entityManager.entityList[c].delay > entityManager.entityList[c].delayTimer || entityManager.entityList[d].delay > entityManager.entityList[d].delayTimer)
+				continue;
+
 			if (entityManager.entityList[d].team == entityManager.entityList[c].team)
 				continue;
 
@@ -372,6 +393,8 @@ void entityTouchAll()
 
 			if (entityManager.entityList[c].layer == EL_INVISIBLE || entityManager.entityList[d].layer == EL_INVISIBLE)
 				continue;
+
+
 
 			/*if (entityManager.entityList[c].layer == EL_PLAYER && entityManager.entityList[d].layer == EL_SYMBOLS)
 			{

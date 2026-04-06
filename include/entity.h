@@ -44,24 +44,19 @@ typedef struct Entity_S
 	int damage;
 	
 	
-
+	//Stuff that is doubled used by various things
 	int isSpecialBomb;
-
-	//Clean these up and put them in children class at some point
-	//ROLE STUFF HERE -First 3 are the Player's stuff
-	//Might be used
-	
-	
-	//This stuff is for the powerup on the player
-	int powerUpTimer;
-	int powerUpMaxTime;
 	int currentPowerUp;
+	int powerUpMaxTime;
 	int ultPowerup;
+	int powerUpTimer;
+
+	//This stuff is for the powerup on the player
+
 
 	//This stuff is for the player
 	int timerPrimary;				//Timer that counts up to cooldown
 	int primaryCooldown;			//Time until primary attack can be fired
-	int basicPlayerProjectileLife;  //Projectile timer to live cap for the Player
 	//int amPowered;					//Flag toggled when in a powered up state, only allowed 1 power up at a time!
 	
 	//Player Baker special values
@@ -86,7 +81,8 @@ typedef struct Entity_S
 	int ultIs;					//This should only be touched by the projectile class when the gunner ults
 
 	
-
+	int delay;					//Used to delay an entities spawn: To be used in the level editor
+	int delayTimer;				//Used to count up to delayMax: Starts at 0
 
 	
 }Entity;
