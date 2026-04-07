@@ -1,0 +1,30 @@
+{
+  "sprite": "images/ed210.png",
+  "name": "Generic Powerup",
+  "powerUpMaxTime": 0,
+  "role":
+  [
+    {
+      "role": "ROLE_PU_FREE_ULT",
+      "colorReal": "GFC_COLOR_GREY",
+      "ultPowerup": 1
+    },
+    {
+      "role": "ROLE_PU_INVUL",
+      "colorReal": "GFC_COLOR_BLUE",
+
+    },
+    {
+      "role": "ROLE_PU_HP_RECOVERY",
+      "colorReal": "GFC_COLOR_RED"
+    },
+    {
+      "role": "ROLE_PU_SPEED",
+      "colorReal": "GFC_COLOR_CYAN",
+      "powerUpMaxTime": 400
+    },
+    {
+      "role": "ROLE_PU_BOMB"
+    }
+  ]
+}

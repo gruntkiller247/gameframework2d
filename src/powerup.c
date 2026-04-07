@@ -1,9 +1,12 @@
 #include "simple_logger.h"
+#include <simple_json.h>
 #include "powerup.h"
 #include "player.h"
 #include "gfc_input.h"
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
+
+const char* powerUpFile = "JSONs/powerups.json";
 
 void powerUpThink(Entity* self);
 
@@ -28,54 +31,25 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 	if(role == ROLE_PU_RANDOM)
 		role = ROLE_PU_MIN+1 + rand() % (ROLE_PU_MAX-1-ROLE_PU_MIN);
 
-	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
+	//Non JSON stuff
 	self->position = position;
 	self->frame = 0;
-
 	self->think = powerUpThink;
 	self->free = powerUpFree;
 	self->update = powerUpUpdate;
 	self->touch = powerUpTouch;
 
-	self->bounds = gfc_rect(0, 0, 32, 32);
-	
 	self->team = TEAM_ITEM;
 	self->layer = EL_ITEM;
 	self->role = role;
+	self->bounds = gfc_rect(0, 0, 32, 32);
 
-	self->powerUpMaxTime = 0;
+	strcpy(self->name, role);
+
 	
-	switch (role)
-	{
-		case ROLE_PU_FREE_ULT:
-			self->colorReal = GFC_COLOR_GREY;
-			self->ultPowerup = 1;
-			break;
+	loadPowerUp(self);
 
-		case ROLE_PU_INVUL:
-			self->colorReal = GFC_COLOR_BLUE;
-
-			break;
-
-		case ROLE_PU_HP_RECOVERY:
-			self->colorReal = GFC_COLOR_RED;
-			break;
-
-		case ROLE_PU_SPEED:
-			//self->powerUpTimer = 0;
-			self->colorReal = GFC_COLOR_CYAN;
-			self->powerUpMaxTime = 400;
-			break;
-
-		case ROLE_PU_BOMB:
-			
-			break;
-
-		default:
-			slog("Error with spawning a powerup!");
-			return NULL;
-			
-	}
+	
 
 	return self;
 }
@@ -144,4 +118,101 @@ void powerUpFree(Entity* self)
 		free(self->data);
 
 	free(self);
+}
+
+void loadPowerUp(Entity* self)
+{
+	if (!self)
+		return;
+
+	if (!powerUpFile)
+	{
+		slog("Error finding powerup JSON file!");
+		return;
+	}
+
+	SJson* json = NULL;
+	SJson* rson = NULL;
+	SJson* roleData = NULL;
+	const char* spriteFile = NULL;
+	const char* colorReal = NULL;
+	int ultPowerUp = -1;
+	int powerUpMaxTime = -1;
+
+	json = sj_load(powerUpFile);
+
+	if (!json)
+	{
+		slog("Failed to load powerup JSON file!");
+		goto fail;
+	}
+
+	spriteFile = sj_object_get_string(json, "sprite");
+
+	if (!spriteFile)
+	{
+		slog("powerup has no sprite!");
+		goto fail;
+	}
+
+	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
+	
+	if (sj_object_get_int(json, "powerUpMaxTime", &powerUpMaxTime) == 0)
+	{
+		slog("Failed to get powerupMaxTime or it is 0!");
+		powerUpMaxTime = 0;
+	}
+	
+	self->powerUpMaxTime = powerUpMaxTime;
+
+
+	rson = sj_object_get_value(json, "role");
+	
+
+	//Role stuff
+	switch (self->role)
+	{
+	case ROLE_PU_FREE_ULT:
+		roleData = sj_array_get_nth(rson, 0);
+		colorReal = sj_object_get_string(roleData, "colorReal");
+
+		if (!getColor(self, &colorReal))
+		{
+			//Do the real color comparison here
+			//This means the JSON used the format of gfc_color(X,Y,Z);
+		}
+
+		self->colorReal = GFC_COLOR_GREY;
+		self->ultPowerup = 1;
+		break;
+
+	case ROLE_PU_INVUL:
+		self->colorReal = GFC_COLOR_BLUE;
+
+		break;
+
+	case ROLE_PU_HP_RECOVERY:
+		self->colorReal = GFC_COLOR_RED;
+		break;
+
+	case ROLE_PU_SPEED:
+		//self->powerUpTimer = 0;
+		self->colorReal = GFC_COLOR_CYAN;
+		self->powerUpMaxTime = 400;
+		break;
+
+	case ROLE_PU_BOMB:
+
+		break;
+
+	default:
+		slog("Error with spawning a powerup!");
+		return NULL;
+
+	}
+
+	fail:
+	
+	if (json)
+		sj_free(json);
 }

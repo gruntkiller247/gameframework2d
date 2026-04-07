@@ -316,5 +316,8 @@
     <None Include="..\JSONs\player.json">
       <Filter>JSONs</Filter>
     </None>
+    <None Include="..\JSONs\powerups.json">
+      <Filter>JSONs</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -571,6 +571,122 @@ int getDistance(Entity* self, Entity* notSelf)
 	return distance;
 }
 
-
+int getColor(Entity* self, const char* color)
+{
+	
+	if (strcmp(color, "GFC_COLOR_RED") == 0)
+	{
+		self->colorReal = GFC_COLOR_RED;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTRED") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTRED;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKRED") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKRED;
+	}
+	else if (strcmp(color, "GFC_COLOR_GREEN") == 0)
+	{
+		self->colorReal = GFC_COLOR_GREEN;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTGREEN") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTGREEN;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKGREEN") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKGREEN;
+	}
+	else if (strcmp(color, "GFC_COLOR_BLUE") == 0)
+	{
+		self->colorReal = GFC_COLOR_BLUE;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTBLUE") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTBLUE;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKBLUE") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKBLUE;
+	}
+	else if (strcmp(color, "GFC_COLOR_BLACK"))
+	{
+		self->colorReal = GFC_COLOR_BLACK;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKGREY") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKGREY;
+	}
+	else if (strcmp(color, "GFC_COLOR_GREY") == 0)
+	{
+		self->colorReal = GFC_COLOR_GREY;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTGREY") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTGREY;
+	}
+	else if (strcmp(color,"GFC_COLOR_WHITE") == 0)
+	{
+		self->colorReal = GFC_COLOR_WHITE;
+	}
+	else if (strcmp(color, "GFC_COLOR_YELLOW") == 0)
+	{
+		self->colorReal = GFC_COLOR_YELLOW;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTYELLOW") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTYELLOW;
+	}
+	else if (strcmp(color,"GFC_COLOR_DARKYELLOW") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKYELLOW;
+	}
+	else if (strcmp(color, "GFC_COLOR_CYAN") == 0)
+	{
+		self->colorReal = GFC_COLOR_CYAN;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTCYAN") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTCYAN;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKCYAN") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKCYAN;
+	}
+	else if (strcmp(color, "GFC_COLOR_MAGENTA") == 0)
+	{
+		self->colorReal = GFC_COLOR_MAGENTA;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTMAGENTA") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTMAGENTA;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKMAGENTA") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKMAGENTA;
+	}
+	else if (strcmp(color, "GFC_COLOR_BROWN") == 0)
+	{
+		self->colorReal = GFC_COLOR_BROWN;
+	}
+	else if (strcmp(color, "GFC_COLOR_ORANGE") == 0)
+	{
+		self->colorReal = GFC_COLOR_ORANGE;
+	}
+	else if (strcmp(color, "GFC_COLOR_LIGHTORANGE") == 0)
+	{
+		self->colorReal = GFC_COLOR_LIGHTORANGE;
+	}
+	else if (strcmp(color, "GFC_COLOR_DARKORANGE") == 0)
+	{
+		self->colorReal = GFC_COLOR_DARKORANGE;
+	}
+	else
+	{
+		slog("Unkown macro color!");
+		return NULL;
+	}
+}
 
 //endLine
