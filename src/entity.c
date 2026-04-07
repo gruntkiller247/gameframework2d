@@ -573,7 +573,9 @@ int getDistance(Entity* self, Entity* notSelf)
 
 int getColor(Entity* self, const char* color)
 {
-	
+
+	slog("The inputted color is:%s",color);
+
 	if (strcmp(color, "GFC_COLOR_RED") == 0)
 	{
 		self->colorReal = GFC_COLOR_RED;
@@ -610,7 +612,7 @@ int getColor(Entity* self, const char* color)
 	{
 		self->colorReal = GFC_COLOR_DARKBLUE;
 	}
-	else if (strcmp(color, "GFC_COLOR_BLACK"))
+	else if (strcmp(color, "GFC_COLOR_BLACK") == 0)
 	{
 		self->colorReal = GFC_COLOR_BLACK;
 	}
@@ -685,7 +687,7 @@ int getColor(Entity* self, const char* color)
 	else
 	{
 		slog("Unkown macro color!");
-		return NULL;
+		return 0;
 	}
 }
 

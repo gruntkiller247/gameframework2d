@@ -153,9 +153,8 @@ int getRole(const char* role)
 	}
 		
 }
-/*
-	TO DO: Add the ablitity to read power ups!
-*/
+
+
 Level* dataLoadLevel(const char* levelName)
 {
 	Level* level = NULL;

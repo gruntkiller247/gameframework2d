@@ -8,7 +8,8 @@
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
 
-
+#define showSlog if (functionSlogs == 1)
+static const functionSlogs = 1;
 
 typedef struct Entity_S
 {
@@ -264,7 +265,7 @@ int getDistance(Entity* self, Entity* notSelf);
 	Recieves an entity and a string representation of a color from a JSON file. Converts the string into a GFC color then applies it to the entity
 	Assumes that color is one of the macros in GFC_COLOR!
 	DOES NOT COMPARE gfc_color(X,Y,Z) for identity! just the macros!
-	Returns 1 if successful, NULL otherwise!
+	Returns 1 if successful, 0 otherwise!
 */
 int getColor(Entity* self,const char* color);
 #endif

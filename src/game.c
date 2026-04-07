@@ -17,7 +17,7 @@
 #include "level.h"
 
 #define MY_FONT "fonts/FreeSans.ttf"
-#define showSlog if (functionSlogs == 1)
+
 
 //Static bullshit
 //Window Size
@@ -382,11 +382,6 @@ int main(int argc, char * argv[])
     strcpy(player->name, "Player");*/
 
     currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
-    
-    showSlog
-    {
-        slog("Past level Loaded!");
-    }
         
 
     if (!currentLevel)

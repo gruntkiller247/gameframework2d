@@ -7,6 +7,7 @@
 #include "gf2d_graphics.h"
 
 const char* powerUpFile = "JSONs/powerups.json";
+void loadPowerUp(Entity* self);
 
 void powerUpThink(Entity* self);
 
@@ -27,7 +28,7 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 	{
 		return NULL;
 	}
-
+	
 	if(role == ROLE_PU_RANDOM)
 		role = ROLE_PU_MIN+1 + rand() % (ROLE_PU_MAX-1-ROLE_PU_MIN);
 
@@ -44,11 +45,11 @@ Entity* powerUpEntityNew(GFC_Vector2D position,int role)
 	self->role = role;
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
-	strcpy(self->name, role);
+	//strcpy(self->name, role);
 
 	
 	loadPowerUp(self);
-
+	
 	
 
 	return self;
@@ -122,6 +123,7 @@ void powerUpFree(Entity* self)
 
 void loadPowerUp(Entity* self)
 {
+
 	if (!self)
 		return;
 
@@ -166,7 +168,13 @@ void loadPowerUp(Entity* self)
 	self->powerUpMaxTime = powerUpMaxTime;
 
 
-	rson = sj_object_get_value(json, "role");
+	rson = sj_object_get_value(json, "roles");
+
+	if (!rson)
+	{
+		slog("Failed to load JSON role array!");
+		goto fail;
+	}
 	
 
 	//Role stuff
@@ -175,30 +183,63 @@ void loadPowerUp(Entity* self)
 	case ROLE_PU_FREE_ULT:
 		roleData = sj_array_get_nth(rson, 0);
 		colorReal = sj_object_get_string(roleData, "colorReal");
-
-		if (!getColor(self, &colorReal))
+		
+		if (getColor(self, colorReal) == 0)
 		{
 			//Do the real color comparison here
 			//This means the JSON used the format of gfc_color(X,Y,Z);
 		}
 
-		self->colorReal = GFC_COLOR_GREY;
-		self->ultPowerup = 1;
+		if (sj_object_get_int(json, "powerUpMaxTime", &powerUpMaxTime) == 0)
+		{
+			slog("Failed to get ultPowerup from JSON!");
+			goto fail;
+		}
+
+		self->powerUpMaxTime = powerUpMaxTime;
 		break;
 
 	case ROLE_PU_INVUL:
-		self->colorReal = GFC_COLOR_BLUE;
+		roleData = sj_array_get_nth(rson, 1);
+		colorReal = sj_object_get_string(roleData, "colorReal");
+
+		if (getColor(self, colorReal) == 0)
+		{
+			//Do the real color comparison here
+			//This means the JSON used the format of gfc_color(X,Y,Z);
+		}
 
 		break;
 
 	case ROLE_PU_HP_RECOVERY:
-		self->colorReal = GFC_COLOR_RED;
+		roleData = sj_array_get_nth(rson, 2);
+		colorReal = sj_object_get_string(roleData, "colorReal");
+
+		if (getColor(self, colorReal) == 0)
+		{
+			//Do the real color comparison here
+			//This means the JSON used the format of gfc_color(X,Y,Z);
+		}
 		break;
 
 	case ROLE_PU_SPEED:
-		//self->powerUpTimer = 0;
-		self->colorReal = GFC_COLOR_CYAN;
-		self->powerUpMaxTime = 400;
+		roleData = sj_array_get_nth(rson, 3);
+		colorReal = sj_object_get_string(roleData, "colorReal");
+		;
+
+		if (getColor(self, colorReal) == 0)
+		{
+			//Do the real color comparison here
+			//This means the JSON used the format of gfc_color(X,Y,Z);
+		}
+
+		if (sj_object_get_int(json, "powerUpMaxTime", &powerUpMaxTime) == 0)
+		{
+			slog("Failed to get ultPowerup from JSON!");
+			goto fail;
+		}
+
+		self->powerUpMaxTime = powerUpMaxTime;
 		break;
 
 	case ROLE_PU_BOMB:

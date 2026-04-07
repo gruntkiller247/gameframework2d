@@ -1,8 +1,8 @@
 {
-  "sprite": "images/ed210.png",
+  "sprite": "images/pointer.png",
   "name": "Generic Powerup",
   "powerUpMaxTime": 0,
-  "role":
+  "roles":
   [
     {
       "role": "ROLE_PU_FREE_ULT",
