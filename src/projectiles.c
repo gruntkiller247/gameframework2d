@@ -6,11 +6,11 @@
 #include "monster.h"
 #include "bomb.h"
 
-typedef struct PD
+/*typedef struct PD
 {
 	int* timerDeath;				//Timer to count up to timeToLive
 	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
-}Projectile_Data; //Currently cut content
+}Projectile_Data; //Currently cut content*/
 
 void symbolExplode(Entity* self);
 
@@ -37,6 +37,8 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 		slog("Data couldn't be made for projectile!");
 		return NULL;
 	}*/
+
+
 	switch (role)
 	{
 		case ROLE_FAKECUP:
@@ -63,23 +65,21 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 
 	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
 	self->position = position;
-	self->frame = 0;
 
+	self->team = team;
+	self->damage = 1;
+	self->velocity = gfc_vector2d(0, 0);
+	self->topSpeed = gfc_vector2d(10, 10);
+
+	self->frame = 0;
 	self->think = projectileThink;
 	self->free = projectileFree;
 	self->update = projectileUpdate;
 	self->touch = projectileTouch;
-
-	self->velocity = gfc_vector2d(0, 0);
-	self->topSpeed = gfc_vector2d(10, 10);
 	self->rotation = 0;
-
 	self->bounds = gfc_rect(0, 0, 32, 32);
 
-	self->team = team;
-	
 
-	self->damage = 1; //hard code this for now, generic projectiles always deal 1! So does body contact!
 
 	boss = getBoss();
 	

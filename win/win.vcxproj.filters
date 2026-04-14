@@ -159,6 +159,9 @@
     <ClCompile Include="..\src\powerup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\entity.h">
@@ -299,6 +302,9 @@
     <ClInclude Include="..\include\powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="testLevel.level">
@@ -317,6 +323,12 @@
       <Filter>JSONs</Filter>
     </None>
     <None Include="..\JSONs\powerups.json">
+      <Filter>JSONs</Filter>
+    </None>
+    <None Include="..\JSONs\bomb.json">
+      <Filter>JSONs</Filter>
+    </None>
+    <None Include="..\JSONs\projectiles.json">
       <Filter>JSONs</Filter>
     </None>
   </ItemGroup>

@@ -21,7 +21,7 @@ typedef struct Entity_S
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
-	GFC_Rect bounds;
+	GFC_Rect bounds;							//CHANGE TO CIRCLE AT SOME POINT!
 	float rotation;
 	Sprite* sprite;
 	float frame;

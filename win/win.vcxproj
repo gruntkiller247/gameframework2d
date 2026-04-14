@@ -186,6 +186,7 @@
     <ClCompile Include="..\src\powerup.c" />
     <ClCompile Include="..\src\projectiles.c" />
     <ClCompile Include="..\src\role.c" />
+    <ClCompile Include="..\src\window.c" />
     <ClCompile Include="..\src\world.c" />
   </ItemGroup>
   <ItemGroup>
@@ -234,11 +235,14 @@
     <ClInclude Include="..\include\projectiles.h" />
     <ClInclude Include="..\include\role.h" />
     <ClInclude Include="..\include\tiledef.h" />
+    <ClInclude Include="..\include\window.h" />
     <ClInclude Include="..\include\world.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\JSONs\bomb.json" />
     <None Include="..\JSONs\player.json" />
     <None Include="..\JSONs\powerups.json" />
+    <None Include="..\JSONs\projectiles.json" />
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
     <None Include="..\levels\mainMenu.level" />
