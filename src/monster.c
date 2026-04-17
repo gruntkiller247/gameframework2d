@@ -168,7 +168,19 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	loadMonster(self);
 
 	monsterData->moveTimer = monsterData->moveMaxTime;
+	self->frame = 0;
+	self->think = monsterThink;
+	self->update = monsterUpdate;
+	self->free = monsterFree;
+	self->touch = monsterTouch;
+	self->velocity = gfc_vector2d(0, 0);
+	self->rotation = 0;
+	self->isInvul = 0;
+	self->bounds = gfc_rect(30, 30, 72, 72);
 
+	self->team = TEAM_ENEMY;
+	monsterData->canMove = 1;
+	monsterData->player = getPlayer();
 
 	switch (role)
 	{
@@ -204,25 +216,14 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	//Also Data drive the Boss Roles!
 
 	
-	self->frame = 0;
-	self->think = monsterThink;
-	self->update = monsterUpdate;
-	self->free = monsterFree;
-	self->touch = monsterTouch;
-	self->velocity = gfc_vector2d(0, 0);
-	self->rotation = 0;
-	self->isInvul = 0;
-	self->bounds = gfc_rect(30, 30, 72, 72);
 
-	self->team = TEAM_ENEMY;
 	self->layer = EL_MONSTER;
 	
 	
 
-	monsterData->player = getPlayer();
 	monsterData->state = MS_IDLE;
 	monsterData->phase = MP_HEALTHY_ONCE;
-	monsterData->canMove = 1;
+	
 
 	switch (role)
 	{
@@ -1972,7 +1973,7 @@ void loadMonster(Entity* self)
 				}
 
 				
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -1980,9 +1981,8 @@ void loadMonster(Entity* self)
 					goto fail;
 				}
 
-				slog("Sprite string: %s", spriteString);
 				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
-				slog("ASFASF");
+				
 
 				if (sj_object_get_int(monster, "damage", &damage) == 0)
 				{
@@ -2077,7 +2077,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -2212,7 +2212,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -2348,7 +2348,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -2542,7 +2542,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -2647,7 +2647,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{
@@ -2752,7 +2752,7 @@ void loadMonster(Entity* self)
 				}
 
 
-				spriteString = getRole(sj_object_get_string(monster, "role"));
+				spriteString = sj_object_get_string(monster, "role");
 
 				if (!spriteString)
 				{

@@ -708,6 +708,8 @@ int getRole(const char* role)
 		return ROLE_ERROR;
 	}
 
+	
+
 	if (strcmp(role, "ROLE_TRASHMOB") == 0)
 		return ROLE_TRASHMOB;
 	else if (strcmp(role, "ROLE_PROJECTILE") == 0)
