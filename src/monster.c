@@ -1937,6 +1937,7 @@ void loadMonster(Entity* self)
 
 	mjson = sj_object_get_value(json, "monster");
 
+	
 
 	if (!mjson)
 	{
@@ -1957,10 +1958,7 @@ void loadMonster(Entity* self)
 		goto fail;
 	}
 
-	maxIndex = sj_array_get_count(roles);
-
-	for (c = 0; c < maxIndex; c++)
-	{
+	
 
 		switch (self->role)
 		{
@@ -1973,7 +1971,7 @@ void loadMonster(Entity* self)
 					goto fail;
 				}
 
-
+				
 				spriteString = getRole(sj_object_get_string(monster, "role"));
 
 				if (!spriteString)
@@ -1982,8 +1980,9 @@ void loadMonster(Entity* self)
 					goto fail;
 				}
 
+				slog("Sprite string: %s", spriteString);
 				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
-
+				slog("ASFASF");
 
 				if (sj_object_get_int(monster, "damage", &damage) == 0)
 				{
@@ -1992,7 +1991,7 @@ void loadMonster(Entity* self)
 				}
 
 				self->damage = damage;
-
+				
 
 				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
 				{
@@ -2851,7 +2850,7 @@ void loadMonster(Entity* self)
 			default: //Error handle as TrashMob!
 				;
 
-		}
+		
 	}
 
 
