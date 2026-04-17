@@ -2536,16 +2536,315 @@ void loadMonster(Entity* self)
 			case ROLE_SYMBOL_ENEMY1:
 				monster = sj_array_get_nth(roles, 4);
 
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+
+				spriteString = getRole(sj_object_get_string(monster, "role"));
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->hitDelay = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->position = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				getColor(self, sj_object_get_string(monster, "color"));
+
 				break;
 
 			case ROLE_SYMBOL_ENEMY2:
 				monster = sj_array_get_nth(roles, 5);
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+
+				spriteString = getRole(sj_object_get_string(monster, "role"));
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->hitDelay = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->position = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				getColor(self, sj_object_get_string(monster, "color"));
 
 				break;
 
 			case ROLE_SYMBOL_ENEMY3:
 				monster = sj_array_get_nth(roles, 6);
 
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+
+				spriteString = getRole(sj_object_get_string(monster, "role"));
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->hitDelay = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->position = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				getColor(self, sj_object_get_string(monster, "color"));
 
 				break;
 

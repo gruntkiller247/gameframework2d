@@ -252,6 +252,9 @@ void loadPowerUp(Entity* self)
 
 	}
 
+	sj_free(json);
+	return;
+
 	fail:
 	
 	if (json)
