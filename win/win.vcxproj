@@ -240,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\JSONs\bomb.json" />
+    <None Include="..\JSONs\monster.json" />
     <None Include="..\JSONs\player.json" />
     <None Include="..\JSONs\powerups.json" />
     <None Include="..\JSONs\projectiles.json" />

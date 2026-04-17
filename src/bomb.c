@@ -1,9 +1,12 @@
 #include "entity.h"
+#include <simple_json.h>
 #include "simple_logger.h"
 #include "bomb.h"
 #include "projectiles.h"
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
+
+static const char* bombFile = "JSONs/bomb.json";
 
 void bombThink(Entity* self);
 
@@ -13,9 +16,10 @@ void bombUpdate(Entity* self);
 
 void bombFree(Entity* self);
 
+void loadBomb(Entity* self);
 
 /*
-	-1 timeToLive = no die, NULL = 5 seconds
+	-1 timeToLive = no die, 0 = 5 seconds
 */
 Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive)
 {
@@ -28,30 +32,29 @@ Entity* bombEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive)
 		return NULL;
 	}
 
-	self->role = ROLE_BOMB;
+	loadBomb(self);
 
-	/*self->color = malloc(sizeof(GFC_Color));
-	*self->color = GFC_COLOR_DARKORANGE;*/
+	/*Stuff to data drive
 	self->colorReal = GFC_COLOR_ORANGE;
-
-	self->team = team;
-
 	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
+	self->damage = 3;
+	*/
+
+	//Stuff to hardcode
+	self->role = ROLE_BOMB;
+	self->team = team;
 	self->position = position;
 	self->frame = 0;
-
 	self->think = bombThink;
 	self->free = bombFree;
 	self->update = bombUpdate;
 	self->touch = bombTouch;
-
-	self->bounds = gfc_rect(0, 0, 32, 32);
-	self->damage = 3;
-
 	self->team = team;
 	self->layer = EL_PROJECTILES;
-	
-	//strcpy(self->name, "BOMB!");
+
+	self->bounds = gfc_rect(0, 0, 32, 32);
+
+
 
 	if (timeToLive == 0)
 	{
@@ -458,4 +461,70 @@ void bakerExplode(Entity* self)
 	moveBomb(SW, D_SOUTHWEST);
 	moveBomb(W, D_WEST);
 	moveBomb(NW, D_NORTHWEST);
+}
+
+void loadBomb(Entity* self)
+{
+	SJson* json = NULL;
+	SJson* bjson = NULL;
+	int damage = -1;
+	const char* color = NULL;
+	const char* spriteFile = NULL;
+
+
+	if (!self)
+		return;
+
+	json = sj_load(bombFile);
+
+	if (!json)
+	{
+		slog("Failed to load level's JSON!");
+		return NULL;
+	}
+
+	bjson = sj_object_get_value(json, "player");
+
+	if (!bjson)
+	{
+		slog("Failed to load the bomb's data from JSON!");
+		goto fail;
+	}
+
+	spriteFile = sj_object_get_string(bjson, "sprite");
+
+	if (!spriteFile)
+	{
+		slog("Bomb has no sprite!");
+		goto fail;
+	}
+
+
+	if (sj_object_get_int(bjson, "positionY", &damage) == 0)
+	{
+		slog("Error finding Bomb Damage");
+		goto fail;
+	}
+	
+	color = sj_object_get_string(bjson, "colorReal");
+
+	if (getColor(self, color) == 0)
+	{
+		; //Means that the color was not found IE not a macro, for now whatever!
+	}
+	
+	
+
+	sj_free(bjson);
+	sj_free(json);
+
+	return;
+
+	fail:
+
+	if (bjson)
+		sj_free(bjson);
+
+	if (json)
+		sj_free(json);
 }

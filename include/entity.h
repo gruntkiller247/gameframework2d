@@ -11,6 +11,8 @@
 #define showSlog if (functionSlogs == 1)
 static const functionSlogs = 1;
 
+static int playerPoints = 0;
+
 typedef struct Entity_S
 {
 	//All Entities Require
@@ -32,7 +34,7 @@ typedef struct Entity_S
 	void	(*free)(struct Entity_S* self);	
 	void	*data;
 	void	(*touch)(struct Entity_S* self,struct Entity_S* toucher);
-	GFC_Color colorReal;
+	GFC_Color color;
 
 	int role;
 
@@ -137,30 +139,34 @@ typedef enum RN
 	ROLE_PLAYER_GUNNER = 1,
 	ROLE_PLAYER_BAKER,
 	ROLE_PLAYER_GAMBLER,
+
 	ROLE_TRASHMOB,
 	ROLE_BOSS1,
 	ROLE_BOSS2,
 	ROLE_BOSS3,
-	ROLE_PROJECTILE,
-	ROLE_CUP,
-	ROLE_FAKECUP,
-
-	ROLE_BOMB,
-	ROLE_SYMBOL1,
-	ROLE_SYMBOL2,
 	ROLE_SYMBOL_ENEMY1,
 	ROLE_SYMBOL_ENEMY2,
 	ROLE_SYMBOL_ENEMY3,
+
+	ROLE_PROJECTILE,
+	ROLE_CUP,
+	ROLE_FAKECUP,
+	ROLE_SYMBOL1,
+	ROLE_SYMBOL2,
+
+	
+	ROLE_BOMB,
+
 	ROLE_PU_NONE,
 	ROLE_PU_RANDOM,
 	ROLE_PU_MIN,		
 	ROLE_PU_HP_RECOVERY,
-	
 	ROLE_PU_INVUL,
 	ROLE_PU_BOMB,
 	ROLE_PU_SPEED,
 	ROLE_PU_FREE_ULT,
 	ROLE_PU_MAX,        
+
 	ROLE_COUNT
 
 }RoleNames;
@@ -268,4 +274,10 @@ int getDistance(Entity* self, Entity* notSelf);
 	Returns 1 if successful, 0 otherwise!
 */
 int getColor(Entity* self,const char* color);
+
+/*
+	Helper function to parse the JSON to get the correct enum role
+*/
+int getRole(const char* role);
+
 #endif

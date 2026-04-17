@@ -1,0 +1,154 @@
+{
+  "monster":
+  {
+    
+
+    "roles": 
+    [
+      {
+        "role": "ROLE_TRASHMOB",
+        "hp": 3,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        
+        "state": "MS_TRASH",
+        "layer": "EL_MONSTER",
+        "timeToLive": 800
+      },
+      {
+        "role": "ROLE_BOSS1",
+        "hp": 10,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "state": "MS_IDLE",
+        "layer": "EL_BOSS",
+        "timeToLive": 800,
+
+        "puzzle1": "cupShoot",
+        "puzzle2": "symbols",
+        "aoeTimer": 0,
+        "aoeMaxTime": 500
+      },
+      {
+        "role": "ROLE_BOSS2",
+        "hp": 10,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "timeToLive": 500,
+        "state": "MS_IDLE",
+        "layer": "EL_BOSS",
+
+        "aoeMaxTime": 500,
+        "aoeTimer": 0,
+        "puzzle1": "aoe",
+        "puzzle2": "symbolPattern"
+      },
+      {
+        "role": "ROLE_BOSS3",
+        "hp": 10,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "timeToLive": 500,
+        "state": "MS_IDLE",
+        "layer": "EL_BOSS",
+
+        "puzzle1": "randomPuzzle",
+        "puzzle2": "randomPuzzle",
+        "aoeMaxTime": 100,
+        "aoeTimer": 0,
+
+        "boss3AttackTimer": 0,
+        "boss3AttackMaxTime": 50,
+        "bossAttack": 0,
+        "bossSnipeCount": 0,
+        "bossSnipeMax": 500,
+        "bossNukeCount": 0,
+        "bossNukeMax": 50
+
+      },
+      {
+        "role": "ROLE_SYMBOL_ENEMY1",
+        "hp": 1,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "timeToLive": 800,
+        "state": "MS_IDLE",
+        "layer": "EL_MONSTER",
+
+        "color": "GFC_COLOR_DARKRED"
+
+      },
+      {
+        "role": "ROLE_SYMBOL_ENEMY2",
+        "hp": 1,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "timeToLive": 800,
+        "state": "MS_IDLE",
+        "layer": "EL_MONSTER",
+
+        "color": "GFC_COLOR_DARKYELLOW"
+      },
+      {
+        "role": "ROLE_SYMBOL_ENEMY3",
+        "hp": 1,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+        "timeToLive": 800,
+        "state": "MS_IDLE",
+        "layer": "EL_MONSTER",
+
+        "color": "GFC_COLOR_DARKBLUE"
+      }
+    ]
+  }
+}

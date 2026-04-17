@@ -1,3 +1,8 @@
 {
-
+  "bomb":
+  {
+    "color": "GFC_COLOR_ORANGE",
+    "sprite": "images/pointer.png",
+    "damage": 3
+  }
 }

@@ -331,5 +331,8 @@
     <None Include="..\JSONs\projectiles.json">
       <Filter>JSONs</Filter>
     </None>
+    <None Include="..\JSONs\monster.json">
+      <Filter>JSONs</Filter>
+    </None>
   </ItemGroup>
 </Project>

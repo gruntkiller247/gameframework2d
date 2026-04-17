@@ -55,8 +55,8 @@ void fillEntityManager()
     {
 
             thing = bombEntityNew(gfc_vector2d(100, 100),TEAM_PLAYER,0);
-        
-
+            //thing = monsterEntityNew(gfc_vector2d(100,100),ROLE_TRASHMOB);
+            //thing = projectileEntityNew(gfc_vector2d(100, 100), TEAM_PLAYER, -1, ROLE_PROJECTILE);
     }
 }
 
@@ -381,7 +381,7 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");*/
 
-    currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
+    currentLevel = dataLoadLevel("levels/debugLevel.level");
         
 
     if (!currentLevel)
@@ -398,8 +398,9 @@ int main(int argc, char * argv[])
     }
 
 
-   
-    player=getPlayer();
+    player = getPlayer();
+    bossGame = getBoss();
+
    
     
     /*main game loop*/
@@ -473,6 +474,12 @@ int main(int argc, char * argv[])
 
             entityBoundsCheckAll();
             //slog("Bounds checked!");
+
+            if (player->hp <= 0)
+            {
+                slog("The player is dead! Load main menu!");
+                //Load Main Menu!;
+            }
 
             entityFreeAll();
             //slog("Freed");

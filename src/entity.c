@@ -78,7 +78,7 @@ Entity* entityNew()
 		entityManager.entityList[c].id = ++entityManager.entityPool;
 		//set defaults
 		
-		entityManager.entityList[c].colorReal = GFC_COLOR_TRANSPARENT;
+		entityManager.entityList[c].color = GFC_COLOR_TRANSPARENT;
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
 
@@ -182,9 +182,9 @@ void entityDraw(Entity* self)
 	{
 		return;
 	}
-	else if (!gfc_color_cmp(self->colorReal, GFC_COLOR_TRANSPARENT) && self->sprite && self->_inUse)
+	else if (!gfc_color_cmp(self->color, GFC_COLOR_TRANSPARENT) && self->sprite && self->_inUse)
 	{
-		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, &self->colorReal, (Uint32)self->frame);
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, /*&thing*/NULL, &self->rotation, NULL, &self->color, (Uint32)self->frame);
 	}
 	else if (self->sprite && self->_inUse)
 	{
@@ -573,122 +573,179 @@ int getDistance(Entity* self, Entity* notSelf)
 
 int getColor(Entity* self, const char* color)
 {
+	if (!self)
+		return;
 
-	slog("The inputted color is:%s",color);
+	if (!color)
+	{
+		slog("Color is NULL!");
+		return 0;
+	}
+	
+	//slog("The inputted color is:%s",color);
 
 	if (strcmp(color, "GFC_COLOR_RED") == 0)
 	{
-		self->colorReal = GFC_COLOR_RED;
+		self->color = GFC_COLOR_RED;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTRED") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTRED;
+		self->color = GFC_COLOR_LIGHTRED;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKRED") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKRED;
+		self->color = GFC_COLOR_DARKRED;
 	}
 	else if (strcmp(color, "GFC_COLOR_GREEN") == 0)
 	{
-		self->colorReal = GFC_COLOR_GREEN;
+		self->color = GFC_COLOR_GREEN;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTGREEN") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTGREEN;
+		self->color = GFC_COLOR_LIGHTGREEN;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKGREEN") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKGREEN;
+		self->color = GFC_COLOR_DARKGREEN;
 	}
 	else if (strcmp(color, "GFC_COLOR_BLUE") == 0)
 	{
-		self->colorReal = GFC_COLOR_BLUE;
+		self->color = GFC_COLOR_BLUE;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTBLUE") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTBLUE;
+		self->color = GFC_COLOR_LIGHTBLUE;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKBLUE") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKBLUE;
+		self->color = GFC_COLOR_DARKBLUE;
 	}
 	else if (strcmp(color, "GFC_COLOR_BLACK") == 0)
 	{
-		self->colorReal = GFC_COLOR_BLACK;
+		self->color = GFC_COLOR_BLACK;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKGREY") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKGREY;
+		self->color = GFC_COLOR_DARKGREY;
 	}
 	else if (strcmp(color, "GFC_COLOR_GREY") == 0)
 	{
-		self->colorReal = GFC_COLOR_GREY;
+		self->color = GFC_COLOR_GREY;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTGREY") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTGREY;
+		self->color = GFC_COLOR_LIGHTGREY;
 	}
 	else if (strcmp(color,"GFC_COLOR_WHITE") == 0)
 	{
-		self->colorReal = GFC_COLOR_WHITE;
+		self->color = GFC_COLOR_WHITE;
 	}
 	else if (strcmp(color, "GFC_COLOR_YELLOW") == 0)
 	{
-		self->colorReal = GFC_COLOR_YELLOW;
+		self->color = GFC_COLOR_YELLOW;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTYELLOW") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTYELLOW;
+		self->color = GFC_COLOR_LIGHTYELLOW;
 	}
 	else if (strcmp(color,"GFC_COLOR_DARKYELLOW") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKYELLOW;
+		self->color = GFC_COLOR_DARKYELLOW;
 	}
 	else if (strcmp(color, "GFC_COLOR_CYAN") == 0)
 	{
-		self->colorReal = GFC_COLOR_CYAN;
+		self->color = GFC_COLOR_CYAN;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTCYAN") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTCYAN;
+		self->color = GFC_COLOR_LIGHTCYAN;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKCYAN") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKCYAN;
+		self->color = GFC_COLOR_DARKCYAN;
 	}
 	else if (strcmp(color, "GFC_COLOR_MAGENTA") == 0)
 	{
-		self->colorReal = GFC_COLOR_MAGENTA;
+		self->color = GFC_COLOR_MAGENTA;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTMAGENTA") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTMAGENTA;
+		self->color = GFC_COLOR_LIGHTMAGENTA;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKMAGENTA") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKMAGENTA;
+		self->color = GFC_COLOR_DARKMAGENTA;
 	}
 	else if (strcmp(color, "GFC_COLOR_BROWN") == 0)
 	{
-		self->colorReal = GFC_COLOR_BROWN;
+		self->color = GFC_COLOR_BROWN;
 	}
 	else if (strcmp(color, "GFC_COLOR_ORANGE") == 0)
 	{
-		self->colorReal = GFC_COLOR_ORANGE;
+		self->color = GFC_COLOR_ORANGE;
 	}
 	else if (strcmp(color, "GFC_COLOR_LIGHTORANGE") == 0)
 	{
-		self->colorReal = GFC_COLOR_LIGHTORANGE;
+		self->color = GFC_COLOR_LIGHTORANGE;
 	}
 	else if (strcmp(color, "GFC_COLOR_DARKORANGE") == 0)
 	{
-		self->colorReal = GFC_COLOR_DARKORANGE;
+		self->color = GFC_COLOR_DARKORANGE;
 	}
 	else
 	{
-		slog("Unkown macro color!");
+		slog("Unkown macro color! No color applied!");
 		return 0;
 	}
+	return 1;
+}
+
+int getRole(const char* role)
+{
+	if (!role)
+	{
+		slog("Role has a bad pointer!");
+		return ROLE_ERROR;
+	}
+
+	if (strcmp(role, "ROLE_TRASHMOB") == 0)
+		return ROLE_TRASHMOB;
+	else if (strcmp(role, "ROLE_PROJECTILE") == 0)
+		return ROLE_PROJECTILE;
+	else if (strcmp(role, "ROLE_BOMB") == 0)
+		return ROLE_BOMB;
+	else if (strcmp(role, "ROLE_BOSS1") == 0)
+		return ROLE_BOSS1;
+	else if (strcmp(role, "ROLE_BOSS2") == 0)
+		return ROLE_BOSS2;
+	else if (strcmp(role, "ROLE_BOSS3") == 0)
+		return ROLE_BOSS3;
+	else if (strcmp(role, "ROLE_PLAYER_GAMBLER") == 0)
+		return ROLE_PLAYER_GAMBLER;
+	else if (strcmp(role, "ROLE_PLAYER_BAKER") == 0)
+		return ROLE_PLAYER_BAKER;
+	else if (strcmp(role, "ROLE_PLAYER_GUNNER") == 0)
+		return ROLE_PLAYER_GUNNER;
+	else if (strcmp(role, "ROLE_PU_BOMB") == 0)
+		return ROLE_PU_BOMB;
+	else if (strcmp(role, "ROLE_PU_FREE_ULT") == 0)
+		return ROLE_PU_FREE_ULT;
+	else if (strcmp(role, "ROLE_PU_HP_RECOVERY") == 0)
+		return ROLE_PU_HP_RECOVERY;
+	else if (strcmp(role, "ROLE_PU_INVUL") == 0)
+		return ROLE_PU_INVUL;
+	else if (strcmp(role, "ROLE_PU_SPEED") == 0)
+		return ROLE_PU_SPEED;
+	else if (strcmp(role, "ROLE_PU_RANDOM") == 0)
+		return ROLE_PU_RANDOM;
+	else
+	{
+		slog("Get Role returning Error Role");
+		return ROLE_ERROR;
+
+
+	}
+
 }
 
 //endLine

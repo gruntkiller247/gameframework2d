@@ -17,6 +17,7 @@ typedef struct Level_L
 	Creates a level with a height of height
 	width of width
 	and a default levelMap of 0. This means there are no players. monsters. nor bosses of anykind on the map
+	NOT THE CONSTRUCTOR! Helper to make the generic level for the constructor!
 */
 Level* levelNew(Uint64 height, Uint64 width);
 
@@ -32,7 +33,8 @@ void levelDraw(Level* self);
 	Recieves a filepath to the json level to load
 	returns the level and its data
 	Creates the entities:
-	   Player, Monsters, projectiles, and bombs
+	   within the level. 
+	   Currently makes: Players, Enemies, Bombs, Projectiles, Power ups!
 */
 Level* dataLoadLevel(const char* levelName);
 

@@ -12,7 +12,7 @@
 #include "bomb.h"
 #include <stdlib.h>
 
-const char* playerFile = "JSONs/player.json";
+static const char* playerFile = "JSONs/player.json";
 
 typedef struct PD
 {
@@ -1022,7 +1022,7 @@ void loadPlayer(Entity* self)
 
 	
 
-	self->sprite= gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
+	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
 
 	if (sj_object_get_int(pjson, "positionY", &posY) == 0)
 	{

@@ -12,7 +12,11 @@
 	int* timeToLive;				//Time to Live for projectiles like things. Can be NULL;
 }Projectile_Data; //Currently cut content*/
 
+const char* projFile = "JSONs/projectiles.json";
+
 void symbolExplode(Entity* self);
+
+void loadProjectile(Entity* self);
 
 Entity* boss = NULL;
 
@@ -38,6 +42,27 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 		return NULL;
 	}*/
 
+	//Stuff to data drive
+	//self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
+	//self->damage = 1;
+
+	loadProjectile(self);
+
+	self->position = position;
+
+	self->team = team;
+
+	self->velocity = gfc_vector2d(0, 0);
+	self->topSpeed = gfc_vector2d(10, 10);
+
+	self->frame = 0;
+	self->think = projectileThink;
+	self->free = projectileFree;
+	self->update = projectileUpdate;
+	self->touch = projectileTouch;
+	self->rotation = 0;
+	self->bounds = gfc_rect(0, 0, 32, 32);
+
 
 	switch (role)
 	{
@@ -51,33 +76,21 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 
 		case ROLE_SYMBOL1:
 			self->layer = EL_SYMBOLS;
-			self->colorReal = GFC_COLOR_DARKMAGENTA;
+			self->color = GFC_COLOR_DARKMAGENTA;
 			break;
 
 		case ROLE_SYMBOL2:
 			self->layer = EL_SYMBOLS;
-			self->colorReal = GFC_COLOR_DARKYELLOW;
+			self->color = GFC_COLOR_DARKYELLOW;
 			break;
 
 		default:
 			self->layer = EL_PROJECTILES;
 	}
 
-	self->sprite = gf2d_sprite_load_all("images/pointer.png", 128, 128, 16, 0);
-	self->position = position;
 
-	self->team = team;
-	self->damage = 1;
-	self->velocity = gfc_vector2d(0, 0);
-	self->topSpeed = gfc_vector2d(10, 10);
 
-	self->frame = 0;
-	self->think = projectileThink;
-	self->free = projectileFree;
-	self->update = projectileUpdate;
-	self->touch = projectileTouch;
-	self->rotation = 0;
-	self->bounds = gfc_rect(0, 0, 32, 32);
+	//self->layer = EL_PROJECTILES;
 
 
 
@@ -439,4 +452,73 @@ void symbolExplode(Entity* self)
 	slog("Bad Symbol is exploding!");
 	Entity* bomb = bombEntityNew(self->position, TEAM_ENEMY, 0);
 	self->_inUse = 0;
+}
+
+void loadProjectile(Entity* self)
+{
+	SJson* json = NULL;
+	SJson* pjson = NULL;
+	int damage = -1;
+	const char* color = NULL;
+	const char* spriteFile = NULL;
+
+
+	if (!self)
+		return;
+
+	json = sj_load(projFile);
+
+	if (!json)
+	{
+		slog("Failed to load level's JSON!");
+		return NULL;
+	}
+
+	pjson = sj_object_get_value(json, "projectile");
+
+
+
+	if (!pjson)
+	{
+		slog("Failed to load the projectile's data from JSON!");
+		goto fail;
+	}
+
+	spriteFile = sj_object_get_string(pjson, "sprite");
+
+	if (!spriteFile)
+	{
+		slog("Projectile has no sprite!");
+		goto fail;
+	}
+
+	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
+
+
+	if (sj_object_get_int(pjson, "damage", &damage) == 0)
+	{
+		slog("Error finding Projectile Damage");
+		goto fail;
+	}
+
+	color = sj_object_get_string(pjson, "color");
+	
+	//slog("Projectile color read in: %s", color);
+
+	if (getColor(self, color) == 0)
+	{
+		slog("Projectile Color Error?");
+		; //Means that the color was not found IE not a macro, for now whatever!
+	}
+
+
+
+
+	sj_free(json);
+	return;
+
+fail:
+
+	if (json)
+		sj_free(json);
 }

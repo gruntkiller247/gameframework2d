@@ -182,7 +182,7 @@ void loadPowerUp(Entity* self)
 	{
 	case ROLE_PU_FREE_ULT:
 		roleData = sj_array_get_nth(rson, 0);
-		colorReal = sj_object_get_string(roleData, "colorReal");
+		colorReal = sj_object_get_string(roleData, "color");
 		
 		if (getColor(self, colorReal) == 0)
 		{
@@ -201,7 +201,7 @@ void loadPowerUp(Entity* self)
 
 	case ROLE_PU_INVUL:
 		roleData = sj_array_get_nth(rson, 1);
-		colorReal = sj_object_get_string(roleData, "colorReal");
+		colorReal = sj_object_get_string(roleData, "color");
 
 		if (getColor(self, colorReal) == 0)
 		{
@@ -213,7 +213,7 @@ void loadPowerUp(Entity* self)
 
 	case ROLE_PU_HP_RECOVERY:
 		roleData = sj_array_get_nth(rson, 2);
-		colorReal = sj_object_get_string(roleData, "colorReal");
+		colorReal = sj_object_get_string(roleData, "color");
 
 		if (getColor(self, colorReal) == 0)
 		{
@@ -224,7 +224,7 @@ void loadPowerUp(Entity* self)
 
 	case ROLE_PU_SPEED:
 		roleData = sj_array_get_nth(rson, 3);
-		colorReal = sj_object_get_string(roleData, "colorReal");
+		colorReal = sj_object_get_string(roleData, "color");
 		;
 
 		if (getColor(self, colorReal) == 0)

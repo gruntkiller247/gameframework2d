@@ -103,56 +103,7 @@ int getTeam(const char* team)
 			return TEAM_NONE;
 }
 
-/*
-	Helper function to parse the JSON to get the correct enum role
-*/
-int getRole(const char* role)
-{
-	if (!role)
-	{
-		slog("Role has a bad pointer!");
-		return ROLE_ERROR;
-	}
 
-	if (strcmp(role, "ROLE_TRASHMOB") == 0)
-		return ROLE_TRASHMOB;
-	else if (strcmp(role, "ROLE_PROJECTILE") == 0)
-		return ROLE_PROJECTILE;
-	else if (strcmp(role, "ROLE_BOMB") == 0)
-		return ROLE_BOMB;
-	else if (strcmp(role, "ROLE_BOSS1") == 0)
-		return ROLE_BOSS1;
-	else if (strcmp(role, "ROLE_BOSS2") == 0)
-		return ROLE_BOSS2;
-	else if (strcmp(role, "ROLE_BOSS3") == 0)
-		return ROLE_BOSS3;
-	else if (strcmp(role, "ROLE_PLAYER_GAMBLER") == 0)
-		return ROLE_PLAYER_GAMBLER;
-	else if (strcmp(role, "ROLE_PLAYER_BAKER") == 0)
-		return ROLE_PLAYER_BAKER;
-	else if (strcmp(role, "ROLE_PLAYER_GUNNER") == 0)
-		return ROLE_PLAYER_GUNNER;
-	else if (strcmp(role, "ROLE_PU_BOMB") == 0)
-		return ROLE_PU_BOMB;
-	else if (strcmp(role, "ROLE_PU_FREE_ULT") == 0)
-		return ROLE_PU_FREE_ULT;
-	else if (strcmp(role, "ROLE_PU_HP_RECOVERY") == 0)
-		return ROLE_PU_HP_RECOVERY;
-	else if (strcmp(role, "ROLE_PU_INVUL") == 0)
-		return ROLE_PU_INVUL;
-	else if (strcmp(role, "ROLE_PU_SPEED") == 0)
-		return ROLE_PU_SPEED;
-	else if (strcmp(role, "ROLE_PU_RANDOM") == 0)
-		return ROLE_PU_RANDOM;
-	else
-	{
-		slog("Get Role returning Error Role");
-		return ROLE_ERROR;
-		
-		
-	}
-		
-}
 
 
 Level* dataLoadLevel(const char* levelName)
@@ -487,11 +438,11 @@ fail:
 	if (temp)
 		temp->_inUse = 0;
 
-	if (entities)
+	/*if (entities)
 		sj_free(entities);
 
 	if (ljson)
-		sj_free(ljson);
+		sj_free(ljson);*/
 
 	if (json)
 		sj_free(json);
