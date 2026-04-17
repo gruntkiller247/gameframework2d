@@ -17,7 +17,7 @@
         "topSpeedX": 10,
         "topSpeedY": 10,
         "moveMaxTime": 200,
-        
+
         "state": "MS_TRASH",
         "layer": "EL_MONSTER",
         "timeToLive": 800

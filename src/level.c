@@ -226,7 +226,7 @@ Level* dataLoadLevel(const char* levelName)
 
 		if(sj_object_get_int(entity, "delay", &delay) == 0);
 		{
-			slog("Either error getting a delay value, or delay is 0!");
+			//slog("Either error getting a delay value, or delay is 0!");
 		}
 
 		switch (role)

@@ -83,7 +83,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	data->timerSpecial = 0;
 	data->timerUlt = 0;
 
-	slog("Trying to load the player!");
+	//slog("Trying to load the player!");
 	loadPlayer(self);
 
 	if (!data)
@@ -1474,7 +1474,7 @@ void loadPlayer(Entity* self)
 	}
 
 
-	slog("Read player JSON!");
+	//slog("Read player JSON!");
 	sj_free(json);
 	return;
 
