@@ -11,6 +11,7 @@ typedef struct Level_L
 	GFC_List* levelMap; //Binary representation of the map
 	Sprite* background; //Background image
 	Uint8 spawnPowerUps; //Whether or not the level can randomly spawn power ups - on by default - not read by JSON ATM
+	const char* name;	//Name of the level
 } Level;
 
 /*

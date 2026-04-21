@@ -118,6 +118,7 @@ Level* dataLoadLevel(const char* levelName)
 	const char* name = NULL;
 	const char* background= NULL;
 	const char* team = NULL;
+	const char* levelObjName = NULL;
 	int time= 0;
 	int c=0, role=0, entityMax=0;
 	int tempX =0 , tempY =0;
@@ -167,6 +168,18 @@ Level* dataLoadLevel(const char* levelName)
 		goto fail;
 	}
 
+	levelObjName = sj_object_get_string(ljson, "name");
+
+	if (!levelObjName)
+	{
+		slog("Level JSON file has no name! Giving default temp name!");
+		level->name = "Default Level Name!";
+	}
+	else
+	{
+		//slog("Found the Level's Name!");
+		level->name = _strdup(levelObjName);
+	}
 
 	entities = sj_object_get_value(ljson, "entities");
 

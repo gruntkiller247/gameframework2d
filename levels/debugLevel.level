@@ -1,6 +1,7 @@
 {
 	"level": 
 	{
+		"name": "Debug Level",
 		"powerUps": 1,
 		"background": "images/backgrounds/cat.jpg",
 		"entities": 
