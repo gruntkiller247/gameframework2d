@@ -8,6 +8,7 @@ typedef struct
 	
 }UIManager;
 
+void uiFree(UI* self);
 
 static UIManager uiManager = { 0 };
 
@@ -40,7 +41,7 @@ void uiManagerClose()
 	int c;
 	for (c = 0; c < uiManager.uiMax; c++)
 	{
-		entityFree(&uiManager.uiList[c]);
+		uiFree(&uiManager.uiList[c]);
 	}
 
 	memset(&uiManager, 0, sizeof(uiManager));
@@ -64,6 +65,7 @@ UI* uiNew(GFC_Vector2D position, GFC_Rect bounds)
 		uiManager.uiList[c].active = -1;
 		uiManager.uiList[c].bounds = bounds;
 		uiManager.uiList[c].position = position;
+		uiManager.uiList[c].scale = 1;
 
 		return &uiManager.uiList[c];
 	}
@@ -123,7 +125,14 @@ void uiDraw(UI* self)
 	if (!self)
 		return;
 
-	gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, &self->color, (Uint32)self->frame);
+	//slog("Trying to draw the UI!");
+	if (!self->sprite)
+	{
+		slog("Failed to load UI's Sprite!");
+		return;
+	}
+
+	gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL,NULL, (Uint32)self->frame);
 }
 
 void uiDrawAll()
@@ -133,11 +142,18 @@ void uiDrawAll()
 
 	if (!uiManager.uiList)
 	{
+		slog("No uiList in Draw All UI!");
 		return;
 	}
 
 	for (c = 0; c < uiManager.uiMax; c++)
 	{
+		if (uiManager.uiList[c].active != 1)
+		{
+			//slog("Skipping!");
+			continue;
+		}
+
 		uiDraw(&uiManager.uiList[c]);
 	}
 }
@@ -164,8 +180,28 @@ void uiFree(UI* self)
 	if (!self)
 		return;
 
-	if (self->data)
-		free(self->data);
+	if (self->free)
+		self->free(self);
 
 	//free(self);
+}
+
+void uiFreeAll()
+{
+	int c;
+
+
+	if (!uiManager.uiList)
+	{
+		return;
+	}
+
+	for (c = 0; c < uiManager.uiMax; c++)
+	{
+		if (uiManager.uiList[c]._inUse == 1)
+			continue;
+		
+
+		uiFree(&uiManager.uiList[c]);
+	}
 }

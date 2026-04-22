@@ -384,13 +384,15 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");*/
 
-    currentLevel = dataLoadLevel("levels/debugLevel.level");
-        
+    currentLevel = dataLoadLevel("levels/uiTest.level");
+
+    
+    
 
     if (!currentLevel)
     {
         slog("No level could be loaded! Loading error handling level!");
-        sprite= gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+        sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
         loadLevel(1,ROLE_PLAYER_GAMBLER);
     }
     else
@@ -404,8 +406,12 @@ int main(int argc, char * argv[])
     player = getPlayer();
     bossGame = getBoss();
 
-    UI* button = newButton(gfc_vector2d(0,0),gfc_rect(30,30,72,72));
+    UI* button = newButton(gfc_vector2d(300, 300), gfc_rect(30, 30, 72, 72));
+    button->active = 1;
+    //slog("Button located at X:%f Y:%f", button->position.x, button->position.y);
     
+    //slog("Button active variable is: %f", button->active);
+
     /*main game loop*/
     while(!done)
     {
@@ -453,7 +459,7 @@ int main(int argc, char * argv[])
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
 
 
-            entityManagerDrawAll();
+
             //slog("Drawn");
 
 
@@ -471,11 +477,18 @@ int main(int argc, char * argv[])
 
             entityTouchAll();
             //slog("Touched");  
+            uiTouchAll();
 
             entityUpdateAll();
             //slog("Updated");
+            uiUpdateAll();
 
             entityBoundsCheckAll();
+
+            entityManagerDrawAll();
+            uiDrawAll();
+
+            
             //slog("Bounds checked!");
 
             if (player->hp <= 0)
@@ -485,6 +498,7 @@ int main(int argc, char * argv[])
             }
 
             entityFreeAll();
+            uiFreeAll();
             //slog("Freed");
             
            
@@ -589,7 +603,7 @@ int main(int argc, char * argv[])
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
             entityManagerDrawAll();
-           
+            uiDrawAll();
 
             gf2d_sprite_draw(
                 mouse,
@@ -639,6 +653,8 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseGFC_Color,
                 (int)mf);
+
+            uiDrawAll();
             gf2d_graphics_next_frame();
 
             //Audio done through sdl2 mixer

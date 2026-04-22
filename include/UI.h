@@ -19,7 +19,7 @@ typedef struct UI_S
 	int id;			//Unique ID for each element
 
 	void* data;									//Data unique to the UI element
-	void (*think)(struct UI_S* self);			
+	//void (*think)(struct UI_S* self);			
 	void (*update)(struct UI_S* self);
 	void (*free)(struct UI_S* self);
 	void (*touch)(struct UI_S* self);
@@ -41,6 +41,10 @@ void uiManagerClose();
 void uiTouchAll();
 
 void uiUpdateAll();
+
+void uiFreeAll();
+
+void uiDrawAll();
 
 
 //UI* uiNew(int width, int height, int posx, int posy);

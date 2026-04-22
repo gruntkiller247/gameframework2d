@@ -101,7 +101,8 @@ typedef enum
 	EL_ALL = 36,
 	EL_INVISIBLE = 64,
 	EL_ENEMY_PROJETILES = 128,
-	EL_SYMBOLS = 256
+	EL_SYMBOLS = 256,
+	EL_UI = 512
 }EntityLayers;
 
 typedef enum DS

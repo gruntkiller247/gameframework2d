@@ -4,8 +4,6 @@
 
     "sprite": "images/ed210.png",
     "name": "Player",
-    "positionX": 300,
-    "positionY": 300,
 
     "velocityX": 1,
     "velocityY": 1,

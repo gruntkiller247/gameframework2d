@@ -79,6 +79,7 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	self->isInvul = 0;
 	self->timerPrimary = 0;
 	self->ultIs = 0;
+	self->position = gfc_vector2d(position.x,position.y);
 
 	data->timerSpecial = 0;
 	data->timerUlt = 0;
@@ -945,8 +946,6 @@ void loadPlayer(Entity* self)
 	const char* name = NULL;
 	const char* spriteFile = NULL;
 
-	int posX = -1;
-	int posY = -1;
 	int velX = -1;
 	int velY = -1;
 	int maxVelY = -1;
@@ -1024,20 +1023,7 @@ void loadPlayer(Entity* self)
 
 	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
 
-	if (sj_object_get_int(pjson, "positionY", &posY) == 0)
-	{
-		slog("Error finding Player position Y");
-		goto fail;
-	}
-
-	if (sj_object_get_int(pjson, "positionX", &posX) == 0)
-	{
-		slog("Error finding Player postion X");
-		goto fail;
-	}
-
-	self->position = gfc_vector2d(posX, posY);
-
+	
 
 
 	if (sj_object_get_int(pjson, "velocityY", &velY) == 0)
