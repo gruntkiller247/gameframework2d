@@ -3,7 +3,6 @@
 
 #include <SDL.h>
 #include <stdio.h>
-#include <time.h>
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
@@ -88,18 +87,6 @@ typedef enum
 }HealthStatesEnum;
 
 extern const double healthStates[HS_COUNT];
-
-/*typedef enum
-{
-	PU_NONE = -2,
-	PU_RANDOM = -1,
-	PU_HP_RECOVERY = 0,
-	PU_INVUL,			
-	PU_BOMB,			
-	PU_SPEED,			
-	PU_FREE_ULT,			
-	PU_MAXNUMBER
-}PowerUps;*/
 
 
 typedef enum

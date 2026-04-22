@@ -28,6 +28,7 @@ C:\Users\Matthew\git\gameframework2d\gfc\src\gfc_vector.c;C:\Users\Matthew\git\g
 C:\Users\Matthew\git\gameframework2d\gfc\src\miniz.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\miniz.obj
 C:\Users\Matthew\git\gameframework2d\src\bomb.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\bomb.obj
 C:\Users\Matthew\git\gameframework2d\src\boss.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\boss.obj
+C:\Users\Matthew\git\gameframework2d\src\button.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\button.obj
 C:\Users\Matthew\git\gameframework2d\src\camera.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\camera.obj
 C:\Users\Matthew\git\gameframework2d\src\entity.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\entity.obj
 C:\Users\Matthew\git\gameframework2d\src\game.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\game.obj
@@ -41,5 +42,6 @@ C:\Users\Matthew\git\gameframework2d\src\player.c;C:\Users\Matthew\git\gameframe
 C:\Users\Matthew\git\gameframework2d\src\powerup.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\powerup.obj
 C:\Users\Matthew\git\gameframework2d\src\projectiles.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\projectiles.obj
 C:\Users\Matthew\git\gameframework2d\src\role.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\role.obj
+C:\Users\Matthew\git\gameframework2d\src\UI.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\UI.obj
 C:\Users\Matthew\git\gameframework2d\src\window.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\window.obj
 C:\Users\Matthew\git\gameframework2d\src\world.c;C:\Users\Matthew\git\gameframework2d\win\win\x64\Debug\world.obj

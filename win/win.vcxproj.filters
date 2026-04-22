@@ -162,6 +162,12 @@
     <ClCompile Include="..\src\window.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\UI.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\entity.h">
@@ -305,6 +311,12 @@
     <ClInclude Include="..\include\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="testLevel.level">
@@ -333,6 +345,12 @@
     </None>
     <None Include="..\JSONs\monster.json">
       <Filter>JSONs</Filter>
+    </None>
+    <None Include="..\JSONs\UI.json">
+      <Filter>JSONs</Filter>
+    </None>
+    <None Include="..\levels\uiTest.level">
+      <Filter>Levels</Filter>
     </None>
   </ItemGroup>
 </Project>

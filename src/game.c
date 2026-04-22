@@ -1,8 +1,7 @@
 #include <SDL.h>
 #include "simple_logger.h"
-#include <stdio.h>
-#include <time.h>
 #include <SDL_ttf.h>
+#include "UI.h"
 #include "gfc_input.h"
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
@@ -15,6 +14,7 @@
 #include "bomb.h"
 #include "powerup.h"
 #include "level.h"
+#include "button.h"
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
@@ -364,6 +364,9 @@ int main(int argc, char * argv[])
     
     
     entityManagerInit(16384);//2^14
+    uiManagerInit(255); //2^8
+
+
     gfc_input_init("config/input.gfc");
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -401,7 +404,7 @@ int main(int argc, char * argv[])
     player = getPlayer();
     bossGame = getBoss();
 
-   
+    UI* button = newButton(gfc_vector2d(0,0),gfc_rect(30,30,72,72));
     
     /*main game loop*/
     while(!done)
@@ -520,6 +523,8 @@ int main(int argc, char * argv[])
         }
         else if(level !=0)
         {
+
+            
             if (gfc_input_key_pressed("g"))
             {
                 slog("Unpausing?");
@@ -682,6 +687,7 @@ int main(int argc, char * argv[])
     TTF_CloseFont(font);
     TTF_Quit();
     entityManagerClose();
+    uiManagerClose();
     //slog("entityManager is closed!");
     //monsterManagerClose();
     slog("---==== END ====---");

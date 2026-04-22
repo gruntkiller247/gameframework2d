@@ -173,6 +173,7 @@
     <ClCompile Include="..\gfc\src\miniz.c" />
     <ClCompile Include="..\src\bomb.c" />
     <ClCompile Include="..\src\boss.c" />
+    <ClCompile Include="..\src\button.c" />
     <ClCompile Include="..\src\camera.c" />
     <ClCompile Include="..\src\entity.c" />
     <ClCompile Include="..\src\game.c" />
@@ -186,6 +187,7 @@
     <ClCompile Include="..\src\powerup.c" />
     <ClCompile Include="..\src\projectiles.c" />
     <ClCompile Include="..\src\role.c" />
+    <ClCompile Include="..\src\UI.c" />
     <ClCompile Include="..\src\window.c" />
     <ClCompile Include="..\src\world.c" />
   </ItemGroup>
@@ -222,6 +224,7 @@
     <ClInclude Include="..\gfc\simple_logger\include\simple_logger.h" />
     <ClInclude Include="..\include\bomb.h" />
     <ClInclude Include="..\include\boss.h" />
+    <ClInclude Include="..\include\button.h" />
     <ClInclude Include="..\include\camera.h" />
     <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\gf2d_draw.h" />
@@ -235,6 +238,7 @@
     <ClInclude Include="..\include\projectiles.h" />
     <ClInclude Include="..\include\role.h" />
     <ClInclude Include="..\include\tiledef.h" />
+    <ClInclude Include="..\include\UI.h" />
     <ClInclude Include="..\include\window.h" />
     <ClInclude Include="..\include\world.h" />
   </ItemGroup>
@@ -244,9 +248,11 @@
     <None Include="..\JSONs\player.json" />
     <None Include="..\JSONs\powerups.json" />
     <None Include="..\JSONs\projectiles.json" />
+    <None Include="..\JSONs\UI.json" />
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
     <None Include="..\levels\mainMenu.level" />
+    <None Include="..\levels\uiTest.level" />
     <None Include="testLevel.level" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
