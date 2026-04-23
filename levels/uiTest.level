@@ -1,6 +1,59 @@
 {
-	"level":
-	[
+	"level": 
+	{
+		"background": "images/backgrounds/cat.jpg",
+		"entities": 
+		[
+			{
+				"name": "test_monster",
+				"role": "ROLE_TRASHMOB",
+				"positionX": 100,
+				"positionY": 100
 
-	]
+			},
+			{
+				"name": "test_monster2",
+				"role": "ROLE_TRASHMOB",
+				"positionX": 200,
+				"positionY": 200
+			},
+			{
+				"name": "player",
+				"role": "ROLE_PLAYER_GUNNER",
+				"positionX": 300,
+				"positionY": 300
+			},
+			{
+				"name": "Test_Projectile",
+				"role": "ROLE_PROJECTILE",
+				"team": "TEAM_ENEMY",
+				"time": -1,
+				"positionX": 300,
+				"positionY": 300
+			},
+			{
+				"name": "Test_Bomb",
+				"role": "ROLE_BOMB",
+				"team": "TEAM_ENEMY",
+				"time": 100,
+				"positionX": 400,
+				"positionY": 400,
+				"delay": 100
+			},
+			{
+				"name": "Powerup",
+				"role": "ROLE_PU_SPEED",
+				"team": "TEAM_ITEM",
+				"positionX": 300,
+				"positionY": 200
+			}
+
+		],
+		"UI": 
+		[
+			{
+
+			}
+		]
+	}
 }

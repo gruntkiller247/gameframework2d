@@ -10,25 +10,36 @@
 
 typedef struct UI_S
 {
-	Uint8 _inUse;	//Toggle whether UI elements needs to be destroyed
-	Uint8 active;		//Toggle whether UI element is active on the screen
+	Uint8 _inUse;								//Toggle whether UI elements needs to be destroyed
+	Uint8 active;								//Toggle whether UI element is active on the screen
 	GFC_Vector2D position;
 	GFC_Rect bounds;
-	int id;			//Unique ID for each element
+	int id;										//Unique ID for each element
 
-	void* data;									//Data unique to the UI element
-	//void (*think)(struct UI_S* self);			
+	void* data;									//Data unique to the UI element		
 	void (*update)(struct UI_S* self);
 	void (*free)(struct UI_S* self);
 	void (*touch)(struct UI_S* self);
 
+	GFC_Vector2D scale;
 	GFC_Color color;
 	Sprite* sprite;
-	int frame;
-	GFC_Vector2D scale;
+	Sprite* onHoverSprite;
+	Sprite* onClickSprite;
+	
 	int rotation;
+	int frame;
+	Uint8 hover;								//Bool indicating whether a UI is being hovered over by the mouse
+	Uint8 clicked;								//Bool indicating whether a UI element has been clicked!
+	Uint8 type;
 	
 }UI;
+
+typedef enum
+{
+	UI_BUTTON = 1,
+	UI_THING
+}UI_TYPE;
 
 UI* uiNew(GFC_Vector2D position, GFC_Rect bounds);
 

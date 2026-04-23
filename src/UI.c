@@ -135,7 +135,41 @@ void uiDraw(UI* self)
 		return;
 	}
 	//slog("UI Draw Pos: %f %f", self->position.x, self->position.y);
-	gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL,NULL, (Uint32)self->frame);
+
+	//self->hover = 0;
+	//self->clicked = 0;
+
+	
+
+	if (self->hover != 0)
+	{
+		//slog("Hover not 0!");
+		if (self->onHoverSprite)
+		{
+			//slog("Drawing on hover sprite for UI!");
+			gf2d_sprite_draw(self->onHoverSprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		}
+		else
+		{
+			//slog("No on hover sprite for UI element!");
+			gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		}
+	}
+	else if (self->clicked != 0)
+	{
+		if (self->onClickSprite)
+		{
+			//Draw clicked sprite
+
+		}
+		else
+		{
+			//Draw as normal
+			gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		}
+	}
+	else
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL,NULL, (Uint32)self->frame);
 }
 
 void uiDrawAll()

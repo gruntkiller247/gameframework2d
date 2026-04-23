@@ -7,6 +7,10 @@
 #include "button.h"
 #include "UI.h"
 #include "gf2d_graphics.h" 
+#include "gf2d_draw.h"
+#include "gfc_input.h"|
+
+
 
 typedef struct BD
 {
@@ -27,14 +31,22 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
 
 	ButtonData* data = malloc(sizeof(ButtonData));
 
+	ui->type = UI_BUTTON;
 	ui->data = data;
 	
 	ui->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
 	//ui->sprite = gf2d_sprite_load_image("images/ed210.png");
+	ui->onHoverSprite = gf2d_sprite_load_all("images/space_bug.png",128,128,16,0);
 
 	if (!ui->sprite)
 	{
 		slog("Failed to load UI Button's Sprite!");
+		return NULL;
+	}
+
+	if (!ui->onHoverSprite)
+	{
+		slog("Failed to load UI Button on click sprite!");
 		return NULL;
 	}
 
@@ -47,6 +59,9 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
 	ui->touch = buttonTouch;
 	ui->free = buttonFree;
 	
+	ui->clicked = 0;
+	ui->hover = 0;
+
 	return ui;
 }
 
@@ -66,7 +81,20 @@ void buttonTouch(UI* self)
 
 	if (mx >= self->position.x && mx <= self->position.x + self->bounds.w && my >= self->position.y && my <= self->position.y + self->bounds.h)
 	{
-		slog("Mouse is hovering over a UI element!");
+		//slog("Mouse is hovering over a UI element!");
+		self->hover = 1;
+
+		
+		if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && !self->clicked)
+		{
+			slog("Button has been clicked!");
+			self->clicked = 1;
+		}
+	}
+	else
+	{
+		self->hover = 0;
+		self->clicked = 0;
 	}
 }
 
@@ -78,7 +106,7 @@ void buttonUpdate(UI* self)
 	if (self->active != 1)
 		return;
 
-	self->frame++;
+	//self->frame++;
 	if (self->frame >= 16)
 		self->frame = 0;
 
@@ -115,5 +143,13 @@ void buttonFree(UI* self)
 		
 
 	//free(self);
+
+}
+
+void levelLoadButton(UI* self)
+{
+	if (!self)
+		return;
+
 
 }

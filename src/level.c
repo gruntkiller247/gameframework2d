@@ -93,14 +93,15 @@ int getTeam(const char* team)
 		return TEAM_NONE;
 	}
 
-		if (strcmp(team, "TEAM_PLAYER") == 0)
-			return TEAM_PLAYER;
-		else if (strcmp(team, "TEAM_ENEMY") == 0)
-			return TEAM_ENEMY;
-		else if (strcmp(team, "TEAM_ITEM") == 0)
-			return TEAM_ITEM;
-		else
-			return TEAM_NONE;
+	if (strcmp(team, "TEAM_PLAYER") == 0)
+		return TEAM_PLAYER;
+	else if (strcmp(team, "TEAM_ENEMY") == 0)
+		return TEAM_ENEMY;
+	else if (strcmp(team, "TEAM_ITEM") == 0)
+		return TEAM_ITEM;
+	else
+		return TEAM_NONE;
+		
 }
 
 
@@ -113,6 +114,9 @@ Level* dataLoadLevel(const char* levelName)
 	SJson* ljson = NULL;
 	SJson* entity = NULL;
 	SJson* entities = NULL;
+
+	SJson* ui = NULL;
+
 	GFC_Vector2D* position;
 	Entity* temp = NULL;
 	const char* name = NULL;
@@ -151,6 +155,18 @@ Level* dataLoadLevel(const char* levelName)
 		slog("%s could not load level data: missing level data!", levelName);
 		sj_free(json);
 		return NULL;
+	}
+
+	//UI Reading!
+	ui = sj_object_get_value(ljson, "UI");
+
+	if (!ui)
+	{
+		slog("Either no UI or UI is NULL!");
+	}
+	else
+	{
+		slog("UI Exist?");
 	}
 
 	

@@ -384,7 +384,7 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");*/
 
-    currentLevel = dataLoadLevel("levels/uiTest.level");
+    currentLevel = dataLoadLevel("levels/debugLevelProjectiles.level");
 
     
     
@@ -406,8 +406,15 @@ int main(int argc, char * argv[])
     player = getPlayer();
     bossGame = getBoss();
 
-    UI* button = newButton(gfc_vector2d(300, 300), gfc_rect(30, 30, 72, 72));
-    button->active = 0;
+    UI* button = newButton(gfc_vector2d(400, 400), gfc_rect(30, 30, 72, 72));
+    
+    if (!button)
+    {
+        slog("Button NULL!");
+    }
+    else
+        button->active = 1;
+    
 
     //slog("Button Active: %i", button->active);
     //button->active = 1;

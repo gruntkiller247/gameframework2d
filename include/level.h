@@ -3,6 +3,8 @@
 
 #include "gf2d_sprite.h"
 #include "gfc_list.h"
+#include "UI.h"
+#include "button.h"
 
 typedef struct Level_L
 {
