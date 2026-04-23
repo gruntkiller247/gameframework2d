@@ -11,9 +11,7 @@
 typedef struct UI_S
 {
 	Uint8 _inUse;	//Toggle whether UI elements needs to be destroyed
-	int width;		//Width of UI element
-	int height;		//Height of UI element
-	int active;		//Toggle whether UI element is active on the screen
+	Uint8 active;		//Toggle whether UI element is active on the screen
 	GFC_Vector2D position;
 	GFC_Rect bounds;
 	int id;			//Unique ID for each element
@@ -27,7 +25,7 @@ typedef struct UI_S
 	GFC_Color color;
 	Sprite* sprite;
 	int frame;
-	int scale;
+	GFC_Vector2D scale;
 	int rotation;
 	
 }UI;

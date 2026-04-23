@@ -407,7 +407,10 @@ int main(int argc, char * argv[])
     bossGame = getBoss();
 
     UI* button = newButton(gfc_vector2d(300, 300), gfc_rect(30, 30, 72, 72));
-    button->active = 1;
+    button->active = 0;
+
+    //slog("Button Active: %i", button->active);
+    //button->active = 1;
     //slog("Button located at X:%f Y:%f", button->position.x, button->position.y);
     
     //slog("Button active variable is: %f", button->active);
@@ -478,16 +481,18 @@ int main(int argc, char * argv[])
             entityTouchAll();
             //slog("Touched");  
             uiTouchAll();
+            
 
             entityUpdateAll();
             //slog("Updated");
             uiUpdateAll();
+            
 
             entityBoundsCheckAll();
 
             entityManagerDrawAll();
             uiDrawAll();
-
+            
             
             //slog("Bounds checked!");
 

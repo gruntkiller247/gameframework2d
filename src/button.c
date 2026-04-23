@@ -29,18 +29,20 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
 
 	ui->data = data;
 	
-	//ui->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
-	ui->sprite = gf2d_sprite_load_image("images/ed210.png");
+	ui->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
+	//ui->sprite = gf2d_sprite_load_image("images/ed210.png");
 
 	if (!ui->sprite)
 	{
-		slog("Failed to load UI Sprite!");
+		slog("Failed to load UI Button's Sprite!");
 		return NULL;
 	}
 
 	ui->frame = 0;
 	ui->rotation = 0;
 	ui->active = 1;
+	//slog("Active: %i", ui->active);
+	
 	ui->update = buttonUpdate;
 	ui->touch = buttonTouch;
 	ui->free = buttonFree;
@@ -52,6 +54,10 @@ void buttonTouch(UI* self)
 {
 	if (!self)
 		return;
+
+	if (self->active != 1)
+		return;
+
 
 	int mx;
 	int my;
@@ -67,6 +73,9 @@ void buttonTouch(UI* self)
 void buttonUpdate(UI* self)
 {
 	if (!self)
+		return;
+
+	if (self->active != 1)
 		return;
 
 	self->frame++;
@@ -105,6 +114,6 @@ void buttonFree(UI* self)
 	}
 		
 
-	free(self);
+	//free(self);
 
 }

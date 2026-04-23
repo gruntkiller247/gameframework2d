@@ -62,10 +62,10 @@ UI* uiNew(GFC_Vector2D position, GFC_Rect bounds)
 		uiManager.uiList[c]._inUse = 1;
 		uiManager.uiList[c].id = ++uiManager.uiPool;
 
-		uiManager.uiList[c].active = -1;
+		uiManager.uiList[c].active = 0;
 		uiManager.uiList[c].bounds = bounds;
 		uiManager.uiList[c].position = position;
-		uiManager.uiList[c].scale = 1;
+		uiManager.uiList[c].scale = gfc_vector2d(1,1);
 
 		return &uiManager.uiList[c];
 	}
@@ -123,15 +123,18 @@ void uiUpdateAll()
 void uiDraw(UI* self)
 {
 	if (!self)
+	{
+		slog("UI is NULL WHEN DRAWING!");
 		return;
+	}
 
 	//slog("Trying to draw the UI!");
 	if (!self->sprite)
 	{
-		slog("Failed to load UI's Sprite!");
+		slog("Failed to load UI's Sprite to draw!");
 		return;
 	}
-
+	//slog("UI Draw Pos: %f %f", self->position.x, self->position.y);
 	gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL,NULL, (Uint32)self->frame);
 }
 
@@ -145,14 +148,21 @@ void uiDrawAll()
 		slog("No uiList in Draw All UI!");
 		return;
 	}
+	//slog("Size of UI List: %i", uiManager.uiMax);
 
 	for (c = 0; c < uiManager.uiMax; c++)
 	{
-		if (uiManager.uiList[c].active != 1)
+		//slog("Active: %i",uiManager.uiList[c].active);
+		if (!uiManager.uiList[c]._inUse)
+			continue;
+
+		if (!uiManager.uiList[c].active || uiManager.uiList[c].active == 0)
 		{
 			//slog("Skipping!");
+			//slog("Unique ID is: %i", uiManager.uiList[c].id);
 			continue;
 		}
+		//slog("Drawing!");
 
 		uiDraw(&uiManager.uiList[c]);
 	}
@@ -182,6 +192,8 @@ void uiFree(UI* self)
 
 	if (self->free)
 		self->free(self);
+
+	memset(self, 0, sizeof(UI));
 
 	//free(self);
 }
