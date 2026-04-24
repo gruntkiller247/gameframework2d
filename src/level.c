@@ -14,6 +14,8 @@
 static int viewWidth = 1200;
 static int viewHeight = 720;
 
+const char* errorBackground = "images/backgrounds/bg_flat.png";
+
 Level* levelNew(Uint64 height, Uint64 width)
 {
 
@@ -183,6 +185,7 @@ Level* dataLoadLevel(const char* levelName)
 	int uiBY = -1;
 	int uiBW = -1;
 	int uiBH = -1;
+	int activeOnPause = -1;
 	UI* tempUI = NULL;
 
 
@@ -252,7 +255,6 @@ Level* dataLoadLevel(const char* levelName)
 			switch (uiType)
 			{
 			case UI_BUTTON:
-
 
 				if (sj_object_get_int(uiElement, "positionX", &uiPosX) == 0)
 				{
@@ -337,6 +339,14 @@ Level* dataLoadLevel(const char* levelName)
 
 
 
+				if (sj_object_get_int(uiElement, "activeOnPause", &activeOnPause) == 0)
+				{
+					slog("Failed to find activeOnPause for UI!");
+					goto fail;
+				}
+
+				tempUI->activeOnPause = activeOnPause;
+
 				gfc_list_append(level->levelUI, tempUI);
 
 
@@ -356,6 +366,7 @@ Level* dataLoadLevel(const char* levelName)
 	if (!background)
 	{
 		slog("Background failed to load!");
+		background = _strdup(errorBackground);
 		goto fail;
 	}
 	
@@ -384,16 +395,18 @@ Level* dataLoadLevel(const char* levelName)
 	if (!entities)
 	{
 		slog("Entities list could not be made!");
-		sj_free(ljson);
-		return NULL;
+		//sj_free(ljson);
+		//return NULL;
+		goto levelLoaded;	
 	}
 
 	if (gfc_list_get_count(entities) == 0)
 	{
 		slog("Entities list is 0?");
-		sj_free(ljson);
-		sj_free(entities);
-		return NULL;
+		//sj_free(ljson);
+		//sj_free(entities);
+		//return NULL;
+		goto levelLoaded;
 			
 	}
 	
@@ -629,6 +642,7 @@ Level* dataLoadLevel(const char* levelName)
 		}
 	}
 
+	levelLoaded:
 	slog("Loaded Level JSON!");
 
 	//sj_free(background);

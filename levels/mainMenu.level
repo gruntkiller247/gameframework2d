@@ -1,6 +1,16 @@
 {
 	"level": 
 	{
+		"background": "images/backgrounds/cat.jpg",
+		"entities": 
+		[
+			{
+				"name": "player",
+				"role": "ROLE_PLAYER_GUNNER",
+				"positionX": 300,
+				"positionY": 300
+			}
+		],
 		"UI": 
 		[
 			{
@@ -14,7 +24,8 @@
 				"onClick": "NOTHING!",
 				"sprite": "images/ed210.png",
 				"onClickSprite": "NULL",
-				"onHoverSprite": "images/space_bug.png"
+				"onHoverSprite": "images/space_bug.png",
+				"activeOnPause": 1
 			}
 		]
 	}

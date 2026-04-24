@@ -268,4 +268,10 @@ int getColor(Entity* self,const char* color);
 */
 int getRole(const char* role);
 
+/*
+	Sets a value as either 0 (Game is paused)
+	Or as 1 (Game is in play)
+*/
+void setPausedEntity(int value);
+
 #endif

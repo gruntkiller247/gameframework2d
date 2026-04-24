@@ -61,7 +61,8 @@
 				"onClick": "NOTHING!",
 				"sprite": "images/ed210.png",
 				"onClickSprite": "NULL",
-				"onHoverSprite": "images/space_bug.png"
+				"onHoverSprite": "images/space_bug.png",
+				"activeOnPause":  1
 			}
 		]
 	}

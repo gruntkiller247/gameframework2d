@@ -15,6 +15,7 @@ typedef struct
 	Uint32 entityMax;
 	Uint32 entityPool;
 	//Uint8 drawBounds;
+	Uint8 paused;
 }EntityManager;
 
 
@@ -43,6 +44,7 @@ void entityManagerInit(Uint32 max)
 	}
 
 	entityManager.entityMax = max;
+	
 	atexit(entityManagerClose);
 	slog("Initalized Entity System");
 }
@@ -748,6 +750,11 @@ int getRole(const char* role)
 
 	}
 
+}
+
+void setPausedEntity(int value)
+{
+	entityManager.paused = value;
 }
 
 //endLine

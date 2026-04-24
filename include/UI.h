@@ -8,10 +8,14 @@
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
 
+
 typedef struct UI_S
 {
 	Uint8 _inUse;								//Toggle whether UI elements needs to be destroyed
-	Uint8 active;								//Toggle whether UI element is active on the screen
+	Uint8 active;								//Toggle whether UI element is on the screen
+	Uint8 activeOnPause;						//Toggle whether the UI should be shown when the game is paused
+												//1 means the UI should be shown ONLY WHEN THE GAME IS PAUSED
+												//0 means it is always active
 	GFC_Vector2D position;
 	GFC_Rect bounds;
 	int id;										//Unique ID for each element
@@ -45,6 +49,12 @@ typedef enum
 	UI_THING
 }UI_TYPE;
 
+typedef enum
+{
+    PAUSED=0,
+    NOT_PAUSED=1
+}PausedENUMS;
+
 UI* uiNew(GFC_Vector2D position, GFC_Rect bounds);
 
 void uiManagerInit(Uint32 max);
@@ -59,6 +69,8 @@ void uiFreeAll();
 
 void uiDrawAll();
 
+void uiKillAll();
+
 
 //UI* uiNew(int width, int height, int posx, int posy);
 
@@ -66,6 +78,18 @@ void uiDrawAll();
 	Returns the UI element with the ID or NULL if not found
 */
 UI* uiGetID(Uint32 id);
+
+/*
+	Sets a value as either 0 (Game is paused)
+	Or as 1 (Game is in play)
+*/
+void setPausedUI(int value);
+
+/*
+	Helper for children UI. Returns if the game is paused.
+	0: Paused. 1: the game is running
+*/
+int isPaused();
 
 
 #pragma once

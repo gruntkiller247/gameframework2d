@@ -48,11 +48,13 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onCl
 	
 	
 	//ui->sprite = gf2d_sprite_load_image("images/ed210.png");
-	ui->onHoverSprite = gf2d_sprite_load_all("images/space_bug.png",128,128,16,0);
+	//ui->onHoverSprite = gf2d_sprite_load_all("images/space_bug.png",128,128,16,0);
 
+	
 	ui->frame = 0;
 	ui->rotation = 0;
 	ui->active = 1;
+
 	//slog("Active: %i", ui->active);
 	
 	ui->update = buttonUpdate;
@@ -89,6 +91,7 @@ void buttonTouch(UI* self)
 		if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && !self->clicked)
 		{
 			slog("Button has been clicked!");
+
 			self->clicked = 1;
 			if (self->onClick)
 				self->onClick(self);
@@ -106,8 +109,23 @@ void buttonUpdate(UI* self)
 	if (!self)
 		return;
 
+
+	if (self->activeOnPause == 1 && isPaused() == PAUSED)
+	{
+		self->active = 1;
+	}
+	else
+	{
+		self->active = 0;
+	}
+		
+
+
 	if (self->active != 1)
+	{
 		return;
+	}
+		
 
 	//self->frame++;
 	if (self->frame >= 16)
@@ -127,6 +145,8 @@ void buttonUpdate(UI* self)
 	gf2d_draw_line(TR, BR, GFC_COLOR_RED);
 	gf2d_draw_line(BR, BL, GFC_COLOR_RED);
 	gf2d_draw_line(BL, TL, GFC_COLOR_RED);
+
+
 
 }
 

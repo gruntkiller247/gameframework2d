@@ -19,6 +19,7 @@
 #define MY_FONT "fonts/FreeSans.ttf"
 
 
+
 //Static bullshit
 //Window Size
 static int viewWidth = 1200;
@@ -314,7 +315,7 @@ int main(int argc, char * argv[])
     SDL_Color color = { 255, 255, 255, 255 };
     Uint8 playerRole = ROLE_PLAYER_BAKER;
 
-    int paused = 0;
+    int paused = NOT_PAUSED;
     
     Level* currentLevel;
 
@@ -397,6 +398,13 @@ int main(int argc, char * argv[])
     }
     else
     {
+        slog("Level Loaded and not NULL!");
+
+        if (!currentLevel->background)
+        {
+            slog("Level Loaded without a background Image! Giving default!");
+            currentLevel->background = "images/backgrounds/bg_flat.png";
+        }
         sprite = gf2d_sprite_load_image(currentLevel->background);
         if (currentLevel->spawnPowerUps)
             powerUpSpawning = 1;
@@ -405,6 +413,7 @@ int main(int argc, char * argv[])
 
     player = getPlayer();
     bossGame = getBoss();
+    paused = NOT_PAUSED;
 
     /*UI* button = newButton(gfc_vector2d(400, 400), gfc_rect(30, 30, 72, 72));
     
@@ -432,12 +441,16 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-        if (!paused && level != 0)
+        if (paused == NOT_PAUSED)
         {
+
+
             if (gfc_input_key_pressed("g"))
             {
                 slog("Pausing?");
-                paused = 1;
+                paused = PAUSED;
+                setPausedEntity(PAUSED);
+                setPausedUI(PAUSED);
             }
                 
 
@@ -547,14 +560,16 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
             //slog("1 cycle!");
         }
-        else if(level !=0)
+        else
         {
 
             
             if (gfc_input_key_pressed("g"))
             {
                 slog("Unpausing?");
-                paused = 0;
+                paused = NOT_PAUSED;
+                setPausedEntity(NOT_PAUSED);
+                setPausedUI(NOT_PAUSED);
             } 
 
             if (gfc_input_key_pressed("1"))
@@ -615,6 +630,8 @@ int main(int argc, char * argv[])
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
             entityManagerDrawAll();
+            uiUpdateAll();
+            uiTouchAll();
             uiDrawAll();
 
             gf2d_sprite_draw(
@@ -647,7 +664,10 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();
               
         }
-        else
+        if (keys[SDL_SCANCODE_ESCAPE])
+            done = 1; // exit condition
+
+        /*else
         {
             //Main menu
             
@@ -682,8 +702,8 @@ int main(int argc, char * argv[])
             //Probably add points
         }
        
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
-        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+        
+        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());*/
     }
  
 

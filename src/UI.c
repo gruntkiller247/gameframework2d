@@ -5,11 +5,13 @@ typedef struct
 	UI* uiList;
 	Uint32 uiMax;
 	Uint32 uiPool;
+	Uint8 paused;
 }UIManager;
 
 void uiFree(UI* self);
 
 static UIManager uiManager = { 0 };
+
 
 void uiManagerInit(Uint32 max)
 {
@@ -26,7 +28,7 @@ void uiManagerInit(Uint32 max)
 		slog("Failed to allocate UI array!");
 		return;
 	}
-
+	uiManager.paused = NOT_PAUSED;
 	uiManager.uiMax = max;
 	atexit(uiManagerClose);
 	slog("Initalized UI System");
@@ -133,6 +135,9 @@ void uiDraw(UI* self)
 		slog("Failed to load UI's Sprite to draw!");
 		return;
 	}
+
+
+
 	//slog("UI Draw Pos: %f %f", self->position.x, self->position.y);
 
 	//self->hover = 0;
@@ -200,6 +205,11 @@ void uiDrawAll()
 		}
 		//slog("Drawing!");
 
+		if (uiManager.uiList[c].activeOnPause == 1 && uiManager.paused != PAUSED)
+		{
+			continue;
+		}
+
 		uiDraw(&uiManager.uiList[c]);
 	}
 }
@@ -252,4 +262,29 @@ void uiFreeAll()
 
 		uiFree(&uiManager.uiList[c]);
 	}
+}
+
+void setPausedUI(int value)
+{
+	uiManager.paused = value;
+}
+
+void uiKillAll()
+{
+	int c;
+
+	if (!uiManager.uiList)
+	{
+		return;
+	}
+
+	for (c = 0; c < uiManager.uiMax; c++)
+	{
+		uiFree(&uiManager.uiList[c]);
+	}
+}
+
+int isPaused()
+{
+	return uiManager.paused;
 }
