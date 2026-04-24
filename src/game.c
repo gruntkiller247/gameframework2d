@@ -20,6 +20,7 @@
 
 
 
+
 //Static bullshit
 //Window Size
 static int viewWidth = 1200;
@@ -28,6 +29,7 @@ static int renderWdith = 1200;
 static int renderHeight = 720;
 
 //Drawing for UI
+/*
 static char playerHP[100];
 static char bossHP[100];
 static SDL_Surface* surface;
@@ -41,6 +43,7 @@ static char fpsNum[100];
 static SDL_Surface* fpsSurface;
 static SDL_Texture* fpsTexture;
 static SDL_Rect fpsRect;
+*/
 
 Entity* bossGame = NULL;
 Entity* player = NULL;
@@ -61,7 +64,7 @@ void fillEntityManager()
     }
 }
 
-void loadLevel(Uint8 level,Uint8 playerRole)
+/*void loadLevel(Uint8 level, Uint8 playerRole)
 {
     entityKillAll();
 
@@ -81,7 +84,7 @@ void loadLevel(Uint8 level,Uint8 playerRole)
         /*Entity* projectile;
            projectile = projectileEntityNew(gfc_vector2d(300, 0), TEAM_ENEMY, -1);
            projectile->team = TEAM_IGNORE;
-           strcpy(projectile->name, "TEST_PROJECTILE");*/
+           strcpy(projectile->name, "TEST_PROJECTILE");
 
         Entity* enemy;
         enemy = monsterEntityNew(gfc_vector2d(300, 100), ROLE_TRASHMOB);
@@ -277,7 +280,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
     dstRect.y = 10;
     dstRect.w = surface->w / 2;
     dstRect.h = surface->h / 2;
-    SDL_FreeSurface(surface);*/
+    SDL_FreeSurface(surface);
 
     if (!bossHPUI || !bossNumHP)
     {
@@ -296,6 +299,7 @@ void updateUI( Uint8 playerNumHP, Uint8 bossNumHP, TTF_Font* font, SDL_Color col
     }
 
 }
+*/
 
 //128 x 128 grid for GIMP + snap to grid
 int main(int argc, char * argv[])
@@ -393,8 +397,10 @@ int main(int argc, char * argv[])
     if (!currentLevel)
     {
         slog("No level could be loaded! Loading error handling level!");
-        sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-        loadLevel(1,ROLE_PLAYER_GAMBLER);
+        
+        //loadLevel(1,ROLE_PLAYER_GAMBLER);
+        currentLevel = dataLoadLevel("levels/mainMenu.level");
+        sprite = gf2d_sprite_load_image(currentLevel->background);
     }
     else
     {
@@ -527,7 +533,7 @@ int main(int argc, char * argv[])
             //slog("Freed");
             
            
-            if (!bossGame)
+            /*if (!bossGame)
             {
                 
                 if (!player)
@@ -547,15 +553,15 @@ int main(int argc, char * argv[])
             framerateUI(font,color,&fpsRect);
             //slog("UI updated");
 
-            SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
+            
             
 
             //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
             SDL_RenderCopy(gf2d_graphics_get_renderer(), textureBoss, NULL, &dstRect2);
             SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
-            SDL_RenderPresent(gf2d_graphics_get_renderer());
-            
+            SDL_RenderPresent(gf2d_graphics_get_renderer());*/
+            SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
 
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
             //slog("1 cycle!");
@@ -572,7 +578,7 @@ int main(int argc, char * argv[])
                 setPausedUI(NOT_PAUSED);
             } 
 
-            if (gfc_input_key_pressed("1"))
+            /*if (gfc_input_key_pressed("1"))
             {
                 //Clear this level then load 1
                 level = 1;
@@ -625,7 +631,7 @@ int main(int argc, char * argv[])
             if (gfc_input_key_pressed("m"))
             {
                 fillEntityManager();
-            }
+            }*/
 
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
@@ -644,7 +650,7 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-            if (!bossGame)
+            /*if (!bossGame)
             {
                 updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
             }
@@ -659,7 +665,7 @@ int main(int argc, char * argv[])
             framerateUI(font, color, &fpsRect);
              
             SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
-            SDL_RenderPresent(gf2d_graphics_get_renderer());
+            SDL_RenderPresent(gf2d_graphics_get_renderer());*/
             
             gf2d_graphics_next_frame();
               
@@ -731,7 +737,7 @@ int main(int argc, char * argv[])
 
    
     
-    SDL_DestroyTexture(texture);
+    //SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
     TTF_Quit();
     entityManagerClose();
