@@ -419,7 +419,6 @@ int main(int argc, char * argv[])
 
     player = getPlayer();
     bossGame = getBoss();
-    paused = NOT_PAUSED;
 
     /*UI* button = newButton(gfc_vector2d(400, 400), gfc_rect(30, 30, 72, 72));
     
@@ -447,16 +446,15 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-        if (paused == NOT_PAUSED)
+        if (isPaused() == NOT_PAUSED)
         {
 
 
             if (gfc_input_key_pressed("g"))
             {
                 slog("Pausing?");
-                paused = PAUSED;
-                setPausedEntity(PAUSED);
-                setPausedUI(PAUSED);
+                setPausedUI();
+                //setPausedEntity();
             }
                 
 
@@ -573,9 +571,8 @@ int main(int argc, char * argv[])
             if (gfc_input_key_pressed("g"))
             {
                 slog("Unpausing?");
-                paused = NOT_PAUSED;
-                setPausedEntity(NOT_PAUSED);
-                setPausedUI(NOT_PAUSED);
+                //setPausedEntity();
+                setPausedUI();
             } 
 
             /*if (gfc_input_key_pressed("1"))

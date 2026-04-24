@@ -264,9 +264,16 @@ void uiFreeAll()
 	}
 }
 
-void setPausedUI(int value)
+void setPausedUI()
 {
-	uiManager.paused = value;
+	slog("Before: %i", isPaused());
+
+	if (uiManager.paused == PAUSED)
+		uiManager.paused = NOT_PAUSED;
+	else
+		uiManager.paused = PAUSED;
+	
+	slog("After: %i", isPaused());
 }
 
 void uiKillAll()

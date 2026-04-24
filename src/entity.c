@@ -357,7 +357,7 @@ void entityTouch(Entity* self, Entity* toucher)
 
 void entityTouchAll()
 {
-	int c,d;
+	int c, d;
 	int touchDistance = 50;
 
 	for (c = 0; c < entityManager.entityMax; c++)
@@ -366,11 +366,11 @@ void entityTouchAll()
 			continue;
 		if (entityManager.entityList[c].team == TEAM_IGNORE)
 			continue;
-		
-		
+
+
 		//BITWISE & Using the layer system
 
-		for (d = c+1; d < entityManager.entityMax; d++)
+		for (d = c + 1; d < entityManager.entityMax; d++)
 		{
 			if (!entityManager.entityList[d]._inUse)
 				continue;
@@ -410,28 +410,16 @@ void entityTouchAll()
 				//slog("Entities are too far away to touch! %s and %s", entityManager.entityList[c].name, entityManager.entityList[d].name);
 				continue;
 			}*/
-				
+
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);
 
 			//slog("Touching all entities: ");
 			entityTouch(&entityManager.entityList[c], &entityManager.entityList[d]);
 		}
-		
+
 	}
 }
-
-void playerSetter(Entity* player)
-{
-	thePlayer = player;
-}
-
-Entity* playerGetter()
-{
-	return thePlayer;
-}
-
-
 
 void outOfBounds(Entity* self)
 {
@@ -754,7 +742,11 @@ int getRole(const char* role)
 
 void setPausedEntity(int value)
 {
-	entityManager.paused = value;
+
+	/*if (entityManager.paused == PAUSED)
+		entityManager.paused = NOT_PAUSED;
+	else
+		entityManager.paused = PAUSED;*/
 }
 
 //endLine

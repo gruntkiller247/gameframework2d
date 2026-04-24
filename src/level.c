@@ -165,11 +165,11 @@ Level* dataLoadLevel(const char* levelName)
 	const char* team = NULL;
 	const char* levelObjName = NULL;
 	const char* uiTypeString = NULL;
-	const char* onClick = NULL;
 
 	const char* uiSprite = NULL;
 	const char* uiHoverSprite = NULL;
 	const char* uiClickSprite = NULL;
+	const char* onClick = NULL;
 
 	int time= 0;
 	int c=0, role=0, entityMax=0;
@@ -293,6 +293,14 @@ Level* dataLoadLevel(const char* levelName)
 					goto fail;
 				}
 
+				onClick = sj_object_get_string(uiElement, "onClick");
+
+				if (!onClick)
+				{
+					slog("Failed to get onClick for UI!");
+					tempUI->onClick = NULL;
+				}
+
 				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH),uiType,onClick);
 
 				if (!tempUI)
@@ -348,6 +356,7 @@ Level* dataLoadLevel(const char* levelName)
 				tempUI->activeOnPause = activeOnPause;
 
 				gfc_list_append(level->levelUI, tempUI);
+
 
 
 				break;

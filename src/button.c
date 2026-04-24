@@ -94,7 +94,12 @@ void buttonTouch(UI* self)
 
 			self->clicked = 1;
 			if (self->onClick)
+			{
+				//self->clicked = 0;
 				self->onClick(self);
+			}	
+			else
+				slog("UI Element has no on click!");
 		}
 	}
 	else
@@ -108,7 +113,8 @@ void buttonUpdate(UI* self)
 {
 	if (!self)
 		return;
-
+	int temp = isPaused();
+	//slog("THE UI THINKS THE GAME IS CURRENTLY: %i", temp);
 
 	if (self->activeOnPause == 1 && isPaused() == PAUSED)
 	{
@@ -169,9 +175,27 @@ void buttonFree(UI* self)
 
 }
 
+void unpause(UI* self)
+{
+	slog("Button trying to unpause!");
+	setPausedUI();
+}
+
 void getOnClick(UI* ui, const char* onClick)
 {
-	ui->onClick = changeLevel;
+	slog("Checking the on Click!");
+
+	if (strcmp(onClick, "unpause") == 0)
+	{
+		slog("Pause");
+		ui->onClick = unpause;
+	}
+	else
+	{
+		slog("Null");
+		ui->onClick = NULL;
+	}
+		
 }
 
 /*

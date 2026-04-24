@@ -80,10 +80,9 @@ void uiKillAll();
 UI* uiGetID(Uint32 id);
 
 /*
-	Sets a value as either 0 (Game is paused)
-	Or as 1 (Game is in play)
+	Flips the bool for isPaused
 */
-void setPausedUI(int value);
+void setPausedUI();
 
 /*
 	Helper for children UI. Returns if the game is paused.
