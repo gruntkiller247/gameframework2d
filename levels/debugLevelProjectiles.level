@@ -51,7 +51,13 @@
 		"UI": 
 		[
 			{
-				"type": "button"
+				"type": "UI_BUTTON",
+				"positionX": 500,
+				"positionY": 500,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 72,
+				"boundsH": 72
 			}
 		]
 	}

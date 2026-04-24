@@ -145,11 +145,3 @@ void buttonFree(UI* self)
 	//free(self);
 
 }
-
-void levelLoadButton(UI* self)
-{
-	if (!self)
-		return;
-
-
-}

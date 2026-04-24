@@ -8,6 +8,7 @@
 #include "projectiles.h"
 #include "bomb.h"
 #include "powerup.h"
+#include "button.h"
 
 
 static int viewWidth = 1200;
@@ -15,12 +16,13 @@ static int viewHeight = 720;
 
 Level* levelNew(Uint64 height, Uint64 width)
 {
-	Level* level;
-	level = gfc_allocate_array(sizeof(Level), 1);
 
-	if (!level)
+	//Put code here later to make the map be boundless!
+	//This requires making a real camera system!
+
+	if (height > 720 || width > 1200)
 	{
-		slog("Failed to create a level!");
+		slog("Can't make level! Height or Width is too large!");
 		return NULL;
 	}
 
@@ -30,18 +32,36 @@ Level* levelNew(Uint64 height, Uint64 width)
 		return NULL;
 	}
 
-	//Put code here later to make the map be boundless!
-	//This requires making a real camera system!
+	Level* level;
+	level = malloc(sizeof(Level));
 
-	if (height > 720 || width > 1200)
+	if (!level)
 	{
-		slog("Clamped Height max! Can't make level!");
+		slog("Failed to create a level!");
 		return NULL;
 	}
 
+
+	level->levelUI = gfc_list_new();
+
+	if (!level->levelUI)
+	{
+		slog("Level failed to allocate UI List!");
+		return NULL;
+	}
+
+	level->levelMap = gfc_list_new();
+
+	if (!level->levelMap)
+	{
+		slog("Failed to allocate Level Map for Level!");
+		return NULL;
+	}
+
+
 	level->height = height;
 	level->width = width;
-	level->levelMap = gfc_list_new();
+
 	level->background = NULL;
 	level->spawnPowerUps = 1;
 }
@@ -104,6 +124,24 @@ int getTeam(const char* team)
 		
 }
 
+int getUIType(const char* text)
+{
+	if (!text)
+	{
+		slog("NULL Text from JSON UI Level!");
+		return UI_ERROR;
+	}
+	
+	if (strcmp(text, "UI_BUTTON") == 0)
+	{
+		return UI_BUTTON;
+	}
+	else
+	{
+		return UI_ERROR;
+	}
+
+}
 
 
 
@@ -114,6 +152,7 @@ Level* dataLoadLevel(const char* levelName)
 	SJson* ljson = NULL;
 	SJson* entity = NULL;
 	SJson* entities = NULL;
+	SJson* uiElement = NULL;
 
 	SJson* ui = NULL;
 
@@ -123,12 +162,23 @@ Level* dataLoadLevel(const char* levelName)
 	const char* background= NULL;
 	const char* team = NULL;
 	const char* levelObjName = NULL;
+	const char* uiTypeString = NULL;
+
 	int time= 0;
 	int c=0, role=0, entityMax=0;
 	int tempX =0 , tempY =0;
 	int tempInt = -1;
 	int teamEnum = -1;
 	int delay = -1;
+
+	int uiType = NULL;
+	int uiPosX = -1;
+	int uiPosY = -1;
+	int uiBX = -1;
+	int uiBY = -1;
+	int uiBW = -1;
+	int uiBH = -1;
+	UI* tempUI = NULL;
 
 
 
@@ -166,7 +216,87 @@ Level* dataLoadLevel(const char* levelName)
 	}
 	else
 	{
-		slog("UI Exist?");
+		slog("UI Exist!");
+		entityMax = sj_array_get_count(ui);
+
+		if (!entityMax)
+		{
+			slog("Error getting UI array count!");
+			goto fail;
+		}
+
+		for (c = 0; c < entityMax; c++)
+		{
+			uiElement = sj_array_get_nth(ui, c);
+			uiType = getUIType(sj_object_get_string(uiElement, "type"));
+
+			if (uiType == UI_ERROR)
+			{
+				slog("Error parsing UI Type!");
+				goto fail;
+			}
+
+
+			switch (uiType)
+			{
+			case UI_BUTTON:
+
+
+				if (sj_object_get_int(uiElement, "positionX", &uiPosX) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "positionY", &uiPosY) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(uiElement, "boundsX", &uiBX) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsY", &uiBY) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsW", &uiBW) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsH", &uiBH) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH));
+
+				if (!tempUI)
+				{
+					slog("Failed to create UI object!");
+					goto fail;
+				}
+				gfc_list_append(level->levelUI, tempUI);
+
+
+				break;
+
+			default:
+				slog("Error reading UI!");
+			}
+		}
+
+		
 	}
 
 	
@@ -179,7 +309,8 @@ Level* dataLoadLevel(const char* levelName)
 	}
 	
 	level->background = _strdup(background);
-	if (!level->background) {
+	if (!level->background) 
+	{
 		slog("Failed to allocate memory for background string!");
 		goto fail;
 	}

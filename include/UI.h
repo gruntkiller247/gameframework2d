@@ -37,6 +37,7 @@ typedef struct UI_S
 
 typedef enum
 {
+	UI_ERROR,
 	UI_BUTTON = 1,
 	UI_THING
 }UI_TYPE;

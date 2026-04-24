@@ -15,4 +15,9 @@ void buttonTouch(UI* self);
 
 void buttonUpdate(UI* self);
 
+/*
+	Used by Level Function to read Button JSON and make a new button
+*/
+UI* levelLoadButton();
+
 #endif

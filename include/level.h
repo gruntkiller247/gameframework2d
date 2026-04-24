@@ -6,6 +6,7 @@
 #include "UI.h"
 #include "button.h"
 
+
 typedef struct Level_L
 {
 	Uint64 width;	//Width of the level
@@ -14,6 +15,7 @@ typedef struct Level_L
 	Sprite* background; //Background image
 	Uint8 spawnPowerUps; //Whether or not the level can randomly spawn power ups - on by default - not read by JSON ATM
 	const char* name;	//Name of the level
+	GFC_List* levelUI;	//List of all UI's in the level!
 } Level;
 
 /*

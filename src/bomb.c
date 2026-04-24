@@ -483,7 +483,7 @@ void loadBomb(Entity* self)
 		return NULL;
 	}
 
-	bjson = sj_object_get_value(json, "player");
+	bjson = sj_object_get_value(json, "bomb");
 
 	if (!bjson)
 	{
@@ -500,30 +500,27 @@ void loadBomb(Entity* self)
 	}
 
 
-	if (sj_object_get_int(bjson, "positionY", &damage) == 0)
+	if (sj_object_get_int(bjson, "damage", &damage) == 0)
 	{
 		slog("Error finding Bomb Damage");
 		goto fail;
 	}
 	
-	color = sj_object_get_string(bjson, "colorReal");
+	color = sj_object_get_string(bjson, "color");
 
 	if (getColor(self, color) == 0)
 	{
-		; //Means that the color was not found IE not a macro, for now whatever!
+		//Means that the color was not found IE not a macro, for now whatever!
 	}
 	
 	
 
-	sj_free(bjson);
+	//sj_free(bjson);
 	sj_free(json);
 
 	return;
 
 	fail:
-
-	if (bjson)
-		sj_free(bjson);
 
 	if (json)
 		sj_free(json);
