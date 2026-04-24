@@ -5,7 +5,6 @@ typedef struct
 	UI* uiList;
 	Uint32 uiMax;
 	Uint32 uiPool;
-	
 }UIManager;
 
 void uiFree(UI* self);
@@ -160,7 +159,7 @@ void uiDraw(UI* self)
 		if (self->onClickSprite)
 		{
 			//Draw clicked sprite
-
+			gf2d_sprite_draw(self->onClickSprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 		}
 		else
 		{
@@ -169,7 +168,10 @@ void uiDraw(UI* self)
 		}
 	}
 	else
-		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL,NULL, (Uint32)self->frame);
+	{
+		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+	}
+		
 }
 
 void uiDrawAll()

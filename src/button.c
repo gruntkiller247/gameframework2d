@@ -18,8 +18,10 @@ typedef struct BD
 }ButtonData;
 
 void buttonFree(UI* self);
+void changeLevel(UI* self);
+void getOnClick(UI* ui, const char* onClick);
 
-UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
+UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
 	UI* ui = uiNew(position, bounds);
 
@@ -31,24 +33,22 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
 
 	ButtonData* data = malloc(sizeof(ButtonData));
 
-	ui->type = UI_BUTTON;
+	if (!data)
+	{
+		slog("Failed to allocate data for button!");
+		return NULL;
+	}
+
+	getOnClick(ui, onClick);
+	
+	ui->type = type;
+	
+
 	ui->data = data;
 	
-	ui->sprite = gf2d_sprite_load_all("images/ed210.png", 128, 128, 16, 0);
+	
 	//ui->sprite = gf2d_sprite_load_image("images/ed210.png");
 	ui->onHoverSprite = gf2d_sprite_load_all("images/space_bug.png",128,128,16,0);
-
-	if (!ui->sprite)
-	{
-		slog("Failed to load UI Button's Sprite!");
-		return NULL;
-	}
-
-	if (!ui->onHoverSprite)
-	{
-		slog("Failed to load UI Button on click sprite!");
-		return NULL;
-	}
 
 	ui->frame = 0;
 	ui->rotation = 0;
@@ -58,6 +58,7 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds)
 	ui->update = buttonUpdate;
 	ui->touch = buttonTouch;
 	ui->free = buttonFree;
+	
 	
 	ui->clicked = 0;
 	ui->hover = 0;
@@ -89,6 +90,8 @@ void buttonTouch(UI* self)
 		{
 			slog("Button has been clicked!");
 			self->clicked = 1;
+			if (self->onClick)
+				self->onClick(self);
 		}
 	}
 	else
@@ -144,4 +147,17 @@ void buttonFree(UI* self)
 
 	//free(self);
 
+}
+
+void getOnClick(UI* ui, const char* onClick)
+{
+	ui->onClick = changeLevel;
+}
+
+/*
+	Parses the onClick Function when read by JSON!
+*/
+void changeLevel(UI* self)
+{
+	slog("Inside CHange Lvel!");
 }

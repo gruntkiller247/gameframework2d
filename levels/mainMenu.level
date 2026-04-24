@@ -1,36 +1,21 @@
 {
 	"level": 
 	{
-		"powerUps": 1,
-		"background": "images/backgrounds/cat.jpg",
-		"entities": 
+		"UI": 
 		[
 			{
-				"name": "test_monster",
-				"role": "ROLE_TRASHMOB", 
-				"positionX": 100,
-				"positionY":  100
-
-			},
-			{
-				"name": "test_monster2",
-				"role": "ROLE_TRASHMOB",
-				"positionX": 200,
-				"positionY": 200
-			},
-			{
-				"name": "player",
-				"role": "ROLE_PLAYER_GUNNER",
-				"positionX": 300,
-				"positionY": 300
-			},
-			{
-				"name": "Boss1",
-				"role": "ROLE_BOSS1",
+				"type": "UI_BUTTON",
 				"positionX": 500,
-				"positionY": 500
+				"positionY": 500,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 72,
+				"boundsH": 72,
+				"onClick": "NOTHING!",
+				"sprite": "images/ed210.png",
+				"onClickSprite": "NULL",
+				"onHoverSprite": "images/space_bug.png"
 			}
-
 		]
 	}
 }

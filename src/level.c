@@ -163,6 +163,11 @@ Level* dataLoadLevel(const char* levelName)
 	const char* team = NULL;
 	const char* levelObjName = NULL;
 	const char* uiTypeString = NULL;
+	const char* onClick = NULL;
+
+	const char* uiSprite = NULL;
+	const char* uiHoverSprite = NULL;
+	const char* uiClickSprite = NULL;
 
 	int time= 0;
 	int c=0, role=0, entityMax=0;
@@ -236,6 +241,13 @@ Level* dataLoadLevel(const char* levelName)
 				goto fail;
 			}
 
+			onClick = sj_object_get_string(uiElement, "onClick");
+
+			if (!onClick)
+			{
+				slog("onClick either NULL or Not Found!");
+			}
+
 
 			switch (uiType)
 			{
@@ -279,20 +291,59 @@ Level* dataLoadLevel(const char* levelName)
 					goto fail;
 				}
 
-				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH));
+				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH),uiType,onClick);
 
 				if (!tempUI)
 				{
 					slog("Failed to create UI object!");
 					goto fail;
 				}
+
+				uiSprite = sj_object_get_string(uiElement, "sprite");
+
+				if (!uiSprite)
+				{
+					slog("uiSprite failed to load!");
+					goto fail;
+				}
+
+				tempUI->sprite = gf2d_sprite_load_all(uiSprite, 128, 128, 16, 0);
+
+
+
+				uiClickSprite = sj_object_get_string(uiElement, "onClickSprite");
+
+				if (!uiClickSprite)
+				{
+					//slog("onClickSprite failed to load!");
+					tempUI->onClickSprite = NULL;
+					//goto fail;
+				}
+				else
+					tempUI->onClickSprite = gf2d_sprite_load_all(uiClickSprite, 128, 128, 16, 0);
+
+
+
+				uiHoverSprite = sj_object_get_string(uiElement, "onHoverSprite");
+
+				if (!uiHoverSprite)
+				{
+					//slog("uiHoverSprite failed to load!");
+					tempUI->onHoverSprite = NULL;
+					//goto fail;
+				}
+				else
+					tempUI->onHoverSprite = gf2d_sprite_load_all(uiHoverSprite, 128, 128, 16, 0);
+
+
+
 				gfc_list_append(level->levelUI, tempUI);
 
 
 				break;
 
 			default:
-				slog("Error reading UI!");
+				slog("Error reading UI! Not a real UI type!");
 			}
 		}
 

@@ -9,15 +9,12 @@
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
 
-UI* newButton(GFC_Vector2D position, GFC_Rect bounds);
+UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick);
 
 void buttonTouch(UI* self);
 
 void buttonUpdate(UI* self);
 
-/*
-	Used by Level Function to read Button JSON and make a new button
-*/
-UI* levelLoadButton();
+
 
 #endif
