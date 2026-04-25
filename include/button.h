@@ -15,6 +15,11 @@ void buttonTouch(UI* self);
 
 void buttonUpdate(UI* self);
 
+void updateTexture(UI* self,SDL_Texture* texture);
+
+SDL_Texture* getButtonTexture(UI* self);
+
+
 
 
 #endif

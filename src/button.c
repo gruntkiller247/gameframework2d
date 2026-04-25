@@ -14,7 +14,8 @@
 
 typedef struct BD
 {
-	int temp;
+	SDL_Texture* uiTexture;
+	SDL_Rect*	uiRect;
 }ButtonData;
 
 void buttonFree(UI* self);
@@ -38,6 +39,8 @@ UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onCl
 		slog("Failed to allocate data for button!");
 		return NULL;
 	}
+
+	data->uiTexture = NULL;
 
 	getOnClick(ui, onClick);
 	
@@ -116,41 +119,41 @@ void buttonUpdate(UI* self)
 	int temp = isPaused();
 	//slog("THE UI THINKS THE GAME IS CURRENTLY: %i", temp);
 
-	if (self->activeOnPause == 1 && isPaused() == PAUSED)
-	{
-		self->active = 1;
-	}
-	else
-	{
-		self->active = 0;
-	}
-		
+if (self->activeOnPause == 1 && isPaused() == PAUSED)
+{
+	self->active = 1;
+}
+else
+{
+	self->active = 0;
+}
 
 
-	if (self->active != 1)
-	{
-		return;
-	}
-		
 
-	//self->frame++;
-	if (self->frame >= 16)
-		self->frame = 0;
+if (self->active != 1)
+{
+	return;
+}
 
-	float x = self->position.x + self->bounds.x;
-	float y = self->position.y + self->bounds.y;
-	float w = self->bounds.w;
-	float h = self->bounds.h;
 
-	GFC_Vector2D TL = gfc_vector2d(x, y);
-	GFC_Vector2D TR = gfc_vector2d(x + w, y);
-	GFC_Vector2D BR = gfc_vector2d(x + w, y + h);
-	GFC_Vector2D BL = gfc_vector2d(x, y + h);
+//self->frame++;
+if (self->frame >= 16)
+self->frame = 0;
 
-	gf2d_draw_line(TL, TR, GFC_COLOR_RED);
-	gf2d_draw_line(TR, BR, GFC_COLOR_RED);
-	gf2d_draw_line(BR, BL, GFC_COLOR_RED);
-	gf2d_draw_line(BL, TL, GFC_COLOR_RED);
+float x = self->position.x + self->bounds.x;
+float y = self->position.y + self->bounds.y;
+float w = self->bounds.w;
+float h = self->bounds.h;
+
+GFC_Vector2D TL = gfc_vector2d(x, y);
+GFC_Vector2D TR = gfc_vector2d(x + w, y);
+GFC_Vector2D BR = gfc_vector2d(x + w, y + h);
+GFC_Vector2D BL = gfc_vector2d(x, y + h);
+
+gf2d_draw_line(TL, TR, GFC_COLOR_RED);
+gf2d_draw_line(TR, BR, GFC_COLOR_RED);
+gf2d_draw_line(BR, BL, GFC_COLOR_RED);
+gf2d_draw_line(BL, TL, GFC_COLOR_RED);
 
 
 
@@ -169,7 +172,7 @@ void buttonFree(UI* self)
 	{
 		free(self->data);
 	}
-		
+
 
 	//free(self);
 
@@ -185,6 +188,12 @@ void getOnClick(UI* ui, const char* onClick)
 {
 	slog("Checking the on Click!");
 
+	if (!ui)
+		return;
+
+	if (!onClick)
+		return;
+
 	if (strcmp(onClick, "unpause") == 0)
 	{
 		slog("Pause");
@@ -195,7 +204,7 @@ void getOnClick(UI* ui, const char* onClick)
 		slog("Null");
 		ui->onClick = NULL;
 	}
-		
+
 }
 
 /*
@@ -205,3 +214,51 @@ void changeLevel(UI* self)
 {
 	slog("Inside CHange Lvel!");
 }
+
+void updateTexture(UI* self, SDL_Texture* texture)
+{
+	if (!self)
+	{
+		slog("No UI element to change texture on!");
+		return;
+	}
+	ButtonData* data = (ButtonData*)self->data;
+	
+	if (!data)
+	{
+		slog("Error! UI Has no Data!");
+		return;
+	}
+
+	if (!data->uiTexture)
+	{
+		data->uiTexture = texture;
+		return;
+	}
+	else
+	{
+		SDL_DestroyTexture(data->uiTexture);
+		data->uiTexture = texture;
+		return;
+	}
+
+	
+
+}
+
+SDL_Texture* getButtonTexture(UI* self)
+{
+	if (self)
+		return NULL;
+
+	ButtonData* data = (ButtonData*)self->data;
+
+	if (!data)
+		return NULL;
+
+	if (!data->uiTexture)
+		return NULL;
+
+	return data->uiTexture;
+}
+

@@ -1,7 +1,8 @@
-#include "simple_logger.h"
+#include <simple_logger.h>
+#include <SDL_ttf.h>
 #include <simple_json.h>
 #include "level.h"
-#include "gfc_list.h"
+#include <gfc_list.h>
 #include "entity.h"
 #include "monster.h"
 #include "player.h"
@@ -9,12 +10,71 @@
 #include "bomb.h"
 #include "powerup.h"
 #include "button.h"
+#include "gf2d_graphics.h"
 
 
 static int viewWidth = 1200;
 static int viewHeight = 720;
 
 const char* errorBackground = "images/backgrounds/bg_flat.png";
+static SDL_Color uiColor = { 255, 255, 255, 255 };
+#define MY_FONT "fonts/FreeSans.ttf"
+
+static TTF_Font* font;
+
+typedef struct
+{
+	Level* levelList;
+	Uint32 levelMax;
+	Uint32 currentLevel;
+}LevelManager;
+
+
+static LevelManager levelManager = { 0 };
+
+
+void levelManagerInit(Uint32 max)
+{
+	if (!max)
+	{
+		slog("You cannot initalize Level system with 0 entities");
+		return;
+	}
+
+	levelManager.levelList = gfc_allocate_array(sizeof(UI), max);
+
+	if (!levelManager.levelList)
+	{
+		slog("Failed to allocate Level array!");
+		return;
+	}
+	levelManager.levelMax = max;
+
+
+	font = TTF_OpenFont(MY_FONT, 64);
+	if (!font)
+		slog("FONT DID NOT LOAD IN LEVEL!");
+
+	atexit(levelManagerClose);
+	slog("Initalized Level System");
+}
+
+void levelManagerClose()
+{
+	if (!levelManager.levelMax)
+		return NULL;
+
+	int c;
+	for (c = 0; c < levelManager.levelMax; c++)
+	{
+		uiFree(&levelManager.levelList[c]);
+	}
+
+	memset(&levelManager, 0, sizeof(levelManager));
+	slog("Closed UI System");
+}
+
+
 
 Level* levelNew(Uint64 height, Uint64 width)
 {
@@ -43,7 +103,6 @@ Level* levelNew(Uint64 height, Uint64 width)
 		return NULL;
 	}
 
-
 	level->levelUI = gfc_list_new();
 
 	if (!level->levelUI)
@@ -66,6 +125,8 @@ Level* levelNew(Uint64 height, Uint64 width)
 
 	level->background = NULL;
 	level->spawnPowerUps = 1;
+
+	return level;
 }
 
 void levelFree(Level* level)
@@ -138,6 +199,14 @@ int getUIType(const char* text)
 	{
 		return UI_BUTTON;
 	}
+	else if (strcmp(text, "UI_TEXT") == 0)
+	{
+		return UI_TEXT;
+	}
+	else if (strcmp(text, "UI_IMAGE") == 0)
+	{
+		return UI_IMAGE;
+	}
 	else
 	{
 		return UI_ERROR;
@@ -170,6 +239,7 @@ Level* dataLoadLevel(const char* levelName)
 	const char* uiHoverSprite = NULL;
 	const char* uiClickSprite = NULL;
 	const char* onClick = NULL;
+	const char* uiText = NULL;
 
 	int time= 0;
 	int c=0, role=0, entityMax=0;
@@ -188,7 +258,11 @@ Level* dataLoadLevel(const char* levelName)
 	int activeOnPause = -1;
 	UI* tempUI = NULL;
 
+	SDL_Rect uiRect;
+	SDL_Surface* uiSurface = NULL;
+	SDL_Texture* tempTexture = NULL;
 
+	
 
 	if (!levelName)
 	{
@@ -355,9 +429,112 @@ Level* dataLoadLevel(const char* levelName)
 
 				tempUI->activeOnPause = activeOnPause;
 
+
+				uiText = sj_object_get_string(uiElement, "uiText");
+
+				if (!uiText)
+				{
+					slog("UI Element has no text!");
+					tempUI->text = NULL;
+				}
+				else
+					tempUI->text = uiText;
+
+
 				gfc_list_append(level->levelUI, tempUI);
 
 
+
+				break;
+			case UI_TEXT:
+
+				if (sj_object_get_int(uiElement, "positionX", &uiPosX) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "positionY", &uiPosY) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(uiElement, "boundsX", &uiBX) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsY", &uiBY) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsW", &uiBW) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(uiElement, "boundsH", &uiBH) == 0)
+				{
+					slog("Failed to create Level UI!");
+					goto fail;
+				}
+
+				uiRect.x = uiBX;
+				uiRect.y = uiBY;
+				uiRect.h = uiBH;
+				uiRect.w = uiBW;
+
+				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH), uiType, onClick);
+
+				uiText = sj_object_get_string(uiElement, "text");
+				
+				if (!uiText)
+				{
+					slog("UI Element has no text!");
+					tempUI->text = "NULL";
+				}
+				else
+					tempUI->text = uiText;
+	
+
+				uiSurface = TTF_RenderText_Solid(font, uiText, uiColor);
+
+				if (!uiSurface)
+				{
+					slog("Failed to create Surface for UI!");
+					slog(SDL_GetError());
+					goto fail;
+				}
+
+				if (!gf2d_graphics_get_renderer())
+				{
+					slog("Level does not have graphics renderer!");
+					goto fail;
+				}
+
+				tempTexture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), uiSurface);
+
+
+				if (!tempTexture)
+				{
+					slog("No fps texture to draw!");
+					return;
+				}
+
+				updateTexture(tempUI, tempTexture);
+				
+
+				/*uiRect.x = 0;
+				uiRect.y = 680;
+				uiRect.w = uiSurface->w / 2;
+				uiRect.h = uiSurface->h / 2;*/
+				SDL_FreeSurface(uiSurface);
 
 				break;
 
@@ -658,9 +835,16 @@ Level* dataLoadLevel(const char* levelName)
 	//sj_free(entities);
 	//sj_free(ljson);
 	sj_free(json);
-	
-	
 
+	SDL_FreeSurface(uiSurface);
+
+	//if (uiTexture)
+		//SDL_FreeSurface(uiTexture);
+	
+	gfc_list_prepend(levelManager.levelList, level);
+	levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList,level);
+	slog("Level Manger current level: %i", levelManager.currentLevel);
+	
 	return level;
 
 fail:
@@ -671,6 +855,9 @@ fail:
 
 	if (temp)
 		temp->_inUse = 0;
+
+	if (uiSurface)
+		SDL_FreeSurface(uiSurface);
 
 	/*if (entities)
 		sj_free(entities);

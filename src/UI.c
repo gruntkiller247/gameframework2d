@@ -1,4 +1,6 @@
 #include "UI.h"
+#include "button.h"
+#include "gf2d_graphics.h"
 
 typedef struct
 {
@@ -136,13 +138,21 @@ void uiDraw(UI* self)
 		return;
 	}
 
+	SDL_Texture* tempTex = NULL;
+
+	tempTex = getButtonTexture(self);
+
+	if (tempTex)
+	{
+		SDL_RenderCopy(gf2d_graphics_get_renderer(), tempTex, NULL, &self->bounds);
+	}
 
 
 	//slog("UI Draw Pos: %f %f", self->position.x, self->position.y);
 
-	//self->hover = 0;
-	//self->clicked = 0;
 
+
+	//SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
 	
 
 	if (self->hover != 0)

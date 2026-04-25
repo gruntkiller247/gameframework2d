@@ -355,7 +355,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     TTF_Init();
 
-    if (TTF_Init() == -1) {
+    /*if (TTF_Init() == -1) {
         slog("TTF_Init Error: %s\n", TTF_GetError());
         return 1;
     }
@@ -365,11 +365,12 @@ int main(int argc, char * argv[])
     }
     font = TTF_OpenFont(MY_FONT, 64);
     if (!font)
-        slog("FONT DID NOT LOAD!");
+        slog("FONT DID NOT LOAD!");*/
     
     
     entityManagerInit(16384);//2^14
     uiManagerInit(255); //2^8
+    levelManagerInit(32);
 
 
     gfc_input_init("config/input.gfc");
@@ -523,7 +524,9 @@ int main(int argc, char * argv[])
             if (player->hp <= 0)
             {
                 slog("The player is dead! Load main menu!");
-                //Load Main Menu!;
+                entityKillAll();
+                currentLevel = dataLoadLevel("levels/mainMenu.level");
+                sprite = gf2d_sprite_load_image(currentLevel->background);
             }
 
             entityFreeAll();
@@ -739,6 +742,7 @@ int main(int argc, char * argv[])
     TTF_Quit();
     entityManagerClose();
     uiManagerClose();
+    levelManagerClose();
     //slog("entityManager is closed!");
     //monsterManagerClose();
     slog("---==== END ====---");

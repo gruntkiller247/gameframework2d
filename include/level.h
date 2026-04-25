@@ -18,6 +18,10 @@ typedef struct Level_L
 	GFC_List* levelUI;	//List of all UI's in the level!
 } Level;
 
+void levelManagerInit(Uint32 max);
+
+void levelManagerClose();
+
 /*
 	Creates a level with a height of height
 	width of width

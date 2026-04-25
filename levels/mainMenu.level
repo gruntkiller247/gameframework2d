@@ -25,7 +25,19 @@
 				"sprite": "images/ed210.png",
 				"onClickSprite": "NULL",
 				"onHoverSprite": "images/space_bug.png",
-				"activeOnPause": 1
+				"activeOnPause": 1,
+				"text": "TEST TEXT"
+			},
+			{
+				"type": "UI_TEXT",
+				"positionX": 100,
+				"positionY": 500,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 72,
+				"boundsH": 72,
+				"activeOnPause": 0,
+				"text": "TEST TEXT"
 			}
 		]
 	}
