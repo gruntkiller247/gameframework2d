@@ -123,6 +123,10 @@ if (self->activeOnPause == 1 && isPaused() == PAUSED)
 {
 	self->active = 1;
 }
+else if (self->activeOnPause == 0)
+{
+	self->active = 1;
+}
 else
 {
 	self->active = 0;
@@ -135,12 +139,19 @@ if (self->active != 1)
 	return;
 }
 
+ButtonData* data = (ButtonData*)self->data;
+
+if (!data)
+	return;
+
+
+
 
 //self->frame++;
 if (self->frame >= 16)
 self->frame = 0;
 
-float x = self->position.x + self->bounds.x;
+/*float x = self->position.x + self->bounds.x;
 float y = self->position.y + self->bounds.y;
 float w = self->bounds.w;
 float h = self->bounds.h;
@@ -153,7 +164,7 @@ GFC_Vector2D BL = gfc_vector2d(x, y + h);
 gf2d_draw_line(TL, TR, GFC_COLOR_RED);
 gf2d_draw_line(TR, BR, GFC_COLOR_RED);
 gf2d_draw_line(BR, BL, GFC_COLOR_RED);
-gf2d_draw_line(BL, TL, GFC_COLOR_RED);
+gf2d_draw_line(BL, TL, GFC_COLOR_RED);*/
 
 
 
@@ -233,6 +244,7 @@ void updateTexture(UI* self, SDL_Texture* texture)
 	if (!data->uiTexture)
 	{
 		data->uiTexture = texture;
+		slog("Saved texture to UI Data!");
 		return;
 	}
 	else
@@ -248,7 +260,7 @@ void updateTexture(UI* self, SDL_Texture* texture)
 
 SDL_Texture* getButtonTexture(UI* self)
 {
-	if (self)
+	if (!self)
 		return NULL;
 
 	ButtonData* data = (ButtonData*)self->data;
@@ -258,7 +270,7 @@ SDL_Texture* getButtonTexture(UI* self)
 
 	if (!data->uiTexture)
 		return NULL;
-
+	//slog("UI has texture!");
 	return data->uiTexture;
 }
 

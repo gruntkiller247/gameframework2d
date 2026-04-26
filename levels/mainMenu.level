@@ -36,7 +36,7 @@
 				"boundsY": 30,
 				"boundsW": 72,
 				"boundsH": 72,
-				"activeOnPause": 0,
+				"activeOnPause": 1,
 				"text": "TEST TEXT"
 			}
 		]

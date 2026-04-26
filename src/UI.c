@@ -134,8 +134,12 @@ void uiDraw(UI* self)
 	//slog("Trying to draw the UI!");
 	if (!self->sprite)
 	{
-		slog("Failed to load UI's Sprite to draw!");
-		return;
+		if (!getButtonTexture(self))
+		{
+			slog("Failed to load UI's Sprite/Texture to draw!");
+			return;
+		}
+
 	}
 
 	SDL_Texture* tempTex = NULL;
@@ -144,9 +148,24 @@ void uiDraw(UI* self)
 
 	if (tempTex)
 	{
-		SDL_RenderCopy(gf2d_graphics_get_renderer(), tempTex, NULL, &self->bounds);
-	}
 
+		if (getButtonTexture(self))
+		{
+			SDL_Rect dest = {
+				self->position.x,
+				self->position.y,
+				self->bounds.w,
+				self->bounds.h
+			};
+			//slog("Trying to draw TEXT UI!");
+			SDL_RenderCopy(gf2d_graphics_get_renderer(), getButtonTexture(self), NULL, &dest);
+
+		}
+		else
+			;
+		
+	}
+	
 
 	//slog("UI Draw Pos: %f %f", self->position.x, self->position.y);
 
@@ -210,7 +229,7 @@ void uiDrawAll()
 		if (!uiManager.uiList[c].active || uiManager.uiList[c].active == 0)
 		{
 			//slog("Skipping!");
-			//slog("Unique ID is: %i", uiManager.uiList[c].id);
+			//slog("Skipping! Unique ID is: %i", uiManager.uiList[c].id);
 			continue;
 		}
 		//slog("Drawing!");

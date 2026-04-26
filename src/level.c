@@ -430,7 +430,7 @@ Level* dataLoadLevel(const char* levelName)
 				tempUI->activeOnPause = activeOnPause;
 
 
-				uiText = sj_object_get_string(uiElement, "uiText");
+				uiText = sj_object_get_string(uiElement, "text");
 
 				if (!uiText)
 				{
@@ -523,19 +523,18 @@ Level* dataLoadLevel(const char* levelName)
 
 				if (!tempTexture)
 				{
-					slog("No fps texture to draw!");
+					slog("No UI texture created!");
 					return;
 				}
 
+
 				updateTexture(tempUI, tempTexture);
 				
-
-				/*uiRect.x = 0;
-				uiRect.y = 680;
-				uiRect.w = uiSurface->w / 2;
-				uiRect.h = uiSurface->h / 2;*/
+			
 				SDL_FreeSurface(uiSurface);
 
+				//tempUI->active = 1;
+				gfc_list_append(level->levelUI, tempUI);
 				break;
 
 			default:
@@ -835,8 +834,9 @@ Level* dataLoadLevel(const char* levelName)
 	//sj_free(entities);
 	//sj_free(ljson);
 	sj_free(json);
-
-	SDL_FreeSurface(uiSurface);
+	
+	//This Crashes, but needs to be done at a some point!
+	//SDL_FreeSurface(uiSurface);
 
 	//if (uiTexture)
 		//SDL_FreeSurface(uiTexture);
@@ -859,7 +859,7 @@ fail:
 	if (uiSurface)
 		SDL_FreeSurface(uiSurface);
 
-	/*if (entities)
+	/*if (entiFties)
 		sj_free(entities);
 
 	if (ljson)

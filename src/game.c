@@ -393,7 +393,7 @@ int main(int argc, char * argv[])
     currentLevel = dataLoadLevel("levels/mainMenu.level");
 
     
-    
+    slog("ASDASDASDS");
 
     if (!currentLevel)
     {
@@ -440,7 +440,7 @@ int main(int argc, char * argv[])
     /*main game loop*/
     while(!done)
     {
-       
+        //slog("Num elements in gfc_list: %i", gfc_list_get_count(currentLevel->levelUI));
         gfc_input_update();
         //SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
@@ -560,8 +560,8 @@ int main(int argc, char * argv[])
             //Render text
             SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
             SDL_RenderCopy(gf2d_graphics_get_renderer(), textureBoss, NULL, &dstRect2);
-            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
-            SDL_RenderPresent(gf2d_graphics_get_renderer());*/
+            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);*/
+            SDL_RenderPresent(gf2d_graphics_get_renderer());
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
 
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
