@@ -599,15 +599,17 @@ int main(int argc, char * argv[])
 
                        monsterEntityNew(gfc_vector2d(mx, my), roleToSpawn());
                        clearSpawning();
-                       click = 0;
                        break;
 
                    default:
                        slog("Nothing to spawn!");
                        clearSpawning();
-                       click = 0;
+                      
 
                    }
+                   click = 0;
+                   mx2 = 0;
+                   my2 = 0;
                }
            }
            else
