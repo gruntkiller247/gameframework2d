@@ -702,6 +702,42 @@ int main(int argc, char * argv[])
            //Make button at bottom of screen/buttons on keyboard
            //Click button -> Mouse click places dude!
 
+          
+           entityThinkAll();
+
+           gf2d_graphics_clear_screen();// clears drawing buffers
+              
+           gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+
+           gf2d_sprite_draw(mouse,gfc_vector2d(mx, my),NULL,NULL,NULL,NULL,&mouseGFC_Color,(int)mf);
+
+           entityTouchAll();
+               
+           uiTouchAll();
+
+
+           entityUpdateAll();
+           
+           uiUpdateAll();
+
+
+           entityBoundsCheckAll();
+
+           entityManagerDrawAll();
+           uiDrawAll();
+
+
+           entityFreeAll();
+           uiFreeAll();
+
+
+
+             
+           SDL_RenderPresent(gf2d_graphics_get_renderer());
+           SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
+
+           gf2d_graphics_next_frame();
+
 
         }
 

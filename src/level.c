@@ -862,7 +862,7 @@ Level* dataLoadLevel(const char* levelName)
 	}
 
 	levelLoaded:
-	strcpy(level->name, levelName);
+	
 	gfc_list_prepend(levelManager.levelList, level);
 	levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList, level);
 	slog("Level Manger current level: %i", levelManager.currentLevel);
@@ -870,8 +870,8 @@ Level* dataLoadLevel(const char* levelName)
 	slog("Loaded Level JSON!");
 
 
-	if(json)
-		sj_free(json);
+	
+	sj_free(json);
 
 	slog("Post JSON FREE!");
 	//sj_free(background);
