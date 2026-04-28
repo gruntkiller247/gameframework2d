@@ -260,6 +260,11 @@ void monsterUpdate(Entity* self)
 			slog("Monster State is NULL!");
 
 		case MS_DEAD:
+			
+			
+			addPlayerPoints(self->points);
+			slog("Player Points: %i", getPlayerPoints());
+
 			self->_inUse = 0;
 			return;
 
@@ -1754,8 +1759,9 @@ void loadMonster(Entity* self)
 	const char* state = NULL;
 	const char* layer = NULL;
 	const char* spriteString = NULL;
-	const char* puzzle1;
-	const char* puzzle2;
+	const char* puzzle1 = NULL;
+	const char* puzzle2 = NULL;
+	const char* name = NULL;
 
 	int c = 0;
 	int maxIndex = 0;
@@ -1782,6 +1788,9 @@ void loadMonster(Entity* self)
 	int bossNukeCount = 0;
 	int bossNukeMax = 0;
 
+	int points = -1;
+
+
 	json = sj_load(monsterFile);
 
 	if (!json)
@@ -1804,7 +1813,8 @@ void loadMonster(Entity* self)
 
 	if (!roles)
 	{
-		slog("Failed to get array for JSON!");
+		slog("Failed to get array for Monster JSON!");
+		goto fail;
 	}
 
 	if (gfc_list_get_count(roles) == 0)
@@ -1819,6 +1829,12 @@ void loadMonster(Entity* self)
 		{
 			case ROLE_TRASHMOB:
 				monster = sj_array_get_nth(roles, 0);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
 
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
 				{
@@ -1923,6 +1939,12 @@ void loadMonster(Entity* self)
 
 			case ROLE_BOSS1:
 				monster = sj_array_get_nth(roles, 1);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
 
 
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
@@ -2061,6 +2083,13 @@ void loadMonster(Entity* self)
 
 			case ROLE_BOSS2:
 				monster = sj_array_get_nth(roles, 2);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
 				{
 					slog("Error getting Monster's HP value!");
@@ -2197,6 +2226,12 @@ void loadMonster(Entity* self)
 
 			case ROLE_BOSS3:
 				monster = sj_array_get_nth(roles, 3);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
 
 
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
@@ -2394,6 +2429,12 @@ void loadMonster(Entity* self)
 			case ROLE_SYMBOL_ENEMY1:
 				monster = sj_array_get_nth(roles, 4);
 
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
 				{
 					slog("Error getting Monster's HP value!");
@@ -2500,6 +2541,12 @@ void loadMonster(Entity* self)
 
 			case ROLE_SYMBOL_ENEMY2:
 				monster = sj_array_get_nth(roles, 5);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
 
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
 				{
@@ -2608,6 +2655,12 @@ void loadMonster(Entity* self)
 			case ROLE_SYMBOL_ENEMY3:
 				monster = sj_array_get_nth(roles, 6);
 
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
 				if (sj_object_get_int(monster, "hp", &hp) == 0)
 				{
 					slog("Error getting Monster's HP value!");
@@ -2712,11 +2765,26 @@ void loadMonster(Entity* self)
 
 				break;
 
-			default: //Error handle as TrashMob!
+			default:
 				;
+
 
 		
 	}
+	//I COULD HAVE SAVED TIME! INSTEAD OF COPYING AND PASTING I COULD HAVE JUST PUT ALL THE GENERIC VALUES HERE!!!!!!!!!!!!!!!!!!Q
+	//Me when my code is so bad an AI clearly could not have made it!
+
+
+
+	if (sj_object_get_int(monster, "points", &points) == 0)
+	{
+		slog("Could not find points! Defaulting! Name: %s", self->name);
+	}
+	else
+		self->points = points;
+		
+
+
 
 
 	sj_free(json);

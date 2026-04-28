@@ -262,6 +262,7 @@ Level* dataLoadLevel(const char* levelName)
 	SDL_Surface* uiSurface = NULL;
 	SDL_Texture* tempTexture = NULL;
 
+
 	
 
 	if (!levelName)
@@ -303,7 +304,7 @@ Level* dataLoadLevel(const char* levelName)
 
 		if (!entityMax)
 		{
-			slog("Error getting UI array count!");
+			slog("Error getting UI array count or it is 0!");
 			goto fail;
 		}
 
@@ -374,7 +375,7 @@ Level* dataLoadLevel(const char* levelName)
 					slog("Failed to get onClick for UI!");
 					tempUI->onClick = NULL;
 				}
-
+				
 				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH),uiType,onClick);
 
 				if (!tempUI)
@@ -388,57 +389,91 @@ Level* dataLoadLevel(const char* levelName)
 				if (!uiSprite)
 				{
 					slog("uiSprite failed to load!");
-					goto fail;
-				}
+					uiText = sj_object_get_string(uiElement, "text");
 
-				tempUI->sprite = gf2d_sprite_load_all(uiSprite, 128, 128, 16, 0);
+					if (!uiText)
+					{
+						slog("Button has neither sprite nor text!");
+						goto fail;
+					}
+					else
+					{
+						//Button with text instead of a sprite!
+						tempUI->text = uiText;
+						uiSurface = TTF_RenderText_Solid(font, uiText, uiColor);
+
+						if (!uiSurface)
+						{
+							slog("Failed to create Surface for UI!");
+							slog(SDL_GetError());
+							goto fail;
+						}
+
+						if (!gf2d_graphics_get_renderer())
+						{
+							slog("Level does not have graphics renderer!");
+							goto fail;
+						}
+
+						tempTexture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), uiSurface);
 
 
+						if (!tempTexture)
+						{
+							slog("No UI texture created!");
+							return;
+						}
 
-				uiClickSprite = sj_object_get_string(uiElement, "onClickSprite");
 
-				if (!uiClickSprite)
-				{
-					//slog("onClickSprite failed to load!");
-					tempUI->onClickSprite = NULL;
-					//goto fail;
+						updateTexture(tempUI, tempTexture);
+
+
+						SDL_FreeSurface(uiSurface);
+					}
 				}
 				else
-					tempUI->onClickSprite = gf2d_sprite_load_all(uiClickSprite, 128, 128, 16, 0);
-
-
-
-				uiHoverSprite = sj_object_get_string(uiElement, "onHoverSprite");
-
-				if (!uiHoverSprite)
 				{
-					//slog("uiHoverSprite failed to load!");
-					tempUI->onHoverSprite = NULL;
-					//goto fail;
+					tempUI->sprite = gf2d_sprite_load_all(uiSprite, 128, 128, 16, 0);
+
+
+
+					uiClickSprite = sj_object_get_string(uiElement, "onClickSprite");
+
+					if (!uiClickSprite)
+					{
+						//slog("onClickSprite failed to load!");
+						tempUI->onClickSprite = NULL;
+						//goto fail;
+					}
+					else
+						tempUI->onClickSprite = gf2d_sprite_load_all(uiClickSprite, 128, 128, 16, 0);
+
+
+
+					uiHoverSprite = sj_object_get_string(uiElement, "onHoverSprite");
+
+					if (!uiHoverSprite)
+					{
+						//slog("uiHoverSprite failed to load!");
+						tempUI->onHoverSprite = NULL;
+						//goto fail;
+					}
+					else
+						tempUI->onHoverSprite = gf2d_sprite_load_all(uiHoverSprite, 128, 128, 16, 0);
 				}
-				else
-					tempUI->onHoverSprite = gf2d_sprite_load_all(uiHoverSprite, 128, 128, 16, 0);
+
+				
 
 
 
 				if (sj_object_get_int(uiElement, "activeOnPause", &activeOnPause) == 0)
 				{
-					slog("Failed to find activeOnPause for UI!");
-					goto fail;
+					slog("Failed to find activeOnPause for UI! Defaulting!");
+					tempUI->activeOnPause = 0;
+					//goto fail;
 				}
 
 				tempUI->activeOnPause = activeOnPause;
-
-
-				uiText = sj_object_get_string(uiElement, "text");
-
-				if (!uiText)
-				{
-					slog("UI Element has no text!");
-					tempUI->text = NULL;
-				}
-				else
-					tempUI->text = uiText;
 
 
 				gfc_list_append(level->levelUI, tempUI);
@@ -633,7 +668,7 @@ Level* dataLoadLevel(const char* levelName)
 
 		name = sj_object_get_string(entity,"name");
 
-		if(sj_object_get_int(entity, "delay", &delay) == 0);
+		if(sj_object_get_int(entity, "delay", &delay) == 0)
 		{
 			//slog("Either error getting a delay value, or delay is 0!");
 		}
@@ -652,7 +687,6 @@ Level* dataLoadLevel(const char* levelName)
 				if (name)
 					strcpy(temp->name, name);
 					
-
 
 				break;
 			case ROLE_PROJECTILE:
@@ -828,12 +862,22 @@ Level* dataLoadLevel(const char* levelName)
 	}
 
 	levelLoaded:
+	strcpy(level->name, levelName);
+	gfc_list_prepend(levelManager.levelList, level);
+	levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList, level);
+	slog("Level Manger current level: %i", levelManager.currentLevel);
+
 	slog("Loaded Level JSON!");
 
+
+	if(json)
+		sj_free(json);
+
+	slog("Post JSON FREE!");
 	//sj_free(background);
 	//sj_free(entities);
 	//sj_free(ljson);
-	sj_free(json);
+	
 	
 	//This Crashes, but needs to be done at a some point!
 	//SDL_FreeSurface(uiSurface);
@@ -841,17 +885,14 @@ Level* dataLoadLevel(const char* levelName)
 	//if (uiTexture)
 		//SDL_FreeSurface(uiTexture);
 	
-	gfc_list_prepend(levelManager.levelList, level);
-	levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList,level);
-	slog("Level Manger current level: %i", levelManager.currentLevel);
+
 	
 	return level;
 
 fail:
 	//slog("Hit a fail condition!");
+	slog("WE ARE IN THE FAIL CONDITION LMAO!");
 
-	if (level)
-		levelFree(level);
 
 	if (temp)
 		temp->_inUse = 0;
@@ -867,6 +908,9 @@ fail:
 
 	if (json)
 		sj_free(json);
+
+	if (level)
+		levelFree(level);
 
 	return NULL;
 

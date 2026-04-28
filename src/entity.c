@@ -16,6 +16,7 @@ typedef struct
 	Uint32 entityPool;
 	//Uint8 drawBounds;
 	Uint8 paused;
+	int playerPoints;
 }EntityManager;
 
 
@@ -24,6 +25,7 @@ static EntityManager entityManager = { 0 };
 
 static Entity* thePlayer = NULL;
 static Entity* theBoss = NULL;
+static int DEFAULT_POINTS = 0;
 
 void entityManagerClose();
 
@@ -44,6 +46,7 @@ void entityManagerInit(Uint32 max)
 	}
 
 	entityManager.entityMax = max;
+	entityManager.playerPoints = 0;
 	
 	atexit(entityManagerClose);
 	slog("Initalized Entity System");
@@ -83,6 +86,7 @@ Entity* entityNew()
 		entityManager.entityList[c].color = GFC_COLOR_TRANSPARENT;
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
+		entityManager.entityList[c].points = DEFAULT_POINTS;
 
 		return &entityManager.entityList[c];
 	}
@@ -158,6 +162,22 @@ void entityKillAll()
 
 	for (c = 0; c < entityManager.entityMax; c++)
 	{
+		entityManager.entityList[c]._inUse = 0;
+		entityFree(&entityManager.entityList[c]);
+
+	}
+}
+
+void entityKillAllButPlayer()
+{
+	int c;
+	int id;
+	id = getPlayer()->id;
+
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (entityManager.entityList[c].id == id)
+			continue;
 		entityManager.entityList[c]._inUse = 0;
 		entityFree(&entityManager.entityList[c]);
 
@@ -428,7 +448,8 @@ void outOfBounds(Entity* self)
 
 	
 
-	if(self->role != NULL && self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3 || self->role == ROLE_PLAYER_BAKER || self->role == ROLE_PLAYER_GAMBLER || self->role == ROLE_PLAYER_GUNNER)
+	//if(self->role != NULL && self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3 || self->role == ROLE_PLAYER_BAKER || self->role == ROLE_PLAYER_GAMBLER || self->role == ROLE_PLAYER_GUNNER)
+	if(self->role != NULL && self->role != ROLE_PROJECTILE || self->role != ROLE_BOMB)
 	{
 		//Hard coded size is 1200x720
 		//slog("Teleporting Player or Boss!");
@@ -514,9 +535,9 @@ void entityBoundsCheckAll()
 	}
 }
 
-void setPlayer(Entity* player)
+void setPlayer(Entity* newPlayer)
 {
-	thePlayer = player;
+	thePlayer = newPlayer;
 }
 
 Entity* getPlayer()
@@ -747,6 +768,26 @@ void setPausedEntity(int value)
 		entityManager.paused = NOT_PAUSED;
 	else
 		entityManager.paused = PAUSED;*/
+}
+
+int getPlayerPoints()
+{
+	return entityManager.playerPoints;
+}
+
+void setPlayerPoints(int newPoints)
+{
+	entityManager.playerPoints = newPoints;
+}
+
+void addPlayerPoints(int add)
+{
+	entityManager.playerPoints += add;
+}
+
+void subtractPlayerPoints(int sub)
+{
+	entityManager.playerPoints -= sub;
 }
 
 //endLine

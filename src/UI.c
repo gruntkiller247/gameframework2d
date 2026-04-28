@@ -185,7 +185,8 @@ void uiDraw(UI* self)
 		else
 		{
 			//slog("No on hover sprite for UI element!");
-			gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+			if (self->sprite)
+				gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 		}
 	}
 	else if (self->clicked != 0)
@@ -198,12 +199,14 @@ void uiDraw(UI* self)
 		else
 		{
 			//Draw as normal
-			gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+			if (self->sprite)
+				gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 		}
 	}
 	else
 	{
-		gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
+		if(self->sprite)
+			gf2d_sprite_draw(self->sprite, self->position, &self->scale, NULL, &self->rotation, NULL, NULL, (Uint32)self->frame);
 	}
 		
 }

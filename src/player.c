@@ -1478,3 +1478,4 @@ void loadPlayer(Entity* self)
 
 		return;
 }
+

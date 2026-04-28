@@ -10,7 +10,7 @@
 #define showSlog if (functionSlogs == 1)
 static const functionSlogs = 1;
 
-static int playerPoints = 0;
+
 
 typedef struct Entity_S
 {
@@ -44,6 +44,7 @@ typedef struct Entity_S
 	int hitTimer;
 	int isInvul;
 	int damage;
+	int points;					  //Value Entities yeild the player upon death!
 	
 	
 	//Stuff that is doubled used by various things - should probably seperate at some point
@@ -147,13 +148,13 @@ typedef enum RN
 
 	ROLE_PU_NONE,
 	ROLE_PU_RANDOM,
-	ROLE_PU_MIN,		
+	ROLE_PU_MIN,			//Cap for rng to get a random powerup
 	ROLE_PU_HP_RECOVERY,
 	ROLE_PU_INVUL,
 	ROLE_PU_BOMB,
 	ROLE_PU_SPEED,
 	ROLE_PU_FREE_ULT,
-	ROLE_PU_MAX,        
+	ROLE_PU_MAX,			//Cap for rng to get a random powerup
 
 	ROLE_COUNT
 
@@ -213,6 +214,10 @@ void entityTouchAll();
 */
 void entityKillAll();
 
+/*
+	Frees all entities except the player! For level transitions!
+*/
+void entityKillAllButPlayer();
 
 
 //Checks if an Entity is out of bounds, kills it if it is anything except a Player or Boss, otherwise moves them back inbounds
@@ -228,6 +233,7 @@ void entityBoundsCheckAll();
 	Returns a pointer to the player or NULL
 */
 Entity* getPlayer();
+
 
 /*
 	Sets a global pointer to the player
@@ -273,5 +279,20 @@ int getRole(const char* role);
 	Or as 1 (Game is in play)
 */
 void setPausedEntity(int value);
+
+/*
+	Returns the number of Points the player has!
+*/
+int getPlayerPoints();
+
+/*
+	Adds the value to the player's total points!
+*/
+void addPlayerPoints(int add);
+
+/*
+	Sets PlayerPoints to the number given!
+*/
+void setPlayerPoints(int newPoints);
 
 #endif

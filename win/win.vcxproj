@@ -249,6 +249,7 @@
     <None Include="..\JSONs\powerups.json" />
     <None Include="..\JSONs\projectiles.json" />
     <None Include="..\JSONs\UI.json" />
+    <None Include="..\levels\customLevelTemplate.level" />
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
     <None Include="..\levels\mainMenu.level" />

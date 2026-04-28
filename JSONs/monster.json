@@ -1,7 +1,7 @@
 {
   "monster":
   {
-    
+    "_comment": "This data should not be accessed! The monster array is hardcoded to check for each thing by Index! Add new monsters at the end!",
 
     "roles": 
     [
@@ -20,7 +20,8 @@
 
         "state": "MS_TRASH",
         "layer": "EL_MONSTER",
-        "timeToLive": 800
+        "timeToLive": 800,
+        "points": 10
       },
       {
         "role": "ROLE_BOSS1",
@@ -41,7 +42,8 @@
         "puzzle1": "cupShoot",
         "puzzle2": "symbols",
         "aoeTimer": 0,
-        "aoeMaxTime": 500
+        "aoeMaxTime": 500,
+        "points": 100
       },
       {
         "role": "ROLE_BOSS2",
@@ -62,7 +64,8 @@
         "aoeMaxTime": 500,
         "aoeTimer": 0,
         "puzzle1": "aoe",
-        "puzzle2": "symbolPattern"
+        "puzzle2": "symbolPattern",
+        "points": 100
       },
       {
         "role": "ROLE_BOSS3",
@@ -91,7 +94,8 @@
         "bossSnipeCount": 0,
         "bossSnipeMax": 500,
         "bossNukeCount": 0,
-        "bossNukeMax": 50
+        "bossNukeMax": 50,
+        "points": 100
 
       },
       {

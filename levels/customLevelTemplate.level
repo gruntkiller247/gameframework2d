@@ -1,0 +1,31 @@
+{
+  "level":
+  {
+    "name":  "Custom Template",
+    "background": "images/backgrounds/cat.jpg",
+    "entities":
+    [
+      {
+        "name": "player",
+        "role": "ROLE_PLAYER_GUNNER",
+        "positionX": 300,
+        "positionY": 300
+      }
+    ],
+    "UI": 
+    [
+      {
+        "type": "UI_BUTTON",
+        "positionX": 0,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "TESTING BUTTON TEXT: ",
+        "onClick": "asbfkjasb"
+      }
+    ]
+  }
+}

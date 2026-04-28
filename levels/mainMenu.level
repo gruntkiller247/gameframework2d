@@ -1,6 +1,7 @@
 {
 	"level": 
 	{
+		"name":  "Main Menu",
 		"background": "images/backgrounds/cat.jpg",
 		"entities": 
 		[
@@ -37,7 +38,7 @@
 				"boundsW": 72,
 				"boundsH": 72,
 				"activeOnPause": 1,
-				"text": "TEST TEXT"
+				"text": "TEST TEXT2"
 			}
 		]
 	}

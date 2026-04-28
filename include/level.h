@@ -22,6 +22,7 @@ void levelManagerInit(Uint32 max);
 
 void levelManagerClose();
 
+
 /*
 	Creates a level with a height of height
 	width of width

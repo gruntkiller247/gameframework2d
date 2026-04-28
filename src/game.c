@@ -390,10 +390,8 @@ int main(int argc, char * argv[])
     player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
     strcpy(player->name, "Player");*/
 
-    currentLevel = dataLoadLevel("levels/mainMenu.level");
-
-    
-    slog("ASDASDASDS");
+    currentLevel = dataLoadLevel("levels/customLevelTemplate.level");
+    //Weird Hash error occuring after this?
 
     if (!currentLevel)
     {
@@ -416,10 +414,21 @@ int main(int argc, char * argv[])
         if (currentLevel->spawnPowerUps)
             powerUpSpawning = 1;
     }
-
+    
 
     player = getPlayer();
     bossGame = getBoss();
+
+    if (!player)
+    {
+        slog("Error no playing loading game!");
+    }
+
+    if (!bossGame)
+    {
+        slog("No Boss loading game!");
+    }
+
 
     /*UI* button = newButton(gfc_vector2d(400, 400), gfc_rect(30, 30, 72, 72));
     
@@ -447,7 +456,9 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-        if (isPaused() == NOT_PAUSED)
+
+
+        if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
         {
 
 
@@ -525,8 +536,12 @@ int main(int argc, char * argv[])
             {
                 slog("The player is dead! Load main menu!");
                 entityKillAll();
+                //entityKillAllButPlayer();
+                uiKillAll();
                 currentLevel = dataLoadLevel("levels/mainMenu.level");
                 sprite = gf2d_sprite_load_image(currentLevel->background);
+                setPlayer(getPlayer());
+                player = getPlayer();
             }
 
             entityFreeAll();
@@ -567,7 +582,7 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
             //slog("1 cycle!");
         }
-        else
+        else if(player && isPaused() == PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
         {
 
             
@@ -577,6 +592,16 @@ int main(int argc, char * argv[])
                 //setPausedEntity();
                 setPausedUI();
             } 
+
+            if (gfc_input_key_pressed("1"))
+            {
+                player->hp = 0;
+            }
+
+            if (gfc_input_key_pressed("2"))
+            {
+                slog("Player Points: %i", getPlayerPoints());
+            }
 
             /*if (gfc_input_key_pressed("1"))
             {
@@ -670,6 +695,16 @@ int main(int argc, char * argv[])
             gf2d_graphics_next_frame();
               
         }
+        else
+        {
+           //In the level builder!
+           //Mouse should be a placer: Buttons should toggle!
+           //Make button at bottom of screen/buttons on keyboard
+           //Click button -> Mouse click places dude!
+
+
+        }
+
         if (keys[SDL_SCANCODE_ESCAPE])
             done = 1; // exit condition
 
