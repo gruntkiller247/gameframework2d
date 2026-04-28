@@ -261,6 +261,9 @@ Level* dataLoadLevel(const char* levelName)
 	SDL_Rect uiRect;
 	SDL_Surface* uiSurface = NULL;
 	SDL_Texture* tempTexture = NULL;
+	
+	const char* spawn = NULL;
+	int spawnRole = -1;
 
 
 	
@@ -319,17 +322,13 @@ Level* dataLoadLevel(const char* levelName)
 				goto fail;
 			}
 
-			onClick = sj_object_get_string(uiElement, "onClick");
-
-			if (!onClick)
-			{
-				slog("onClick either NULL or Not Found!");
-			}
-
+			
 
 			switch (uiType)
 			{
 			case UI_BUTTON:
+
+
 
 				if (sj_object_get_int(uiElement, "positionX", &uiPosX) == 0)
 				{
@@ -382,6 +381,27 @@ Level* dataLoadLevel(const char* levelName)
 				{
 					slog("Failed to create UI object!");
 					goto fail;
+				}
+
+				//"spawn" : "ROLE_TRASHMOB",
+				spawn = sj_object_get_string(uiElement, "spawn");
+
+				if (!spawn)
+				{
+					slog("Button has nothing to spawn!");
+				}
+				else
+				{
+					spawnRole = getRole(spawn);
+					if (spawnRole != ROLE_ERROR)
+					{
+						tempUI->spawn = spawnRole;
+					}
+					else
+					{
+						slog("Failed to find spawnRole for spawn!");
+						tempUI->spawn = ROLE_ERROR;
+					}
 				}
 
 				uiSprite = sj_object_get_string(uiElement, "sprite");
@@ -685,7 +705,7 @@ Level* dataLoadLevel(const char* levelName)
 				}
 
 				if (name)
-					strcpy(temp->name, name);
+					strcpy(temp->name, name);	
 					
 
 				break;

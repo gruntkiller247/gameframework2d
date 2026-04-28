@@ -34,10 +34,13 @@ typedef struct UI_S
 	
 	int rotation;
 	int frame;
+	int spawn;
 	Uint8 hover;								//Bool indicating whether a UI is being hovered over by the mouse
 	Uint8 clicked;								//Bool indicating whether a UI element has been clicked!
 	Uint8 type;									//What UI type is
 	const char* text;
+
+	//int spawnFlag;
 
 	
 }UI;
@@ -56,6 +59,12 @@ typedef enum
     PAUSED=0,
     NOT_PAUSED=1
 }PausedENUMS;
+
+typedef enum
+{
+	S_NOT = 0,
+	S_IS = 1
+}Spawning;
 
 UI* uiNew(GFC_Vector2D position, GFC_Rect bounds);
 
@@ -93,5 +102,13 @@ void setPausedUI();
 int isPaused();
 
 
-#pragma once
+
+void setUISpawning(int roleToSpawn);
+
+int isSpawning();
+
+void clearSpawning();
+
+int roleToSpawn();
+
 #endif

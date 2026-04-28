@@ -22,7 +22,7 @@
 				"boundsY": 30,
 				"boundsW": 72,
 				"boundsH": 72,
-				"onClick": "unpause",
+				"onClick": "spawn",
 				"sprite": "images/ed210.png",
 				"onClickSprite": "NULL",
 				"onHoverSprite": "images/space_bug.png",

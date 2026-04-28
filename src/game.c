@@ -48,8 +48,6 @@ static SDL_Rect fpsRect;
 Entity* bossGame = NULL;
 Entity* player = NULL;
 
-
-
 void fillEntityManager()
 {
     int c;
@@ -310,6 +308,7 @@ int main(int argc, char * argv[])
     Sprite *sprite;
     
     int mx,my;
+    int mx2, my2;
     float mf = 0;
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color(1, 1, 1, 100);//= gfc_color8(255,100,255,200);
@@ -323,10 +322,6 @@ int main(int argc, char * argv[])
     
     Level* currentLevel;
 
-    //surfaceBoss = TTF_RenderText_Solid(font, bossHP, color);
-    //textureBoss = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), surfaceBoss);
-    
-
     int level = -1;
     int numPowerUps = 0;
     int powerUpSpawning = 0;
@@ -336,8 +331,7 @@ int main(int argc, char * argv[])
 
     int distance;
     int functionSlogs = 1;
-
-    //SDL_GetTikcs returns milli seconds program has been running
+    int click = 0;
 
 
     /*program initializtion*/
@@ -378,17 +372,12 @@ int main(int argc, char * argv[])
     
 
     /*demo setup*/
-    //sprite = gf2d_sprite_load_image("images/backgrounds/cat.jpg");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
 
 
 
     
-    
-    /*loadLevel(level, playerRole);
-    player = playerEntityNew(gfc_vector2d(0, 0), ROLE_PLAYER_GAMBLER);
-    strcpy(player->name, "Player");*/
 
     currentLevel = dataLoadLevel("levels/customLevelTemplate.level");
     //Weird Hash error occuring after this?
@@ -397,7 +386,6 @@ int main(int argc, char * argv[])
     {
         slog("No level could be loaded! Loading error handling level!");
         
-        //loadLevel(1,ROLE_PLAYER_GAMBLER);
         currentLevel = dataLoadLevel("levels/mainMenu.level");
         sprite = gf2d_sprite_load_image(currentLevel->background);
     }
@@ -419,32 +407,9 @@ int main(int argc, char * argv[])
     player = getPlayer();
     bossGame = getBoss();
 
-    if (!player)
-    {
-        slog("Error no playing loading game!");
-    }
-
-    if (!bossGame)
-    {
-        slog("No Boss loading game!");
-    }
-
-
-    /*UI* button = newButton(gfc_vector2d(400, 400), gfc_rect(30, 30, 72, 72));
     
-    if (!button)
-    {
-        slog("Button NULL!");
-    }
-    else
-        button->active = 1;
-    */
+    slog("\n\n\n\n\n");
 
-    //slog("Button Active: %i", button->active);
-    //button->active = 1;
-    //slog("Button located at X:%f Y:%f", button->position.x, button->position.y);
-    
-    //slog("Button active variable is: %f", button->active);
 
     /*main game loop*/
     while(!done)
@@ -536,7 +501,6 @@ int main(int argc, char * argv[])
             {
                 slog("The player is dead! Load main menu!");
                 entityKillAll();
-                //entityKillAllButPlayer();
                 uiKillAll();
                 currentLevel = dataLoadLevel("levels/mainMenu.level");
                 sprite = gf2d_sprite_load_image(currentLevel->background);
@@ -546,36 +510,9 @@ int main(int argc, char * argv[])
 
             entityFreeAll();
             uiFreeAll();
-            //slog("Freed");
             
            
-            /*if (!bossGame)
-            {
-                
-                if (!player)
-                    slog("NO PLAYER!");
-                else
-                    updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
-            }
-            else
-            {
-                if (!player)
-                    slog("NO PLAYER!");
-                else
-                    updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
-            }
-                
-            
-            framerateUI(font,color,&fpsRect);
-            //slog("UI updated");
-
-            
-            
-
-            //Render text
-            SDL_RenderCopy(gf2d_graphics_get_renderer(), texture, NULL, &dstRect);
-            SDL_RenderCopy(gf2d_graphics_get_renderer(), textureBoss, NULL, &dstRect2);
-            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);*/
+           
             SDL_RenderPresent(gf2d_graphics_get_renderer());
             SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 0, 0, 0, 255);
 
@@ -589,7 +526,6 @@ int main(int argc, char * argv[])
             if (gfc_input_key_pressed("g"))
             {
                 slog("Unpausing?");
-                //setPausedEntity();
                 setPausedUI();
             } 
 
@@ -602,61 +538,6 @@ int main(int argc, char * argv[])
             {
                 slog("Player Points: %i", getPlayerPoints());
             }
-
-            /*if (gfc_input_key_pressed("1"))
-            {
-                //Clear this level then load 1
-                level = 1;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("2"))
-            {
-                //Clear this level then load 2
-                level = 2;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("3"))
-            {
-                //Clear this level then load 3
-                level = 3;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("4"))
-            {
-                //Clear this level then load 4
-                level = 4;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("p"))
-            {
-                slog("Changing Player's Class to Gambler!");
-                playerRole = ROLE_PLAYER_GAMBLER;
-                loadLevel(level, playerRole);
-                
-            }
-
-            if (gfc_input_key_pressed("o"))
-            {
-                slog("Changing Player's Class to Baker!");
-                playerRole = ROLE_PLAYER_BAKER;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("i"))
-            {
-                slog("Changing Player's Class to Gunner!");
-                playerRole = ROLE_PLAYER_GUNNER;
-                loadLevel(level, playerRole);
-            }
-
-            if (gfc_input_key_pressed("m"))
-            {
-                fillEntityManager();
-            }*/
 
             gf2d_graphics_clear_screen();
             gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
@@ -675,22 +556,6 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-            /*if (!bossGame)
-            {
-                updateUI(player->hp, NULL, font, color, &dstRect, &dstRect2);
-            }
-            else
-            {
-                updateUI(player->hp, bossGame->hp, font, color, &dstRect, &dstRect2);
-                distance = getDistance(player, bossGame);
-
-                //slog("Boss and Player are %i units away!", distance);
-            }
-
-            framerateUI(font, color, &fpsRect);
-             
-            SDL_RenderCopy(gf2d_graphics_get_renderer(), fpsTexture, NULL, &fpsRect);
-            SDL_RenderPresent(gf2d_graphics_get_renderer());*/
             
             gf2d_graphics_next_frame();
               
@@ -702,8 +567,56 @@ int main(int argc, char * argv[])
            //Make button at bottom of screen/buttons on keyboard
            //Click button -> Mouse click places dude!
 
+
+           if (isSpawning() == S_IS)
+           {
+               //Spawn that thing!
+               slog("IS_SPAWNING TRUE!");
+               if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && !click)
+               {
+                   click = 1;
+                   mx2 = mx;
+                   my2 = my;
+                    //I have clicked a button, thus I have something I want to spawn elsewhere!
+                   slog("Click = 1");
+               }
+               else if ((mx2 != mx && my!= my2) && SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && click == 1)
+               {
+                   slog("Clicked elsewhere!");
+                   //I have clicked another spot, thus spawn the thing here!
+                   switch (roleToSpawn())
+                   {
+                   case ROLE_TRASHMOB:
+
+
+                   case ROLE_BOSS1:
+
+
+                   case ROLE_BOSS2:
+
+
+                   case ROLE_BOSS3:
+
+                       monsterEntityNew(gfc_vector2d(mx, my), roleToSpawn());
+                       clearSpawning();
+                       click = 0;
+                       break;
+
+                   default:
+                       slog("Nothing to spawn!");
+                       clearSpawning();
+                       click = 0;
+
+                   }
+               }
+           }
+           else
+           {
+               //There is nothing to spawn here!
+           }
+
           
-           entityThinkAll();
+           //entityThinkAll();
 
            gf2d_graphics_clear_screen();// clears drawing buffers
               
@@ -711,17 +624,17 @@ int main(int argc, char * argv[])
 
            gf2d_sprite_draw(mouse,gfc_vector2d(mx, my),NULL,NULL,NULL,NULL,&mouseGFC_Color,(int)mf);
 
-           entityTouchAll();
+           //entityTouchAll();
                
            uiTouchAll();
 
 
-           entityUpdateAll();
+           //entityUpdateAll();
            
            uiUpdateAll();
 
 
-           entityBoundsCheckAll();
+           //entityBoundsCheckAll();
 
            entityManagerDrawAll();
            uiDrawAll();
@@ -785,29 +698,6 @@ int main(int argc, char * argv[])
  
 
     entityKillAll();
-
-    /*if (player)
-    {
-        slog("Freeing player post game");
-        entityFree(player);
-    }
-        
-    
-    if (projectile)
-    {
-        slog("Freeing TEST PROJECTILE post game");
-        entityFree(projectile);
-    }
-        
-    
-    if (enemy)
-    {
-        slog("Freeing TEST MONSTER post game");
-        entityFree(enemy);
-    }*/
-
-   
-    
     //SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
     TTF_Quit();

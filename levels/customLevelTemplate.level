@@ -24,7 +24,8 @@
         "boundsH": 72,
         "activeOnPause": 0,
         "text": "TESTING BUTTON TEXT: ",
-        "onClick": "asbfkjasb"
+        "onClick": "spawn",
+        "spawn": "ROLE_TRASHMOB"
       }
     ]
   }

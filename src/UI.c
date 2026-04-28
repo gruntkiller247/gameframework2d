@@ -1,6 +1,7 @@
 #include "UI.h"
 #include "button.h"
 #include "gf2d_graphics.h"
+#include "entity.h"
 
 typedef struct
 {
@@ -8,6 +9,9 @@ typedef struct
 	Uint32 uiMax;
 	Uint32 uiPool;
 	Uint8 paused;
+
+	Uint8 isSpawning;
+	Uint32 roleToSpawn;
 }UIManager;
 
 void uiFree(UI* self);
@@ -30,6 +34,7 @@ void uiManagerInit(Uint32 max)
 		slog("Failed to allocate UI array!");
 		return;
 	}
+	uiManager.isSpawning = 0;
 	uiManager.paused = NOT_PAUSED;
 	uiManager.uiMax = max;
 	atexit(uiManagerClose);
@@ -326,4 +331,31 @@ void uiKillAll()
 int isPaused()
 {
 	return uiManager.paused;
+}
+
+/*
+	Recieves a Role from a button to spawn in
+	Sets the flag that we are spawning!
+*/
+void setUISpawning(int in)
+{
+	uiManager.isSpawning = S_IS;
+	uiManager.roleToSpawn = in;
+}
+
+int isSpawning()
+{
+	return uiManager.isSpawning;
+}
+
+int roleToSpawn()
+{
+	return uiManager.roleToSpawn;
+}
+
+void clearSpawning()
+{
+	uiManager.roleToSpawn = -1;
+	uiManager.isSpawning = S_NOT;
+	slog("Cleared Spawning!");
 }
