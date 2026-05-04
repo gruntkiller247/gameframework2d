@@ -122,13 +122,13 @@ int main(int argc, char * argv[])
     slog("press [escape] to quit");
 
     
-    currentLevel = dataLoadLevel("levels/mainMenu.level");
+    currentLevel = dataLoadLevel("levels/customLevelTemplate.level");
 
     if (!currentLevel)
     {
         slog("No level could be loaded! Loading error handling level!");
         
-        currentLevel = dataLoadLevel("levels/mainMenu.level");
+        currentLevel = dataLoadLevel("levels / mainMenu.level"); 
         sprite = gf2d_sprite_load_image(currentLevel->background);
     }
     else
@@ -366,7 +366,7 @@ int main(int argc, char * argv[])
               
            gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
 
-           gf2d_sprite_draw(mouse,gfc_vector2d(mx, my),NULL,NULL,NULL,NULL,&mouseGFC_Color,(int)mf);
+           
 
            //entityTouchAll();
                
@@ -388,7 +388,7 @@ int main(int argc, char * argv[])
            entityFreeAll();
            uiFreeAll();
 
-
+           gf2d_sprite_draw(mouse, gfc_vector2d(mx, my), NULL, NULL, NULL, NULL, &mouseGFC_Color, (int)mf);
 
              
            SDL_RenderPresent(gf2d_graphics_get_renderer());

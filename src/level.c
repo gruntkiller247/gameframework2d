@@ -556,6 +556,7 @@ Level* dataLoadLevel(const char* levelName)
 				tempUI->activeOnPause = activeOnPause;
 
 
+				
 				gfc_list_append(level->levelUI, tempUI);
 
 
