@@ -62,4 +62,12 @@ void symbolPatternAlert(Entity* self, GFC_Color color);
 */
 void setMonsterState(Entity* self, int newState);
 
+/*
+	Helper function used when a boss spawns a child monster/object.
+	The child should be given the ID of the parent Boss
+	This function sets that ID
+	Self is the child, inID is the parent's Entity ID
+*/
+void setMonsterBossID(Entity* self, int inID);
+
 #endif

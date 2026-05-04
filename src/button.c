@@ -236,7 +236,9 @@ void spawn(UI* self)
 	}
 	else
 	{
+		slog("I am setting role to spawn %i", self->spawn);
 		setUISpawning(self->spawn);
+		slog("Stored as role: %i", roleToSpawn());
 	}
 	
 

@@ -355,5 +355,8 @@
     <None Include="..\levels\customLevelTemplate.level">
       <Filter>Levels</Filter>
     </None>
+    <None Include="..\levels\Test_Custom_Level.level">
+      <Filter>Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

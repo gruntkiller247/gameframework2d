@@ -103,7 +103,7 @@ int isPaused();
 
 
 
-void setUISpawning(int roleToSpawn);
+void setUISpawning(Uint32 roleToSpawn);
 
 int isSpawning();
 

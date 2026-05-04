@@ -11,6 +11,9 @@
 #include "powerup.h"
 #include "button.h"
 #include "gf2d_graphics.h"
+#include "gfc_list.h"
+
+
 
 
 static int viewWidth = 1200;
@@ -22,9 +25,12 @@ static SDL_Color uiColor = { 255, 255, 255, 255 };
 
 static TTF_Font* font;
 
+//extern struct EntityManager* entityManager;
+
 typedef struct
 {
-	Level* levelList;
+	
+	GFC_List* levelList;
 	Uint32 levelMax;
 	Uint32 currentLevel;
 }LevelManager;
@@ -40,8 +46,8 @@ void levelManagerInit(Uint32 max)
 		slog("You cannot initalize Level system with 0 entities");
 		return;
 	}
-
-	levelManager.levelList = gfc_allocate_array(sizeof(UI), max);
+	
+	levelManager.levelList = gfc_list_new();//gfc_allocate_array(sizeof(Level), max);
 
 	if (!levelManager.levelList)
 	{
@@ -61,13 +67,16 @@ void levelManagerInit(Uint32 max)
 
 void levelManagerClose()
 {
+	Level* level;
+	int c;
+
 	if (!levelManager.levelMax)
 		return NULL;
-
-	int c;
+	
 	for (c = 0; c < levelManager.levelMax; c++)
 	{
-		uiFree(&levelManager.levelList[c]);
+		level = gfc_list_get_nth(levelManager.levelList, c);
+		levelFree(level);
 	}
 
 	memset(&levelManager, 0, sizeof(levelManager));
@@ -75,7 +84,9 @@ void levelManagerClose()
 }
 
 
-
+/*
+	Makes a level of height and width. Does not read any json files!
+*/
 Level* levelNew(Uint64 height, Uint64 width)
 {
 
@@ -110,14 +121,14 @@ Level* levelNew(Uint64 height, Uint64 width)
 		slog("Level failed to allocate UI List!");
 		return NULL;
 	}
-
-	level->levelMap = gfc_list_new();
+	
+	/*level->levelMap = gfc_list_new();
 
 	if (!level->levelMap)
 	{
 		slog("Failed to allocate Level Map for Level!");
 		return NULL;
-	}
+	}*/
 
 
 	level->height = height;
@@ -133,20 +144,65 @@ void levelFree(Level* level)
 {
 	if (!level)
 		return;
+	//slog("Insider Level Free");
+	void* thing = NULL;
+	int c = 0;
 
 	if (level->background)
 	{
+		slog("Freeing background");
 		gf2d_sprite_free(level->background);
+		level->background = NULL;
+		slog("Post Free background!");
 	}
 
-	free(level->levelMap);
+	/*if (level->levelMap)
+	{
+		slog("Free levelmap");
+		for (int i = 0; i < gfc_list_get_count(level->levelMap); i++)
+		{
+			thing = gfc_list_get_nth(level->levelMap, i);
+		}
+		gfc_list_delete(level->levelMap);
+		gfc_list_delete(level->levelMap);
+	}*/
+
+	/*if (level->levelUI)
+	{
+		slog("Freeing levelUI!");
+		for ( c = 0; c < gfc_list_get_count(level->levelUI); c++)
+		{
+			thing = gfc_list_get_nth(level->levelUI, c);
+		}
+		gfc_list_delete(level->levelUI);
+	}*/
+	
 	free(level);
+}
+
+void levelKillAll()
+{
+	int c;
+
+	if (!levelManager.levelList)
+	{
+		return;
+	}
+
+	for (c = 0; c < levelManager.levelMax; c++)
+	{
+		levelFree(&levelManager.levelList[c]);
+	}
 }
 
 void levelDraw(Level* level)
 {
 	if (!level)
+	{
+		slog("Level was NULL! Cannot draw a NULL level!");
 		return;
+	}
+		
 
 	if (!level->background)
 	{
@@ -154,7 +210,7 @@ void levelDraw(Level* level)
 		return;
 	}
 
-	gf2d_sprite_draw_image(level, gfc_vector2d(0, 0));
+	gf2d_sprite_draw_image(level->background, gfc_vector2d(0, 0));
 }
 
 void levelSetBackground(Level* level,Sprite* background)
@@ -214,8 +270,9 @@ int getUIType(const char* text)
 
 }
 
-
-
+/*
+	Creates a level and reads in values from the JSON file provided!
+*/
 Level* dataLoadLevel(const char* levelName)
 {
 	Level* level = NULL;
@@ -369,11 +426,6 @@ Level* dataLoadLevel(const char* levelName)
 
 				onClick = sj_object_get_string(uiElement, "onClick");
 
-				if (!onClick)
-				{
-					slog("Failed to get onClick for UI!");
-					tempUI->onClick = NULL;
-				}
 				
 				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH),uiType,onClick);
 
@@ -381,6 +433,13 @@ Level* dataLoadLevel(const char* levelName)
 				{
 					slog("Failed to create UI object!");
 					goto fail;
+				}
+
+
+				if (!onClick)
+				{
+					slog("Failed to get onClick for UI!");
+					tempUI->onClick = NULL;
 				}
 
 				//"spawn" : "ROLE_TRASHMOB",
@@ -392,6 +451,7 @@ Level* dataLoadLevel(const char* levelName)
 				}
 				else
 				{
+					slog("Role to spawn: %s",spawn);
 					spawnRole = getRole(spawn);
 					if (spawnRole != ROLE_ERROR)
 					{
@@ -603,14 +663,17 @@ Level* dataLoadLevel(const char* levelName)
 	
 	background=sj_object_get_string(ljson, "background");
 
+	slog("\n\nLevel Loading: Background is: %s\n\n", background);
+
 	if (!background)
 	{
 		slog("Background failed to load!");
 		background = _strdup(errorBackground);
-		goto fail;
+		//goto fail;
 	}
 	
-	level->background = _strdup(background);
+	level->background = gf2d_sprite_load_image(background);//_strdup(background);
+
 	if (!level->background) 
 	{
 		slog("Failed to allocate memory for background string!");
@@ -893,7 +956,7 @@ Level* dataLoadLevel(const char* levelName)
 	
 	sj_free(json);
 
-	slog("Post JSON FREE!");
+	//slog("Post JSON FREE!");
 	//sj_free(background);
 	//sj_free(entities);
 	//sj_free(ljson);
@@ -910,8 +973,8 @@ Level* dataLoadLevel(const char* levelName)
 	return level;
 
 fail:
-	//slog("Hit a fail condition!");
-	slog("WE ARE IN THE FAIL CONDITION LMAO!");
+	slog("Hit a fail condition when loading the Level JSON!");
+	//slog("WE ARE IN THE FAIL CONDITION LMAO!");
 
 
 	if (temp)
@@ -936,15 +999,236 @@ fail:
 
 }
 
-Level* dataLoadMainMenu(const char* levelPath)
+void saveLevel()
 {
-	if (!levelPath)
+	SJson* json = NULL;
+	SJson* entitiesArray = NULL;
+	SJson* uiArray = NULL;
+	SJson* temp = NULL;
+
+	int c = 0;
+	int posX = 0;
+	int posY = 0;
+	int delay = 0;
+	int time = 0;
+	int count = 0;
+
+	const char* role = NULL;
+	const char* name = NULL;
+	const char* team = NULL;
+
+	Entity* dude = NULL;
+	GFC_List* entityData = NULL;
+
+	json = sj_object_new();
+
+	if (!json)
 	{
-		slog("No filepath to main menu!");
-		return NULL;
+		slog("Failed to allocate new JSON file!");
+		return;
 	}
 
+	entitiesArray = sj_array_new();
 
+	if (!entitiesArray)
+	{
+		slog("Failed to make entity JSON array!");
+
+		goto fail;
+	}
+
+	uiArray = sj_array_new();
+
+	if (!uiArray)
+	{
+		slog("Failed to make UI JSON array!");
+
+		if (entitiesArray)
+			sj_free(entitiesArray);
+		goto fail;
+	}
+
+	
+
+
+
+	sj_object_insert(json, "background", sj_new_str(errorBackground));
+	sj_object_insert(json, "name", sj_new_str("New Custom Level!"));
+
+
+	entityData = gfc_list_new();
+
+	if (!entityData)
+	{
+		slog("Failed to make gfc list");
+		goto fail;
+	}
+
+	getEntityData(entityData);
+
+	if (!entityData)
+	{
+		slog("Failed to get entity data from entity manager!");
+		goto fail;
+	}
+
+	//JSON obj -> json array -> json obj
+
+	
+	count = gfc_list_get_count(entityData);
+	for (c = 0; c<count; c++)
+	{
+		//slog("C is: %i", c);
+		dude = gfc_list_get_nth(entityData, c);
+
+		if (!dude)
+		{
+			slog("Failed to create Entity Data from array!");
+
+			if (entitiesArray)
+				sj_free(entitiesArray);
+
+			if (uiArray)
+				sj_free(uiArray);
+
+
+			goto fail;
+		}
+			
+		
+		temp = sj_object_new();
+
+		if (!temp)
+		{
+			if (entitiesArray)
+				sj_free(entitiesArray);
+
+			if (uiArray)
+				sj_free(uiArray);
+
+			goto fail;
+		}
+
+	
+		
+
+		posX = dude->position.x;
+		//slog("Got PosX!");
+		sj_object_insert(temp,"posX", sj_new_int(posX));
+
+		posY = dude->position.y;
+		//slog("Got PosY!");
+		sj_object_insert(temp, "posY", sj_new_int(posY));
+
+		if (!dude->name)
+		{
+			name = "NO NAME";
+		}
+		else
+			name = dude->name;
+
+		sj_object_insert(temp, "name", sj_new_str(name));
+		
+		//slog("Got Name!");
+		
+		role = getRoleFromInt(dude->role);
+		sj_object_insert(temp, "role", sj_new_str(role));
+		//slog("Got Role!");
+		
+		delay = dude->delay;
+		//slog("Got Delay!");
+		sj_object_insert(temp, "delay", sj_new_int(delay));
+
+		
+
+		switch (dude->role)
+		{
+			case ROLE_TRASHMOB:
+				break;
+
+			case ROLE_BOSS1:
+				break;
+
+			case ROLE_BOSS2:
+				break;
+
+			case ROLE_BOSS3:
+				break;
+
+			case ROLE_PROJECTILE:
+
+			case ROLE_BOMB:
+				
+				team = getTeamFromInt(dude->team);
+				sj_object_insert(temp, "team", sj_new_str(team));
+				
+				time = dude->timeToLive;
+				sj_object_insert(temp, "time", sj_new_int(time));
+
+				break;
+
+			case ROLE_PU_BOMB:
+
+			case ROLE_PU_FREE_ULT:
+
+			case ROLE_PU_HP_RECOVERY:
+
+			case ROLE_PU_INVUL:
+
+			case ROLE_PU_RANDOM:
+				team = getTeamFromInt(dude->team);
+				sj_object_insert(temp, "team", sj_new_str(team));
+				break;
+
+			case ROLE_PLAYER_BAKER:
+				break;
+
+			case ROLE_PLAYER_GAMBLER:
+				break;
+
+			case ROLE_PLAYER_GUNNER:
+				break;
+
+			default:
+				
+				slog("Failed to find role when Saving custom Level!");
+				
+				break;
+		}
+		sj_array_append(entitiesArray,temp);
+		
+		
+	}
+
+	sj_object_insert(json, "entities", entitiesArray);
+	slog("Trying to save JSON!");
+	
+	sj_save(json,"levels/New_Custom_Level.level");
+
+	slog("Post save attempt!");
+
+
+
+	
+	//Crash Here
+	sj_free(json);
+
+	return;
+	
 	fail:
-		return NULL;
+	slog("Failed to save the level!");
+
+
+	if (json)
+		sj_free(json);
+
+
+
+	if (uiArray)
+		sj_free(uiArray);
+
+	if (temp)
+		sj_free(temp);
+
+	return;
 }

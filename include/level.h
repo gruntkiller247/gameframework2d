@@ -11,7 +11,7 @@ typedef struct Level_L
 {
 	Uint64 width;	//Width of the level
 	Uint64 height;	//Height of the level
-	GFC_List* levelMap; //Binary representation of the map
+	//GFC_List* levelMap; //Binary representation of the map
 	Sprite* background; //Background image
 	Uint8 spawnPowerUps; //Whether or not the level can randomly spawn power ups - on by default - not read by JSON ATM
 	const char* name;	//Name of the level
@@ -49,9 +49,13 @@ void levelDraw(Level* self);
 Level* dataLoadLevel(const char* levelName);
 
 /*
-	Loads the main menu for the game!
+	Run by the level editor to save the level in JSON format
 */
-Level* dataLoadMainMenu(const char* levelPath);
+void saveLevel();
 
+/*
+	Frees all levels
+*/
+void levelKillAll();
 #endif
 

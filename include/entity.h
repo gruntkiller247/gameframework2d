@@ -78,6 +78,7 @@ typedef struct Entity_S
 	
 }Entity;
 
+
 typedef enum
 {
 	HS_HEALTHY,
@@ -294,5 +295,28 @@ void addPlayerPoints(int add);
 	Sets PlayerPoints to the number given!
 */
 void setPlayerPoints(int newPoints);
+
+/*
+	Recieves a BossID and returns a pointer to that boss.
+	NULL if that ID is not found!
+*/
+Entity* compareMonsterBossID(int bossID);
+
+/*
+	Recieves a role ENUM and returns that role's string representation
+*/
+const char* getRoleFromInt(int role);
+
+/*
+	Recieves a team ENUM and returns that team's string representation
+*/
+const char* getTeamFromInt(int team);
+
+/*
+	Returns a list of pointers to all active entities in the manager
+	0 if error or list is empty!
+	1 is success!
+*/
+int getEntityData(GFC_List* data);
 
 #endif

@@ -89,6 +89,8 @@ typedef struct MD
 	void (*puzzle1)(Entity* self);
 	void (*puzzle2)(Entity* self);
 
+	Uint32 bossID;		//ID of the 'Boss' of certain enemies
+
 	int canMove;
 	int lastDirection;
 	int currentDirection;
@@ -119,7 +121,6 @@ typedef struct MD
 	Uint16 bossNukeCount;
 }MonsterData;
 
-Entity* theBoss = NULL;
 
 void monsterThink(Entity* self);
 void monsterFree(Entity* self);
@@ -204,6 +205,15 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 	return self;
 }
 
+
+void setMonsterBossID(Entity* self,int inID)
+{
+	if (!self)
+		return;
+
+	((MonsterData*)self->data)->bossID = inID;
+
+}
 
 void monsterTouch(Entity* self, Entity* toucher)
 {
@@ -559,7 +569,12 @@ void monsterThink(Entity* self)
 		{
 			if (self->hp <= 0)
 			{
-				symbolPatternAlert(theBoss, self->color);
+				if (!getBoss())
+				{
+					slog("Symbol failed to find boss pointer!");
+					data->state = MS_DEAD;
+				}
+				symbolPatternAlert(getBoss(), self->color);
 			}
 		}
 		data->state = MS_DEAD;
@@ -745,6 +760,9 @@ void symbols(Entity* self)
 	}
 
 	//slog("Sym1 and 2 created!");
+
+	setMonsterBossID(sym1,self->id);
+	setMonsterBossID(sym2, self->id);
 
 	data->symbol1 = sym1;
 	data->symbol2 = sym2;
@@ -2800,3 +2818,5 @@ void loadMonster(Entity* self)
 		sj_free(json);
 
 }
+
+

@@ -23,9 +23,35 @@
         "boundsW": 272,
         "boundsH": 72,
         "activeOnPause": 0,
-        "text": "TESTING BUTTON TEXT: ",
+        "text": "TrashMob: ",
         "onClick": "spawn",
         "spawn": "ROLE_TRASHMOB"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 400,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Boss1: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_BOSS1"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 800,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Boss2: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_BOSS2"
       }
     ]
   }

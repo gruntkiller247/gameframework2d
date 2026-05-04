@@ -43,10 +43,10 @@ void uiManagerInit(Uint32 max)
 
 void uiManagerClose()
 {
+	int c;
 	if (!uiManager.uiMax)
 		return NULL;
 
-	int c;
 	for (c = 0; c < uiManager.uiMax; c++)
 	{
 		uiFree(&uiManager.uiList[c]);
@@ -58,10 +58,10 @@ void uiManagerClose()
 
 UI* uiNew(GFC_Vector2D position, GFC_Rect bounds)
 {
+	int c;
 	if (!uiManager.uiMax)
 		return NULL;
 
-	int c;
 	for (c = 0; c < uiManager.uiMax; c++)
 	{
 		if (uiManager.uiList[c]._inUse)
@@ -326,6 +326,7 @@ void uiKillAll()
 	{
 		uiFree(&uiManager.uiList[c]);
 	}
+	gfc_list_delete(uiManager.uiList);
 }
 
 int isPaused()
@@ -337,10 +338,39 @@ int isPaused()
 	Recieves a Role from a button to spawn in
 	Sets the flag that we are spawning!
 */
-void setUISpawning(int in)
+
+void setUISpawning(Uint32 in)
 {
 	uiManager.isSpawning = S_IS;
-	uiManager.roleToSpawn = in;
+
+	slog("SetUISpawning In: %i", in);
+
+	switch(in)
+	{
+		case ROLE_BOSS1:
+			
+		case ROLE_BOSS2:
+
+		case ROLE_BOSS3:
+
+			
+			if (getBoss() == NULL)
+			{
+				uiManager.roleToSpawn = in;
+				slog("No Boss!");
+			}
+			else
+			{
+				slog("A Boss is already in the level! Cannot have more than 1!");
+				uiManager.roleToSpawn = ROLE_ERROR;
+			}
+
+			break;
+		default:
+			uiManager.roleToSpawn = in;
+			break;
+	}
+	
 }
 
 int isSpawning()

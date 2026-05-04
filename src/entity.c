@@ -9,7 +9,7 @@
 
 const double healthStates[HS_COUNT] = { 0.80, 0.40, 0.20 };
 
-typedef struct
+typedef struct EntityManager_S
 {
 	Entity* entityList;
 	Uint32 entityMax;
@@ -19,12 +19,11 @@ typedef struct
 	int playerPoints;
 }EntityManager;
 
-
-
 static EntityManager entityManager = { 0 };
 
 static Entity* thePlayer = NULL;
 static Entity* theBoss = NULL;
+
 static int DEFAULT_POINTS = 0;
 
 void entityManagerClose();
@@ -166,6 +165,7 @@ void entityKillAll()
 		entityFree(&entityManager.entityList[c]);
 
 	}
+	gfc_list_delete(entityManager.entityList);
 }
 
 void entityKillAllButPlayer()
@@ -788,6 +788,126 @@ void addPlayerPoints(int add)
 void subtractPlayerPoints(int sub)
 {
 	entityManager.playerPoints -= sub;
+}
+
+Entity* compareMonsterBossID(int bossID)
+{
+	int c;
+
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		if (entityManager.entityList[c].id == bossID)
+			return &entityManager.entityList[c];
+	}
+	return NULL;
+}
+
+const char* getRoleFromInt(int role) 
+{
+	switch (role)
+	{			
+		case ROLE_TRASHMOB:
+			return "ROLE_TRASHMOB";
+			
+
+		case ROLE_BOSS1:
+			return "ROLE_BOSS1";
+			
+
+		case ROLE_BOSS2:
+			return "ROLE_BOSS2";
+			
+
+		case ROLE_BOSS3:
+			return "ROLE_BOSS3";
+			
+
+		case ROLE_PROJECTILE:
+			return "ROLE_PROJECTILE";
+			
+			
+		case ROLE_BOMB:
+			return "ROLE_BOMB";
+			
+
+		case ROLE_PU_RANDOM:
+			return "ROLE_PU_RANDOM";
+
+
+		case ROLE_PU_HP_RECOVERY:
+			return "ROLE_PU_HP_RECOVERY";
+
+		case ROLE_PU_INVUL:
+			return "ROLE_PU_INVUL";
+
+		case ROLE_PU_BOMB:
+			return "ROLE_PU_BOMB";
+
+		case ROLE_PU_SPEED:
+			return "ROLE_PU_SPEED";
+
+		case ROLE_PU_FREE_ULT:
+			return "ROLE_PU_FREE_ULT";
+
+		case ROLE_PLAYER_GAMBLER:
+			return "ROLE_PLAYER_GAMBLER";
+
+
+		case ROLE_PLAYER_BAKER:
+			return "ROLE_PLAYER_BAKER";
+
+
+		case ROLE_PLAYER_GUNNER:
+			return "ROLE_PLAYER_GUNNER";
+
+		default:
+			slog("Failed to find the role!");
+			return "ROLE_ERROR";
+	}
+}
+
+const char* getTeamFromInt(int team)
+{
+	switch (team)
+	{
+		case TEAM_PLAYER:
+			return "TEAM_PLAYER";
+		case TEAM_ENEMY:
+			return "TEAM_ENEMY";
+
+		case TEAM_IGNORE:
+			return "TEAM_IGNORE";
+		case TEAM_ITEM:
+			return "TEAM_ITEM";
+
+		default:
+			slog("Failed to find team!");
+			return "TEAM_NONE";
+	}
+}
+
+int getEntityData(GFC_List* data)
+{
+	if (!data)
+	{
+		slog("List to return is not real!");
+		return 0;
+	}
+
+	int c;
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (entityManager.entityList[c]._inUse == NULL)
+			continue;
+		
+		gfc_list_append(data,&entityManager.entityList[c]);
+
+	}
+
+	return 1;
 }
 
 //endLine
