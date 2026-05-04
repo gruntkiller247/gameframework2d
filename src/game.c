@@ -101,10 +101,10 @@ int main(int argc, char * argv[])
     }
 
     
-    
-    entityManagerInit(24);//16384);//2^14
-    uiManagerInit(255); //2^8
-    levelManagerInit(32);
+    initalizeLevel();
+    entityManagerInit(16384);//16384);//2^14
+    uiManagerInit(256); //2^8
+    //levelManagerInit(32);
 
 
     gfc_input_init("config/input.gfc");
@@ -122,13 +122,13 @@ int main(int argc, char * argv[])
     slog("press [escape] to quit");
 
     
-    currentLevel = dataLoadLevel("levels/customLevelTemplate.level");
+    currentLevel = dataLoadLevel("levels/mainMenu.level");
 
     if (!currentLevel)
     {
         slog("No level could be loaded! Loading error handling level!");
         
-        currentLevel = dataLoadLevel("levels / mainMenu.level"); 
+        currentLevel = dataLoadLevel("levels/mainMenu.level"); 
         sprite = gf2d_sprite_load_image(currentLevel->background);
     }
     else
@@ -163,7 +163,32 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
 
 
-        if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
+
+        
+        if (getLevelStatus() == LS_NEW_LEVEL)
+        {
+            slog("MAIN GAME LOOP! NEW LEVEL NEEDS TO BE LOADED!");
+            
+            //Kill everything - ONLY THE UI AND ENTITIES
+            entityKillAll();
+            uiKillAll();
+            slog("Next level is: %s", getNextLevel());
+            currentLevel = dataLoadLevel(getNextLevel());
+
+            slog_sync();
+
+            if (!currentLevel)
+            {
+                slog("CURRENT LEVEL IS NULL!");
+            }
+
+            setNextLevel(NULL);
+
+            //currentLevel = getCurrentLevel();
+            setLevelStatus(LS_NORMAL);
+            
+        }
+        else if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
         {
 
 

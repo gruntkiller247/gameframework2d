@@ -326,7 +326,7 @@ void uiKillAll()
 	{
 		uiFree(&uiManager.uiList[c]);
 	}
-	gfc_list_delete(uiManager.uiList);
+	
 }
 
 int isPaused()

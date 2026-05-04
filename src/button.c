@@ -10,6 +10,7 @@
 #include "gf2d_draw.h"
 #include "gfc_input.h"|
 #include "entity.h"
+#include "level.h"
 
 
 
@@ -20,9 +21,9 @@ typedef struct BD
 }ButtonData;
 
 void buttonFree(UI* self);
-void changeLevel(UI* self);
 void getOnClick(UI* ui, const char* onClick);
 void spawn(UI* self);
+void levelEditor(UI* self);
 
 UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
@@ -95,7 +96,7 @@ void buttonTouch(UI* self)
 		
 		if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && !self->clicked)
 		{
-			slog("Button has been clicked!");
+			//slog("Button has been clicked!");
 
 			self->clicked = 1;
 			if (self->onClick)
@@ -199,7 +200,7 @@ void unpause(UI* self)
 
 void getOnClick(UI* ui, const char* onClick)
 {
-	slog("Checking the on Click!");
+	//slog("Checking the on Click!");
 
 	if (!ui)
 		return;
@@ -217,12 +218,31 @@ void getOnClick(UI* ui, const char* onClick)
 		//slog("spawn");
 		ui->onClick = spawn;
 	}
+	else if (strcmp(onClick, "levelEditor") == 0)
+	{
+		ui->onClick = levelEditor;
+	}
 	else
 	{
 		slog("Null");
 		ui->onClick = NULL;
 	}
 
+}
+
+void levelEditor(UI* self)
+{
+	if (!self)
+		return;
+
+	slog("Inside LEVEL EDITOR BUTTON ON MAIN MNEU!");
+
+	//Need to tell Entities to kill all
+	//Need to tell UI to kill all
+	//Need to tell Level to kill all
+	//Then load the level editor!
+	
+	levelUpdate("levels/customLevelTemplate.level");
 }
 
 void spawn(UI* self)
@@ -243,14 +263,6 @@ void spawn(UI* self)
 	
 
 	
-}
-
-/*
-	Parses the onClick Function when read by JSON!
-*/
-void changeLevel(UI* self)
-{
-	slog("Inside CHange Lvel!");
 }
 
 void updateTexture(UI* self, SDL_Texture* texture)

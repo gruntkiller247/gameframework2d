@@ -2,7 +2,6 @@
 #define __LEVEL_H__
 
 #include "gf2d_sprite.h"
-#include "gfc_list.h"
 #include "UI.h"
 #include "button.h"
 
@@ -15,13 +14,26 @@ typedef struct Level_L
 	Sprite* background; //Background image
 	Uint8 spawnPowerUps; //Whether or not the level can randomly spawn power ups - on by default - not read by JSON ATM
 	const char* name;	//Name of the level
-	GFC_List* levelUI;	//List of all UI's in the level!
+	//GFC_List* levelUI;	//List of all UI's in the level!
+	Uint8 _inUse;
 } Level;
 
-void levelManagerInit(Uint32 max);
+typedef enum
+{
+	LS_ERROR = 0,
+	LS_NORMAL,
+	LS_NEW_LEVEL,
+}Level_Status;
 
-void levelManagerClose();
+//void levelManagerInit(Uint32 max);
 
+//void levelManagerClose();
+
+/*
+	All this does is ensures that the font is working!
+	Must be run before levels can be loaded!
+*/
+void initalizeLevel();
 
 /*
 	Creates a level with a height of height
@@ -57,5 +69,23 @@ void saveLevel();
 	Frees all levels
 */
 void levelKillAll();
+
+void levelUpdate(const char* levelName);
+
+/*
+	Returns the enum status of a level.
+	IE when a level needs to be changed, call this to check if the level has changed!
+	If the level has changed, then you need to get the new current level
+*/
+int getLevelStatus();
+
+void setLevelStatus(int status);
+
+Level* getCurrentLevel();
+
+const char* getNextLevel();
+
+void setNextLevel(const char* name);
+
 #endif
 

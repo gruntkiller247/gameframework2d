@@ -24,13 +24,25 @@ static SDL_Color uiColor = { 255, 255, 255, 255 };
 #define MY_FONT "fonts/FreeSans.ttf"
 
 static TTF_Font* font;
+static int levelStatus = LS_NORMAL;
+
+static Level* currentLevel = NULL;
+static const char* nextLevel = "";
+
+
+void initalizeLevel()
+{
+	font = TTF_OpenFont(MY_FONT, 64);
+	if (!font)
+		slog("FONT DID NOT LOAD IN LEVEL!");
+}
 
 //extern struct EntityManager* entityManager;
-
+/*
 typedef struct
 {
 	
-	GFC_List* levelList;
+	Level* levelList;
 	Uint32 levelMax;
 	Uint32 currentLevel;
 }LevelManager;
@@ -47,7 +59,7 @@ void levelManagerInit(Uint32 max)
 		return;
 	}
 	
-	levelManager.levelList = gfc_list_new();//gfc_allocate_array(sizeof(Level), max);
+	levelManager.levelList = gfc_allocate_array(sizeof(Level), max);
 
 	if (!levelManager.levelList)
 	{
@@ -75,13 +87,12 @@ void levelManagerClose()
 	
 	for (c = 0; c < levelManager.levelMax; c++)
 	{
-		level = gfc_list_get_nth(levelManager.levelList, c);
-		levelFree(level);
+		levelFree(&levelManager.levelList[c]);
 	}
 
 	memset(&levelManager, 0, sizeof(levelManager));
 	slog("Closed UI System");
-}
+}*/
 
 
 /*
@@ -114,7 +125,7 @@ Level* levelNew(Uint64 height, Uint64 width)
 		return NULL;
 	}
 
-	level->levelUI = gfc_list_new();
+	/*level->levelUI = gfc_list_new();
 
 	if (!level->levelUI)
 	{
@@ -150,10 +161,10 @@ void levelFree(Level* level)
 
 	if (level->background)
 	{
-		slog("Freeing background");
+		//slog("Freeing background");
 		gf2d_sprite_free(level->background);
 		level->background = NULL;
-		slog("Post Free background!");
+		//slog("Post Free background!");
 	}
 
 	/*if (level->levelMap)
@@ -182,7 +193,9 @@ void levelFree(Level* level)
 
 void levelKillAll()
 {
-	int c;
+
+	levelFree(currentLevel);
+	/*int c;
 
 	if (!levelManager.levelList)
 	{
@@ -192,7 +205,7 @@ void levelKillAll()
 	for (c = 0; c < levelManager.levelMax; c++)
 	{
 		levelFree(&levelManager.levelList[c]);
-	}
+	}*/
 }
 
 void levelDraw(Level* level)
@@ -557,7 +570,7 @@ Level* dataLoadLevel(const char* levelName)
 
 
 				
-				gfc_list_append(level->levelUI, tempUI);
+				//gfc_list_append(level->levelUI, tempUI);
 
 
 
@@ -650,7 +663,7 @@ Level* dataLoadLevel(const char* levelName)
 				SDL_FreeSurface(uiSurface);
 
 				//tempUI->active = 1;
-				gfc_list_append(level->levelUI, tempUI);
+				//gfc_list_append(level->levelUI, tempUI);
 				break;
 
 			default:
@@ -664,7 +677,7 @@ Level* dataLoadLevel(const char* levelName)
 	
 	background=sj_object_get_string(ljson, "background");
 
-	slog("\n\nLevel Loading: Background is: %s\n\n", background);
+	//slog("\n\nLevel Loading: Background is: %s\n\n", background);
 
 	if (!background)
 	{
@@ -947,9 +960,10 @@ Level* dataLoadLevel(const char* levelName)
 
 	levelLoaded:
 	
-	gfc_list_prepend(levelManager.levelList, level);
-	levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList, level);
-	slog("Level Manger current level: %i", levelManager.currentLevel);
+	currentLevel = level;
+	//gfc_list_prepend(levelManager.levelList, level);
+	//levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList, level);
+	//slog("Level Manger current level: %i", levelManager.currentLevel);
 
 	slog("Loaded Level JSON!");
 
@@ -1232,4 +1246,47 @@ void saveLevel()
 		sj_free(temp);
 
 	return;
+}
+
+void levelKillLevel()
+{
+	
+}
+
+void levelUpdate(const char* levelName)
+{
+	nextLevel = levelName;
+	levelStatus = LS_NEW_LEVEL;
+}
+
+int getLevelStatus()
+{
+	return levelStatus;
+}
+
+void setLevelStatus(int status)
+{
+	levelStatus = status;
+}
+
+Level* getCurrentLevel()
+{
+	return currentLevel;//&levelManager.levelList[levelManager.currentLevel];
+}
+
+void setNextLevel(const char* name)
+{
+	if (!name)
+	{
+		nextLevel = NULL;
+		return;
+	}
+
+	
+	strcpy(nextLevel, name);
+}
+
+const char* getNextLevel()
+{
+	return nextLevel;
 }

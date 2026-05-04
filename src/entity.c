@@ -165,7 +165,7 @@ void entityKillAll()
 		entityFree(&entityManager.entityList[c]);
 
 	}
-	gfc_list_delete(entityManager.entityList);
+	
 }
 
 void entityKillAllButPlayer()
