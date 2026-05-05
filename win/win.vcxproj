@@ -253,7 +253,7 @@
     <None Include="..\levels\debugLevel.level" />
     <None Include="..\levels\debugLevelProjectiles.level" />
     <None Include="..\levels\mainMenu.level" />
-    <None Include="..\levels\Test_Custom_Level.level" />
+    <None Include="..\levels\New_Custom_Level.level" />
     <None Include="..\levels\uiTest.level" />
     <None Include="testLevel.level" />
   </ItemGroup>

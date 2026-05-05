@@ -24,6 +24,7 @@ void buttonFree(UI* self);
 void getOnClick(UI* ui, const char* onClick);
 void spawn(UI* self);
 void levelEditor(UI* self);
+void customLevel(UI* self);
 
 UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
@@ -222,12 +223,25 @@ void getOnClick(UI* ui, const char* onClick)
 	{
 		ui->onClick = levelEditor;
 	}
+	else if (strcmp(onClick, "customLevel") == 0)
+	{
+		ui->onClick = customLevel;
+	}
 	else
 	{
 		slog("Null");
 		ui->onClick = NULL;
 	}
 
+}
+
+void customLevel(UI* self)
+{
+	if (!self)
+		return;
+
+	slog("INSIDE LOADING CUSTOM LEVEL BUTTON!");
+	levelUpdate("levels/New_Custom_Level.level");
 }
 
 void levelEditor(UI* self)

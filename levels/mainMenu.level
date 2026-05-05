@@ -3,6 +3,7 @@
 	{
 		"name":  "Main Menu",
 		"background": "images/backgrounds/cat.jpg",
+		"powerUps": 0,
 		"entities": 
 		[
 			{
@@ -20,14 +21,27 @@
 				"positionY": 500,
 				"boundsX": 30,
 				"boundsY": 30,
-				"boundsW": 72,
+				"boundsW": 172,
 				"boundsH": 72,
 				"onClick": "levelEditor",
-				"sprite": "images/ed210.png",
 				"onClickSprite": "NULL",
 				"onHoverSprite": "images/space_bug.png",
 				"activeOnPause": 0,
-				"text": "TEST TEXT"
+				"text": "Create Custom level"
+			}
+			{
+				"type": "UI_BUTTON",
+				"positionX": 500,
+				"positionY": 300,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 172,
+				"boundsH": 72,
+				"onClick": "customLevel",
+				"onClickSprite": "NULL",
+				"onHoverSprite": "images/space_bug.png",
+				"activeOnPause": 0,
+				"text": "Load Custom Level"
 			}
 		]
 	}

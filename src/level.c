@@ -439,6 +439,12 @@ Level* dataLoadLevel(const char* levelName)
 
 				onClick = sj_object_get_string(uiElement, "onClick");
 
+				if (!onClick)
+				{
+					slog("Failed to get onClick for UI!");
+					tempUI->onClick = NULL;
+				}
+
 				
 				tempUI = newButton(gfc_vector2d(uiPosX, uiPosY), gfc_rect(uiBX, uiBY, uiBW, uiBH),uiType,onClick);
 
@@ -449,11 +455,7 @@ Level* dataLoadLevel(const char* levelName)
 				}
 
 
-				if (!onClick)
-				{
-					slog("Failed to get onClick for UI!");
-					tempUI->onClick = NULL;
-				}
+	
 
 				//"spawn" : "ROLE_TRASHMOB",
 				spawn = sj_object_get_string(uiElement, "spawn");
@@ -1017,6 +1019,7 @@ fail:
 void saveLevel()
 {
 	SJson* json = NULL;
+	SJson* ljson = NULL;
 	SJson* entitiesArray = NULL;
 	SJson* uiArray = NULL;
 	SJson* temp = NULL;
@@ -1040,6 +1043,14 @@ void saveLevel()
 	if (!json)
 	{
 		slog("Failed to allocate new JSON file!");
+		return;
+	}
+
+	ljson = sj_object_new();
+
+	if (!ljson)
+	{
+		slog("Failed to make Level part of JSON!");
 		return;
 	}
 
@@ -1067,8 +1078,8 @@ void saveLevel()
 
 
 
-	sj_object_insert(json, "background", sj_new_str(errorBackground));
-	sj_object_insert(json, "name", sj_new_str("New Custom Level!"));
+	sj_object_insert(ljson, "background", sj_new_str(errorBackground));
+	sj_object_insert(ljson, "name", sj_new_str("New Custom Level!"));
 
 
 	entityData = gfc_list_new();
@@ -1129,11 +1140,11 @@ void saveLevel()
 
 		posX = dude->position.x;
 		//slog("Got PosX!");
-		sj_object_insert(temp,"posX", sj_new_int(posX));
+		sj_object_insert(temp,"positionX", sj_new_int(posX));
 
 		posY = dude->position.y;
 		//slog("Got PosY!");
-		sj_object_insert(temp, "posY", sj_new_int(posY));
+		sj_object_insert(temp, "positionY", sj_new_int(posY));
 
 		if (!dude->name)
 		{
@@ -1215,17 +1226,14 @@ void saveLevel()
 		
 	}
 
-	sj_object_insert(json, "entities", entitiesArray);
+	sj_object_insert(ljson, "entities", entitiesArray);
+	sj_object_insert(json, "level", ljson);
 	slog("Trying to save JSON!");
 	
 	sj_save(json,"levels/New_Custom_Level.level");
 
 	slog("Post save attempt!");
-
-
-
 	
-	//Crash Here
 	sj_free(json);
 
 	return;
@@ -1236,8 +1244,6 @@ void saveLevel()
 
 	if (json)
 		sj_free(json);
-
-
 
 	if (uiArray)
 		sj_free(uiArray);

@@ -177,16 +177,17 @@ int main(int argc, char * argv[])
 
             slog_sync();
 
-            if (!currentLevel)
-            {
-                slog("CURRENT LEVEL IS NULL!");
-            }
+
 
             setNextLevel(NULL);
 
             //currentLevel = getCurrentLevel();
             setLevelStatus(LS_NORMAL);
             
+        }
+        else if (!currentLevel)
+        {
+            //slog("CURRENT LEVEL IS NULL!");
         }
         else if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
         {
