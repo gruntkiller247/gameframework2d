@@ -25,6 +25,8 @@ void getOnClick(UI* ui, const char* onClick);
 void spawn(UI* self);
 void levelEditor(UI* self);
 void customLevel(UI* self);
+void level1(UI* self);
+void exitGame(UI* self);
 
 UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
@@ -227,11 +229,36 @@ void getOnClick(UI* ui, const char* onClick)
 	{
 		ui->onClick = customLevel;
 	}
+	else if (strcmp(onClick, "level1") == 0)
+	{
+		ui->onClick = level1;
+	}
+	else if (strcmp(onClick, "exitGame") == 0)
+	{
+		ui->onClick = exitGame;
+	}
 	else
 	{
 		slog("Null");
 		ui->onClick = NULL;
 	}
+
+}
+
+void exitGame(UI* self)
+{
+	if (!self)
+		return;
+
+	setLevelStatus(LS_END_GAME);
+
+}
+void level1(UI* self)
+{
+	if (!self)
+		return;
+
+	levelUpdate("levels/debugLevelProjectiles.level");
 
 }
 

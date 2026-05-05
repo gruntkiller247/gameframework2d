@@ -99,6 +99,15 @@ int main(int argc, char * argv[])
         slog("TTF_Init Error: %s\n", TTF_GetError());
         return 1;
     }
+    SDL_Init(SDL_INIT_AUDIO);
+
+    if (SDL_Init(SDL_INIT_AUDIO) == -1)
+    {
+        slog("Failed to initiate audio!");
+        return 1;
+    }
+
+
 
     
     initalizeLevel();
@@ -162,10 +171,15 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-
-
         
-        if (getLevelStatus() == LS_NEW_LEVEL)
+
+        if (getLevelStatus() == LS_END_GAME)
+        {
+            done = 1;
+            slog("Ending the Game!");
+            break;
+        }
+        else if (getLevelStatus() == LS_NEW_LEVEL)
         {
             slog("MAIN GAME LOOP! NEW LEVEL NEEDS TO BE LOADED!");
             
@@ -263,16 +277,7 @@ int main(int argc, char * argv[])
             
             //slog("Bounds checked!");
 
-            if (player->hp <= 0)
-            {
-                slog("The player is dead! Load main menu!");
-                entityKillAll();
-                uiKillAll();
-                currentLevel = dataLoadLevel("levels/mainMenu.level");
-                sprite = gf2d_sprite_load_image(currentLevel->background);
-                setPlayer(getPlayer());
-                player = getPlayer();
-            }
+            
 
             entityFreeAll();
             uiFreeAll();
@@ -425,6 +430,18 @@ int main(int argc, char * argv[])
 
         }
 
+        if (player->hp <= 0)
+        {
+            slog("The player is dead! Load main menu!");
+            entityKillAll();
+            uiKillAll();
+            currentLevel = dataLoadLevel("levels/mainMenu.level");
+            sprite = gf2d_sprite_load_image(currentLevel->background);
+            setPlayer(getPlayer());
+            player = getPlayer();
+            setPlayerPoints(0);
+        }
+
         if (keys[SDL_SCANCODE_ESCAPE])
             done = 1; // exit condition
     }
@@ -434,7 +451,9 @@ int main(int argc, char * argv[])
         saveLevel();
     }
     
-    
+    SDL_CloseAudio();
+    SDL_Quit();
+
     TTF_CloseFont(font);
     TTF_Quit();
     slog("---==== END ====---");

@@ -311,6 +311,8 @@ Level* dataLoadLevel(const char* levelName)
 	const char* onClick = NULL;
 	const char* uiText = NULL;
 
+	const char* nextLevelRead = NULL;
+
 	int time= 0;
 	int c=0, role=0, entityMax=0;
 	int tempX =0 , tempY =0;
@@ -362,6 +364,16 @@ Level* dataLoadLevel(const char* levelName)
 		sj_free(json);
 		return NULL;
 	}
+
+	nextLevelRead = sj_object_get_string(ljson, "nextLevel");
+
+	if (!nextLevelRead)
+	{
+		slog("Level has no next level! Defaulting to Main Menu!");
+		nextLevel = "levels/mainMenu.level";
+	}
+	else
+		strcpy(nextLevel, nextLevelRead);
 
 	//UI Reading!
 	ui = sj_object_get_value(ljson, "UI");
@@ -1261,6 +1273,13 @@ void levelKillLevel()
 
 void levelUpdate(const char* levelName)
 {
+	if (!levelName)
+		return;
+
+	if (nextLevel)
+	{
+		nextLevel = NULL;
+	}
 	nextLevel = levelName;
 	levelStatus = LS_NEW_LEVEL;
 }

@@ -23,6 +23,7 @@ typedef enum
 	LS_ERROR = 0,
 	LS_NORMAL,
 	LS_NEW_LEVEL,
+	LS_END_GAME
 }Level_Status;
 
 //void levelManagerInit(Uint32 max);

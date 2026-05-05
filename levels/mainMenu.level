@@ -13,12 +13,11 @@
 				"positionY": 300
 			}
 		],
-		"UI": 
-		[
+		"UI": [
 			{
 				"type": "UI_BUTTON",
 				"positionX": 500,
-				"positionY": 500,
+				"positionY": 200,
 				"boundsX": 30,
 				"boundsY": 30,
 				"boundsW": 172,
@@ -28,7 +27,7 @@
 				"onHoverSprite": "images/space_bug.png",
 				"activeOnPause": 0,
 				"text": "Create Custom level"
-			}
+			},
 			{
 				"type": "UI_BUTTON",
 				"positionX": 500,
@@ -42,7 +41,36 @@
 				"onHoverSprite": "images/space_bug.png",
 				"activeOnPause": 0,
 				"text": "Load Custom Level"
+			},
+			{
+				"type": "UI_BUTTON",
+				"positionX": 500,
+				"positionY": 100,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 172,
+				"boundsH": 72,
+				"onClick": "level1",
+				"onClickSprite": "NULL",
+				"onHoverSprite": "images/space_bug.png",
+				"activeOnPause": 0,
+				"text": "Start Game"
+			},
+			{
+				"type": "UI_BUTTON",
+				"positionX": 500,
+				"positionY": 400,
+				"boundsX": 30,
+				"boundsY": 30,
+				"boundsW": 172,
+				"boundsH": 72,
+				"onClick": "exitGame",
+				"onClickSprite": "NULL",
+				"onHoverSprite": "images/space_bug.png",
+				"activeOnPause": 0,
+				"text": "Exit Game"
 			}
+
 		]
 	}
 }
