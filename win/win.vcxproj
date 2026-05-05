@@ -171,6 +171,7 @@
     <ClCompile Include="..\gfc\src\gfc_types.c" />
     <ClCompile Include="..\gfc\src\gfc_vector.c" />
     <ClCompile Include="..\gfc\src\miniz.c" />
+    <ClCompile Include="..\src\audio.c" />
     <ClCompile Include="..\src\bomb.c" />
     <ClCompile Include="..\src\boss.c" />
     <ClCompile Include="..\src\button.c" />
@@ -222,6 +223,7 @@
     <ClInclude Include="..\gfc\simple_json\include\simple_json_types.h" />
     <ClInclude Include="..\gfc\simple_json\include\simple_json_value.h" />
     <ClInclude Include="..\gfc\simple_logger\include\simple_logger.h" />
+    <ClInclude Include="..\include\audio.h" />
     <ClInclude Include="..\include\bomb.h" />
     <ClInclude Include="..\include\boss.h" />
     <ClInclude Include="..\include\button.h" />

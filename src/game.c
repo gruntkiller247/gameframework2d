@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "simple_logger.h"
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "UI.h"
 #include "gfc_input.h"
 #include "gf2d_graphics.h"
@@ -15,6 +16,7 @@
 #include "powerup.h"
 #include "level.h"
 #include "button.h"
+
 
 #define MY_FONT "fonts/FreeSans.ttf"
 
@@ -107,7 +109,18 @@ int main(int argc, char * argv[])
         return 1;
     }
 
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 5, 2048);
+    Mix_Music* music = Mix_LoadMUS("audio/mondamusic-retro-arcade-game-music-512837.mp3");
+    Mix_PlayMusic(music, -1);
 
+    Mix_Chunk* laser = Mix_LoadWAV("audio/soundreality-laser-gun-280344.mp3");
+
+    if (!laser)
+    {
+        slog("Failed to load SFX: %s\n", Mix_GetError());
+    }
+
+    Mix_PlayChannel(2, laser, 0);
 
     
     initalizeLevel();
@@ -171,7 +184,7 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-        
+       
 
         if (getLevelStatus() == LS_END_GAME)
         {

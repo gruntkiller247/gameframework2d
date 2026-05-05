@@ -168,6 +168,9 @@
     <ClCompile Include="..\src\button.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\audio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\entity.h">
@@ -315,6 +318,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\audio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
