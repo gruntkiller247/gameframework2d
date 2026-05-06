@@ -1,1 +1,1 @@
-{"level":{"background":"images/backgrounds/bg_flat.png","name":"New Custom Level!","entities":[{"positionX":300,"positionY":300,"name":"player","role":"ROLE_PLAYER_GUNNER","delay":-1},{"positionX":586,"positionY":234,"name":"","role":"ROLE_BOSS1","delay":0}]}}
+{"level":{"background":"images/backgrounds/bg_flat.png","name":"New Custom Level!","entities":[{"positionX":300,"positionY":300,"name":"player","role":"ROLE_PLAYER_GUNNER","delay":-1},{"positionX":527,"positionY":218,"name":"","role":"ROLE_TRASHMOB","delay":0}]}}

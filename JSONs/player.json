@@ -14,6 +14,7 @@
     "hitDelay": 300,
     "damage": 1,
     "fireNoise": "audio/soundreality-laser-gun-280344.mp3",
+    "deathNoise":  "audio/lesiakower-8-bit-game-over-sound-effect-331435.mp3",
 
     "role": 
     [

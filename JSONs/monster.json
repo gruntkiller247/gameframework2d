@@ -2,7 +2,8 @@
   "monster":
   {
     "_comment": "This data should not be accessed! The monster array is hardcoded to check for each thing by Index! Add new monsters at the end!",
-    "fireNoise":  "audio/soundreality-laser-gun-280344.mp3",
+    "fireNoise": "audio/soundreality-laser-gun-280344.mp3",
+     "deathNoise":  "audio/freesound_community-videogame-death-sound-43894.mp3",
 
     "roles": 
     [

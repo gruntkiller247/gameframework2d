@@ -23,7 +23,12 @@ typedef struct Entity_S
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
 	GFC_Vector2D scale;
+
+
 	GFC_Rect bounds;							//CHANGE TO CIRCLE AT SOME POINT!
+
+	//GFC_Circle bounds;
+
 	float rotation;
 	Sprite* sprite;
 	float frame;
@@ -78,6 +83,14 @@ typedef struct Entity_S
 
 	const char* fireSound;
 	Mix_Chunk* fireChunk;
+
+	const char* deathSound;
+	Mix_Chunk* deathChunk;
+
+	//Spatial Hash Stuff
+	int sX;
+	int sY;
+
 }Entity;
 
 
@@ -320,5 +333,28 @@ const char* getTeamFromInt(int team);
 	1 is success!
 */
 int getEntityData(GFC_List* data);
+
+
+
+
+//Spatial Hash Stuff
+
+
+
+//I have the manager that holds the list of cells
+//Each cell should have a list of who is in int
+//Remake it every frame before collision
+// Check if entity is in many cells
+//Each frame ask who is in me - go through entity list?
+
+
+
+/*
+	Creates the cells for the level
+	Entity manager must be made first!
+	Recieves the Level's Width, Height, and the square size of the cell! IE 10x10
+	Returns 0 if fails, 1 if succeeds on creating the cell manager!
+*/
+int initializeCells(int width, int height, int cellSize);
 
 #endif

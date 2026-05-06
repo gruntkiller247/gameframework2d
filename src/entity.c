@@ -27,6 +27,7 @@ static Entity* theBoss = NULL;
 static int DEFAULT_POINTS = 0;
 
 void entityManagerClose();
+void cellManagerClose();
 
 void entityManagerInit(Uint32 max)
 {
@@ -909,5 +910,197 @@ int getEntityData(GFC_List* data)
 
 	return 1;
 }
+
+
+
+//Spacial Hash Stuff
+
+typedef struct Cell_s
+{
+	int x;
+	int y;
+	int entityMax;
+	Entity** entityList;
+}Cell;
+
+typedef struct CellManager_S
+{
+	Cell* cellList;
+	Uint32 width;
+	Uint32 height;
+	Uint32 cellSize;
+	Uint32 cellMax;
+}CellManager;
+
+static CellManager cellManager = { 0 };
+
+int initializeCells(int width, int height, int cellSize)
+{
+	int c;
+
+	if (!width)
+		return 0;
+
+	if (!height)
+		return 0;
+
+	if (!cellSize)
+		return 0;
+
+	if (!entityManager.entityMax)
+		return;
+
+	cellManager.cellSize = cellSize;
+	cellManager.width = ((width + cellSize - 1) / cellSize);
+	cellManager.height = ((height + cellSize - 1) / cellSize);
+	cellManager.cellMax = cellManager.width * cellManager.height;
+
+	cellManager.cellList = gfc_allocate_array(sizeof(Cell), cellManager.cellMax);
+	slog("CellManager Size: %i ", cellManager.cellMax);
+
+	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		cellManager.cellList[c].entityMax = entityManager.entityMax;
+		cellManager.cellList[c].entityList = gfc_allocate_array(sizeof(Entity), entityManager.entityMax);
+
+		if (!cellManager.cellList[c].entityList)
+		{
+			slog("Failed to allocate a cell's entityList!");
+			return 0;
+		}
+	}
+
+	atexit(cellManagerClose);
+	slog("Initalized Cell System");
+	return 1;
+}
+
+
+
+void cellManagerClose()
+{
+	int c,d;
+
+	if (!cellManager.cellList)
+		return;
+
+	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		if (!cellManager.cellList[c].entityList)
+			continue;
+		
+
+		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
+		{
+			//Do this only if the cells should own the entity data!
+			entityFree(&cellManager.cellList[c].entityList[d]);	
+		}
+		free(cellManager.cellList[c].entityList);
+		cellManager.cellList[c].entityList = NULL;
+	}
+	
+	free(cellManager.cellList);
+	
+	memset(&cellManager, 0, sizeof(CellManager));
+	slog("Closed Cell System");
+}
+
+void addToCell(Entity* thing)
+{
+	int posX, posY, index, c;
+
+	if (!thing)
+	{
+		slog("Cannot add a NULL entity to a cell!");
+		return;
+	}
+
+	//79,79 -> 0,0
+	//81,81 -> 1,1 * width 2d-> 1d array
+
+	posX = hashInt(thing->position.x);
+	posY = hashInt(thing->position.y);
+	
+
+	if(posX >= cellManager.width || posX < 0)
+	{
+		slog("Entity Position X is outside the cell's bounds! Cannot add!");
+		return;
+	}
+
+	if (posY >= cellManager.height || posY < 0)
+	{
+		slog("Entity Position Y is outside the cell's bounds! Cannot add!");
+		return;
+	}
+
+	index = posX + posY * cellManager.width;
+
+	for (c = 0; c < cellManager.cellList[index].entityMax; c++)
+	{
+		if (!cellManager.cellList->entityList[c]->_inUse)
+		{
+			cellManager.cellList->entityList[c] = thing;
+			slog("Found the space in cell structure to Add!");
+			return;
+		}
+	}
+	slog("Failed to add entity to a cell!");
+
+}
+
+void removeFromCell(Entity* thing)
+{
+	int posX, posY, index, c;
+
+	if (!thing)
+	{
+		slog("Trying to remove NULL a cell!");
+		return;
+	}
+
+	posX = hashInt(thing->position.x);
+	posY = hashInt(thing->position.y);
+
+
+	if (posX >= cellManager.width || posX < 0)
+	{
+		slog("Entity Position X is outside the cell's bounds! Cannot add!");
+		return;
+	}
+
+	if (posY >= cellManager.height || posY < 0)
+	{
+		slog("Entity Position Y is outside the cell's bounds! Cannot add!");
+		return;
+	}
+
+	index = posX + posY * cellManager.width;
+
+	for (c = 0; c < cellManager.cellList[index].entityMax; c++)
+	{
+		if (cellManager.cellList[index].entityList[c] == thing)
+		{
+			cellManager.cellList[index].entityList[c] = NULL;
+			slog("Found the entity in cell structure to remove!");
+			return;
+		}
+	}
+	slog("Failed to find the entity to remove in a cell!");
+}
+
+/*
+	Converts a position int into a hashed position based on the cell system
+	Initialize the cells first!
+*/
+static int hashInt(int num)
+{
+	if (!cellManager.cellMax)
+		return 0;
+
+	return num/cellManager.cellSize;
+}
+
+
 
 //endLine

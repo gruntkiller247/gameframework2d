@@ -159,6 +159,8 @@ int main(int argc, char * argv[])
         if (currentLevel->spawnPowerUps)
             powerUpSpawning = 1;
     }
+
+    initializeCells(currentLevel->width,currentLevel->height,80);
     
 
     player = getPlayer();
@@ -438,6 +440,7 @@ int main(int argc, char * argv[])
 
         if (player->hp <= 0)
         {
+            Mix_PlayChannel(3, player->deathChunk, 0);
             slog("The player is dead! Load main menu!");
             entityKillAll();
             uiKillAll();

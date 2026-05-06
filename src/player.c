@@ -17,6 +17,7 @@
 
 static const char* playerFile = "JSONs/player.json";
 static const char* defaultShootingNoise = "audio/floraphonic-scifi-gun-shoot-1-266417.mp3";
+static const char* defaultDeathNoise = "audio/lesiakower-8-bit-game-over-sound-effect-331435.mp3";
 
 typedef struct PD
 {
@@ -976,6 +977,7 @@ void loadPlayer(Entity* self)
 	const char* playerSpecial = NULL;
 	const char* playerUlt = NULL;
 	const char* fireNoise = NULL;
+	const char* deathNoise = NULL;
 
 	int bombAmount = -1;
 	int bombTLL = -1;
@@ -1049,7 +1051,19 @@ void loadPlayer(Entity* self)
 	}
 
 	
+	deathNoise = sj_object_get_string(pjson,"deathNoise");
 
+	if (!deathNoise)
+	{
+		slog("Failed to load Player's death Noise!");
+		self->deathSound = defaultDeathNoise;
+		self->deathChunk = Mix_LoadWAV(self->deathChunk);
+	}
+	else
+	{
+		self->deathSound = deathNoise;
+		self->deathChunk = Mix_LoadWAV(self->deathChunk);
+	}
 
 
 	if (sj_object_get_int(pjson, "velocityY", &velY) == 0)

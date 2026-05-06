@@ -13,6 +13,7 @@
 
 const char* monsterFile = "JSONs/monster.json";
 const char* defaultShootingNoise = "audio/soundreality-laser-gun-280344.mp3";
+const char* defaultDeathNoise = "audio/freesound_community-videogame-death-sound-43894.mp3";
 
 
 void loadMonster(Entity* self);
@@ -252,6 +253,8 @@ void monsterUpdate(Entity* self)
 			
 			addPlayerPoints(self->points);
 			slog("Player Points: %i", getPlayerPoints());
+
+			Mix_PlayChannel(3, self->deathChunk, 0);
 
 			self->_inUse = 0;
 			return;
@@ -1760,7 +1763,9 @@ void loadMonster(Entity* self)
 	const char* puzzle1 = NULL;
 	const char* puzzle2 = NULL;
 	const char* name = NULL;
+
 	const char* fireNoise = NULL;
+	const char* deathNoise = NULL;
 
 	int c = 0;
 	int maxIndex = 0;
@@ -1814,6 +1819,20 @@ void loadMonster(Entity* self)
 	{
 		self->fireSound = fireNoise;
 		self->fireChunk = Mix_LoadWAV(self->fireSound);
+	}
+
+	deathNoise = sj_object_get_string(mjson,"deathNoise");
+
+	if (!deathNoise)
+	{
+		slog("Failed to load Monster's death sound effect! Loading default!");
+		self->deathSound = defaultDeathNoise;
+		self->deathChunk = Mix_LoadWAV(self->deathSound);
+	}
+	else
+	{ 
+		self->deathSound = deathNoise;
+		self->deathChunk = Mix_LoadWAV(self->deathSound);
 	}
 	
 
