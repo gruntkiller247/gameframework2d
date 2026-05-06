@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 5, 2048);
     Mix_Music* music = Mix_LoadMUS("audio/mondamusic-retro-arcade-game-music-512837.mp3");
-    Mix_PlayMusic(music, -1);
+    //Mix_PlayMusic(music, -1);
 
 
 
@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
     uiManagerInit(256); //2^8
     //levelManagerInit(32);
     initializeCells(viewWidth, viewHeight, 80); //Currently Level's size are hardcoded. In the future solve this bug where the cells are required to spawn a level, but need a level's size prior to being spawned
-
+    
 
     gfc_input_init("config/input.gfc");
     SDL_ShowCursor(SDL_DISABLE);

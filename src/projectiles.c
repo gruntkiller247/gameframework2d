@@ -125,9 +125,6 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 	return self;
 }
 
-
-
-
 void projectileThink(Entity* self)
 {
 	if (!self)
@@ -315,6 +312,8 @@ void projectileUpdate(Entity* self)
 {
 	if (!self)
 		return;
+
+	addToCell(self);
 
 	//I hate writing code like this but debugging the wall of text made my migraine worse
 	float x = self->position.x + self->bounds.x;

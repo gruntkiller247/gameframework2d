@@ -224,6 +224,8 @@ void monsterTouch(Entity* self, Entity* toucher)
 
 void monsterUpdate(Entity* self)
 {
+	int num;
+
 	if (!self)
 		return;
 
@@ -236,8 +238,9 @@ void monsterUpdate(Entity* self)
 		self->_inUse = 0;
 		return;
 	}
+	addToCell(self);
 
-	int num;
+	
 
 	self->frame += 0.1;
 	if (self->frame >= 8)

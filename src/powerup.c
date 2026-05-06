@@ -89,6 +89,8 @@ void powerUpUpdate(Entity* self)
 	if (!self)
 		return;
 
+	addToCell(self);
+
 	float x = self->position.x + self->bounds.x;
 	float y = self->position.y + self->bounds.y;
 	float w = self->bounds.w;

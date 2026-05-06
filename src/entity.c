@@ -9,6 +9,28 @@
 
 const double healthStates[HS_COUNT] = { 0.80, 0.40, 0.20 };
 
+
+//Spacial Hash Stuff
+
+typedef struct Cell_s
+{
+	int x;
+	int y;
+	int entityMax;
+	Entity** entityList;
+}Cell;
+
+typedef struct CellManager_S
+{
+	Cell* cellList;
+	Uint32 width;
+	Uint32 height;
+	Uint32 cellSize;
+	Uint32 cellMax;
+}CellManager;
+
+static CellManager cellManager = { 0 };
+
 typedef struct EntityManager_S
 {
 	Entity* entityList;
@@ -30,6 +52,7 @@ void entityManagerClose();
 void cellManagerClose();
 void addToCell(Entity* thing);
 void removeFromCell(Entity* thing);
+static int _touchChecks(int c, int d, int e);
 
 void entityManagerInit(Uint32 max)
 {
@@ -382,9 +405,66 @@ void entityTouch(Entity* self, Entity* toucher)
 
 void entityTouchAll()
 {
-	int c, d;
-	int touchDistance = 50;
+	int c, d, e;
+	int posX,posY, index;
+	//int touchDistance = 50;
 
+	if (!cellManager.cellMax)
+		return;
+	
+
+
+	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
+		{
+			if (!cellManager.cellList[c].entityList[d])
+				continue;
+
+			if (cellManager.cellList[c].entityList[d]->team == TEAM_IGNORE)
+				continue;
+
+			if(cellManager.cellList[c].entityList[d]->delay > cellManager.cellList[c].entityList[d]->delayTimer)
+				continue;
+
+			if (cellManager.cellList[c].entityList[d]->layer == EL_INVISIBLE)
+				continue;
+
+			index = cellManager.cellList[c].entityList[d]->currentIndex;
+
+			posX = index % cellManager.width;
+			posY = index / cellManager.width;
+
+			slog("Position of current Entitity in 1D Index: %i X: %i Y: %i", index, posX, posY);
+			
+
+			//Found an entity!
+			//Check if that entity is touching any entities in cells + 1 distance around it
+			//Assuming a 3x3 grid:
+			/*
+				1,2,3
+				4,5,6
+				7,8,9
+			*/
+			//Current entity is 5, need to look at all 9
+			//Compare with other entities in same spot first (5)
+
+
+			//Slot 5
+			for (e = 0; e < cellManager.cellList[c].entityMax; e++)
+			{
+				if (!_touchChecks(c, d, e))
+					continue;
+
+				entityTouch(cellManager.cellList[c].entityList[d], cellManager.cellList[c].entityList[e]);	
+			}
+
+			
+		}
+	}
+
+
+	/*
 	for (c = 0; c < entityManager.entityMax; c++)
 	{
 		if (!entityManager.entityList[c]._inUse)
@@ -423,18 +503,6 @@ void entityTouchAll()
 
 
 
-			/*if (entityManager.entityList[c].layer == EL_PLAYER && entityManager.entityList[d].layer == EL_SYMBOLS)
-			{
-				slog("Trying to touch player and symbols!");
-			}
-
-			//This will probably not work in the player leaves Quadrant 1. Currently they are locked to Q1.
-			if (getDistance(&entityManager.entityList[c], &entityManager.entityList[d]) > touchDistance)
-			{
-				//Damn! This shit works well!
-				//slog("Entities are too far away to touch! %s and %s", entityManager.entityList[c].name, entityManager.entityList[d].name);
-				continue;
-			}*/
 
 
 			//slog("Comparing touch %s and %s",entityManager.entityList[c].name, entityManager.entityList[d].name);
@@ -444,6 +512,41 @@ void entityTouchAll()
 		}
 
 	}
+	*/
+
+	/*if (entityManager.entityList[c].layer == EL_PLAYER && entityManager.entityList[d].layer == EL_SYMBOLS)
+	{
+		slog("Trying to touch player and symbols!");
+	}
+
+	//This will probably not work in the player leaves Quadrant 1. Currently they are locked to Q1.
+	if (getDistance(&entityManager.entityList[c], &entityManager.entityList[d]) > touchDistance)
+	{
+		//Damn! This shit works well! - using distance formula, a bit too heavy on performance eventually
+		//slog("Entities are too far away to touch! %s and %s", entityManager.entityList[c].name, entityManager.entityList[d].name);
+		continue;
+	}*/
+}
+
+/*
+	Helper function to run through all the touch checks between cells within the nested loops
+	If more cells need to be touched, this is where to put conditions
+	Immediate false cases, invis, error layer, etc should be caught earlier!
+	returns 0 if no touch. 1 if touching
+*/
+static int _touchChecks(int c, int d, int e)
+{
+	if (!cellManager.cellList[c].entityList[e])
+		return 0;
+
+	if (cellManager.cellList[c].entityList[d]->team == cellManager.cellList[c].entityList[e]->team)
+		return 0;
+
+	if (cellManager.cellList[c].entityList[d]->layer == cellManager.cellList[c].entityList[e]->layer)
+		return 0;
+
+	if ((cellManager.cellList[c].entityList[d]->layer == EL_ITEM || cellManager.cellList[c].entityList[e]->layer == EL_ITEM) && (cellManager.cellList[c].entityList[d]->layer != EL_PLAYER || cellManager.cellList[c].entityList[e]->layer == EL_PLAYER))
+		return 0;
 }
 
 void outOfBounds(Entity* self)
@@ -915,29 +1018,6 @@ int getEntityData(GFC_List* data)
 	return 1;
 }
 
-
-
-//Spacial Hash Stuff
-
-typedef struct Cell_s
-{
-	int x;
-	int y;
-	int entityMax;
-	Entity** entityList;
-}Cell;
-
-typedef struct CellManager_S
-{
-	Cell* cellList;
-	Uint32 width;
-	Uint32 height;
-	Uint32 cellSize;
-	Uint32 cellMax;
-}CellManager;
-
-static CellManager cellManager = { 0 };
-
 int initializeCells(int width, int height, int cellSize)
 {
 	int c;
@@ -959,6 +1039,8 @@ int initializeCells(int width, int height, int cellSize)
 	cellManager.height = ((height + cellSize - 1) / cellSize);
 	cellManager.cellMax = cellManager.width * cellManager.height;
 
+	slog("Cellmanager width: %i Height: %i CellMax: %i", cellManager.width, cellManager.height, cellManager.cellMax);
+
 	cellManager.cellList = gfc_allocate_array(sizeof(Entity*), cellManager.cellMax);
 
 	slog("CellManager Size: %i ", cellManager.cellMax);
@@ -979,8 +1061,6 @@ int initializeCells(int width, int height, int cellSize)
 	slog("Initalized Cell System");
 	return 1;
 }
-
-
 
 void cellManagerClose()
 {
@@ -1019,6 +1099,8 @@ void addToCell(Entity* thing)
 		slog("Cannot add a NULL entity to a cell!");
 		return;
 	}
+	else
+		slog("Added an entity to cell!");
 
 	if (thing->currentIndex != -1)
 		removeFromCell(thing);
@@ -1026,8 +1108,8 @@ void addToCell(Entity* thing)
 	//79,79 -> 0,0
 	//81,81 -> 1,1 * width 2d-> 1d array
 
-	posX = hashInt(thing->position.x);
-	posY = hashInt(thing->position.y);
+	posX = thing->position.x/cellManager.cellSize;
+	posY = thing->position.y/cellManager.cellSize;
 	
 
 	if(posX >= cellManager.width || posX < 0)
@@ -1089,13 +1171,6 @@ void removeFromCell(Entity* thing)
 	Converts a position int into a hashed position based on the cell system
 	Initialize the cells first!
 */
-static int hashInt(int num)
-{
-	if (!cellManager.cellMax)
-		return 0;
-
-	return num/cellManager.cellSize;
-}
 
 void displayAllCells()
 {

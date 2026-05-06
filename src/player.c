@@ -361,6 +361,8 @@ void playerUpdate(Entity* self)
 		return;
 	}
 
+	addToCell(self);
+
 	self->frame += 0.1;
 
 	if (self->frame >= 8)
