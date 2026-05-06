@@ -120,6 +120,7 @@ int main(int argc, char * argv[])
     entityManagerInit(16384);//16384);//2^14
     uiManagerInit(256); //2^8
     //levelManagerInit(32);
+    initializeCells(viewWidth, viewHeight, 80); //Currently Level's size are hardcoded. In the future solve this bug where the cells are required to spawn a level, but need a level's size prior to being spawned
 
 
     gfc_input_init("config/input.gfc");
@@ -160,7 +161,7 @@ int main(int argc, char * argv[])
             powerUpSpawning = 1;
     }
 
-    initializeCells(currentLevel->width,currentLevel->height,80);
+    
     
 
     player = getPlayer();
@@ -179,7 +180,7 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
 
-       
+        //displayAllCells();
 
         if (getLevelStatus() == LS_END_GAME)
         {

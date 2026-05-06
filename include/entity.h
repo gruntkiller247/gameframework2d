@@ -17,8 +17,8 @@ typedef struct Entity_S
 {
 	//All Entities Require
 	Uint8 _inUse;								//No Touch
-	Uint64* id;									//What Number Entity I am
-	Uint64* layer;								//What layer I am on
+	Uint64 id;									//What Number Entity I am
+	Uint64 layer;								//What layer I am on
 
 	GFC_TextLine name;							//Name of the entity
 	GFC_Vector2D position;						//Coordinates in 2d space
@@ -88,8 +88,8 @@ typedef struct Entity_S
 	Mix_Chunk* deathChunk;
 
 	//Spatial Hash Stuff
-	int sX;
-	int sY;
+	int previousIndex;	//Previous index of the entitty within the 1d cellArray
+	int currentIndex;	//The current index of the entity within the 1d cellArray
 
 }Entity;
 
@@ -356,5 +356,16 @@ int getEntityData(GFC_List* data);
 	Returns 0 if fails, 1 if succeeds on creating the cell manager!
 */
 int initializeCells(int width, int height, int cellSize);
+
+/*
+	Adds an entity to the cell based on that entities global position
+	Calls removeFrom Cell should it have been in a previous one to remove it from that one
+*/
+void addToCell(Entity* thing);
+
+/*
+	Removes an entity from its current cell.
+*/
+void removeFromCell(Entity* thing);
 
 #endif

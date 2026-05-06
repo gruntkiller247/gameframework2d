@@ -28,6 +28,8 @@ static int DEFAULT_POINTS = 0;
 
 void entityManagerClose();
 void cellManagerClose();
+void addToCell(Entity* thing);
+void removeFromCell(Entity* thing);
 
 void entityManagerInit(Uint32 max)
 {
@@ -87,6 +89,8 @@ Entity* entityNew()
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
 		entityManager.entityList[c].points = DEFAULT_POINTS;
+
+		addToCell(&entityManager.entityList[c]);
 
 		return &entityManager.entityList[c];
 	}
@@ -955,7 +959,8 @@ int initializeCells(int width, int height, int cellSize)
 	cellManager.height = ((height + cellSize - 1) / cellSize);
 	cellManager.cellMax = cellManager.width * cellManager.height;
 
-	cellManager.cellList = gfc_allocate_array(sizeof(Cell), cellManager.cellMax);
+	cellManager.cellList = gfc_allocate_array(sizeof(Entity*), cellManager.cellMax);
+
 	slog("CellManager Size: %i ", cellManager.cellMax);
 
 	for (c = 0; c < cellManager.cellMax; c++)
@@ -1015,6 +1020,9 @@ void addToCell(Entity* thing)
 		return;
 	}
 
+	if (thing->currentIndex != -1)
+		removeFromCell(thing);
+
 	//79,79 -> 0,0
 	//81,81 -> 1,1 * width 2d-> 1d array
 
@@ -1038,9 +1046,12 @@ void addToCell(Entity* thing)
 
 	for (c = 0; c < cellManager.cellList[index].entityMax; c++)
 	{
-		if (!cellManager.cellList->entityList[c]->_inUse)
+		
+		if (cellManager.cellList[index].entityList[c] == NULL)
 		{
-			cellManager.cellList->entityList[c] = thing;
+			cellManager.cellList[index].entityList[c] = thing;
+			thing->previousIndex = thing->currentIndex;
+			thing->currentIndex = index;
 			slog("Found the space in cell structure to Add!");
 			return;
 		}
@@ -1051,7 +1062,7 @@ void addToCell(Entity* thing)
 
 void removeFromCell(Entity* thing)
 {
-	int posX, posY, index, c;
+	int index, c;
 
 	if (!thing)
 	{
@@ -1059,29 +1070,14 @@ void removeFromCell(Entity* thing)
 		return;
 	}
 
-	posX = hashInt(thing->position.x);
-	posY = hashInt(thing->position.y);
-
-
-	if (posX >= cellManager.width || posX < 0)
-	{
-		slog("Entity Position X is outside the cell's bounds! Cannot add!");
-		return;
-	}
-
-	if (posY >= cellManager.height || posY < 0)
-	{
-		slog("Entity Position Y is outside the cell's bounds! Cannot add!");
-		return;
-	}
-
-	index = posX + posY * cellManager.width;
+	index = thing->currentIndex;
 
 	for (c = 0; c < cellManager.cellList[index].entityMax; c++)
 	{
 		if (cellManager.cellList[index].entityList[c] == thing)
 		{
 			cellManager.cellList[index].entityList[c] = NULL;
+			thing->previousIndex = -1;
 			slog("Found the entity in cell structure to remove!");
 			return;
 		}
@@ -1101,6 +1097,32 @@ static int hashInt(int num)
 	return num/cellManager.cellSize;
 }
 
+void displayAllCells()
+{
+	int c, d;
+
+	if (!cellManager.cellMax)
+		return;
+
+	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		if (!cellManager.cellList[c].entityList)
+			continue;
+
+
+		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
+		{
+			if (!cellManager.cellList[c].entityList[d])
+				continue;
+			
+			if(!cellManager.cellList[c].entityList[d]->name)
+				slog("Inside Cell Manager Cell's list: it has an entity!");
+			else
+				slog("Inside Cell Manager Cell's list: it has an entity! Name: %s", cellManager.cellList[c].entityList[d]->name);
+		}
+		
+	}
+}
 
 
 //endLine
