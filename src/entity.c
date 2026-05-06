@@ -85,6 +85,7 @@ void entityManagerClose()
 	int c;
 	for (c = 0;c < entityManager.entityMax;c++)
 	{
+		entityManager.entityList[c]._inUse = 0;
 		entityFree(&entityManager.entityList[c]);
 	}
 
@@ -141,9 +142,15 @@ Entity* entityGetID(Uint32 id)
 
 void entityFree(Entity* self)
 {
-	if (!self || self->_inUse)
+	if (!self)
 	{
-		slog("Trying to free null or inUse entity");
+		slog("Trying to free null entity");
+		return;
+	}
+
+	if (self->_inUse)
+	{
+		slog("Trying to free in use entity!");
 		return;
 	}
 
@@ -173,7 +180,7 @@ void entityFreeAll()
 		if (entityManager.entityList[c]._inUse || entityManager.entityList[c]._inUse == NULL)
 			continue;
 
-
+		
 		entityFree(&entityManager.entityList[c]);
 		
 	}
@@ -435,7 +442,7 @@ void entityTouchAll()
 			posX = index % cellManager.width;
 			posY = index / cellManager.width;
 
-			slog("Position of current Entitity in 1D Index: %i X: %i Y: %i", index, posX, posY);
+			//slog("Position of current Entitity in 1D Index: %i X: %i Y: %i", index, posX, posY);
 			
 
 			//Found an entity!
@@ -537,6 +544,15 @@ void entityTouchAll()
 static int _touchChecks(int c, int d, int e)
 {
 	if (!cellManager.cellList[c].entityList[e])
+		return 0;
+
+	if (!cellManager.cellList[c].entityList[d])
+		return 0;
+
+	if (!cellManager.cellList[c].entityList[e]->_inUse == 0)
+		return 0;
+
+	if (!cellManager.cellList[c].entityList[d]->_inUse == 0)
 		return 0;
 
 	if (cellManager.cellList[c].entityList[d]->team == cellManager.cellList[c].entityList[e]->team)
@@ -1078,7 +1094,8 @@ void cellManagerClose()
 		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
 		{
 			//Do this only if the cells should own the entity data!
-			entityFree(&cellManager.cellList[c].entityList[d]);	
+			//cellManager.cellList[c].entityList[d]->_inUse = 0;
+			//entityFree(&cellManager.cellList[c].entityList[d]);	
 		}
 		free(cellManager.cellList[c].entityList);
 		cellManager.cellList[c].entityList = NULL;
@@ -1100,7 +1117,7 @@ void addToCell(Entity* thing)
 		return;
 	}
 	else
-		slog("Added an entity to cell!");
+		;//slog("Added an entity to cell!");
 
 	if (thing->currentIndex != -1)
 		removeFromCell(thing);
@@ -1134,7 +1151,7 @@ void addToCell(Entity* thing)
 			cellManager.cellList[index].entityList[c] = thing;
 			thing->previousIndex = thing->currentIndex;
 			thing->currentIndex = index;
-			slog("Found the space in cell structure to Add!");
+			//slog("Found the space in cell structure to Add!");
 			return;
 		}
 	}
@@ -1160,7 +1177,7 @@ void removeFromCell(Entity* thing)
 		{
 			cellManager.cellList[index].entityList[c] = NULL;
 			thing->previousIndex = -1;
-			slog("Found the entity in cell structure to remove!");
+			//slog("Found the entity in cell structure to remove!");
 			return;
 		}
 	}
