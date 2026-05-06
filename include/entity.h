@@ -2,6 +2,7 @@
 #define __ENTITY_H__
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include "gfc_text.h"
 #include "gf2d_sprite.h"
@@ -75,7 +76,8 @@ typedef struct Entity_S
 	int delay;					//Used to delay an entities spawn: To be used in the level editor
 	int delayTimer;				//Used to count up to delayMax: Starts at 0
 
-	
+	const char* fireSound;
+	Mix_Chunk* fireChunk;
 }Entity;
 
 

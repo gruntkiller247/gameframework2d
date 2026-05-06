@@ -113,14 +113,7 @@ int main(int argc, char * argv[])
     Mix_Music* music = Mix_LoadMUS("audio/mondamusic-retro-arcade-game-music-512837.mp3");
     Mix_PlayMusic(music, -1);
 
-    Mix_Chunk* laser = Mix_LoadWAV("audio/soundreality-laser-gun-280344.mp3");
 
-    if (!laser)
-    {
-        slog("Failed to load SFX: %s\n", Mix_GetError());
-    }
-
-    Mix_PlayChannel(2, laser, 0);
 
     
     initalizeLevel();

@@ -13,6 +13,7 @@
     "maxHP": 3,
     "hitDelay": 300,
     "damage": 1,
+    "fireNoise": "audio/soundreality-laser-gun-280344.mp3",
 
     "role": 
     [

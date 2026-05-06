@@ -1,3 +1,5 @@
+#include <SDL.h>
+#include <SDL_mixer.h>
 #include "simple_logger.h"
 #include "entity.h"
 #include "player.h"
@@ -7,39 +9,11 @@
 #include "projectiles.h"
 #include "bomb.h"
 
-/*typedef struct
-{
-	Entity* monsterList;
-	Uint32 monsterMax;
 
-}MonsterManager;
-
-static MonsterManager monsterManager = { 0 };
-
-//void monsterManagerClose();
-
-void monsterManagerInit(Uint32 max)
-{
-	if (!max)
-	{
-		slog("You cannot initalize monster system with 0 monsters");
-		return;
-	}
-
-	monsterManager.monsterList = gfc_allocate_array(sizeof(Entity), max);
-
-	if (!monsterManager.monsterList)
-	{
-		slog("Failed to allocate %i entities", max);
-		return;
-	}
-
-	monsterManager.monsterMax = max;
-	atexit(monsterManagerClose);
-	slog("Initalized Monster System");
-}*/
 
 const char* monsterFile = "JSONs/monster.json";
+const char* defaultShootingNoise = "audio/soundreality-laser-gun-280344.mp3";
+
 
 void loadMonster(Entity* self);
 
@@ -170,6 +144,10 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 
 	if (self->_inUse == 0)
 		return NULL;
+
+	
+	
+
 
 	monsterData->moveTimer = monsterData->moveMaxTime;
 	self->frame = 0;
@@ -623,6 +601,8 @@ void trashShoot(Entity* self, Entity* player)
 
 	GFC_Vector2D angle = gfc_vector2d(player->position.x - self->position.x,player->position.y - self->position.y);
 	gfc_vector2d_normalize(&angle);
+
+	Mix_PlayChannel(2, self->fireChunk, 0);
 
 	//self->timeToLive
 	Entity* projectile = projectileEntityNew(gfc_vector2d(self->position.x + (self->bounds.w/2),self->position.y + (self->bounds.h/2)), TEAM_ENEMY, -1, ROLE_PROJECTILE);
@@ -1780,6 +1760,7 @@ void loadMonster(Entity* self)
 	const char* puzzle1 = NULL;
 	const char* puzzle2 = NULL;
 	const char* name = NULL;
+	const char* fireNoise = NULL;
 
 	int c = 0;
 	int maxIndex = 0;
@@ -1819,6 +1800,21 @@ void loadMonster(Entity* self)
 
 	mjson = sj_object_get_value(json, "monster");
 
+
+	fireNoise = sj_object_get_string(mjson,"fireNoise");
+
+	
+	if (!fireNoise)
+	{
+		slog("Failed to load Monster's sound effect! Loading default!");
+		self->fireSound = defaultShootingNoise;
+		self->fireChunk = Mix_LoadWAV(self->fireSound);
+	}
+	else
+	{
+		self->fireSound = fireNoise;
+		self->fireChunk = Mix_LoadWAV(self->fireSound);
+	}
 	
 
 	if (!mjson)

@@ -1,5 +1,8 @@
 
 #include <stdio.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <stdlib.h>
 #include <simple_json.h>
 #include "simple_logger.h"
 #include "entity.h"
@@ -10,9 +13,10 @@
 #include "gf2d_graphics.h"
 #include "projectiles.h"
 #include "bomb.h"
-#include <stdlib.h>
+
 
 static const char* playerFile = "JSONs/player.json";
+static const char* defaultShootingNoise = "audio/floraphonic-scifi-gun-shoot-1-266417.mp3";
 
 typedef struct PD
 {
@@ -92,6 +96,8 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 		slog("Player failed to get created!");
 		return NULL;
 	}
+
+	
 
 
 	setPlayer(self);
@@ -506,6 +512,7 @@ void playerGunnerShoot(Entity* self, int direction)
 	Entity* thing3 = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
 	//thing->damage = 2;
 
+	Mix_PlayChannel(2, self->fireChunk, 0);
 
 	if (!thing)
 	{
@@ -653,6 +660,8 @@ void playerBakerShoot(Entity* self, int direction)
 
 	slog("Baker shooting! Bomb team is %i", thing->team);
 
+	Mix_PlayChannel(2, self->fireChunk, 0);
+
 	//thing->scale = gfc_vector2d(5, 5);
 	//thing->bounds = gfc_rect(0, 0, 32 * 5, 32 * 5);
 	thing->damage = self->damage;
@@ -759,6 +768,8 @@ void playerGamblerShoot(Entity* self, Uint8 direction)
 		return;
 
 	Entity* thing = projectileEntityNew(gfc_vector2d(self->position.x + self->bounds.x, self->position.y + self->bounds.y), TEAM_PLAYER, data->basicPlayerProjectileLife, ROLE_PROJECTILE);
+
+	Mix_PlayChannel(2, self->fireChunk, 0);
 
 	//slog("Gambler Shooting");
 
@@ -964,6 +975,7 @@ void loadPlayer(Entity* self)
 	const char* playerFire = NULL;
 	const char* playerSpecial = NULL;
 	const char* playerUlt = NULL;
+	const char* fireNoise = NULL;
 
 	int bombAmount = -1;
 	int bombTLL = -1;
@@ -1023,7 +1035,21 @@ void loadPlayer(Entity* self)
 
 	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
 
+	fireNoise = sj_object_get_string(pjson, "fireNoise");
+	if (!fireNoise)
+	{
+		slog("Failed to load Player's sound effect! Loading default!");
+		self->fireSound = defaultShootingNoise;
+		self->fireChunk = Mix_LoadWAV(self->fireSound);
+	}
+	else
+	{
+		self->fireSound = fireNoise;
+		self->fireChunk = Mix_LoadWAV(self->fireSound);
+	}
+
 	
+
 
 
 	if (sj_object_get_int(pjson, "velocityY", &velY) == 0)

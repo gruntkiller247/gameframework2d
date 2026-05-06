@@ -447,9 +447,12 @@ void outOfBounds(Entity* self)
 		return;
 
 	
+	if (!self->role)
+		goto jump;
+	
 
 	//if(self->role != NULL && self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3 || self->role == ROLE_PLAYER_BAKER || self->role == ROLE_PLAYER_GAMBLER || self->role == ROLE_PLAYER_GUNNER)
-	if(self->role != NULL && self->role != ROLE_PROJECTILE || self->role != ROLE_BOMB)
+	if(self->role != ROLE_PROJECTILE && self->role != ROLE_BOMB)
 	{
 		//Hard coded size is 1200x720
 		//slog("Teleporting Player or Boss!");
@@ -481,14 +484,11 @@ void outOfBounds(Entity* self)
 			//slog("Entity bounds name %s role is %i", self->name, self->role);
 			self->position = gfc_vector2d(self->position.x, -50);
 		}
-			
-
-
-
 
 	}
 	else
 	{
+		jump:
 		//Neither player not boss
 		//slog("NOT PLAYUER Entity bounds name %s role is %i", self->name, self->role);
 		if (self->position.x >= 1200)
