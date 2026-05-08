@@ -1973,6 +1973,10 @@ void loadMonster(Entity* self)
 
 				break;
 
+			case ROLE_DODGE:
+
+				break;
+
 			case ROLE_BOSS1:
 				monster = sj_array_get_nth(roles, 1);
 
