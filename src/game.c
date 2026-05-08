@@ -216,6 +216,10 @@ int main(int argc, char * argv[])
         }
         else if (currentLevel->enemiesToKill != -1 && currentLevel->enemiesToKill == returnKilled())
         {
+            slog("THE PLAYER HAS WON THE LEVEL!");
+            
+            ///Mix_PlayChannel(4, "audio/freesound_community-win-sfx-38507.mp3", 0);
+
             setLevelStatus(LS_NEW_LEVEL);
         }
         else if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
@@ -453,6 +457,8 @@ int main(int argc, char * argv[])
             setPlayerPoints(0);
         }
 
+        
+        
         if (keys[SDL_SCANCODE_ESCAPE])
             done = 1; // exit condition
     }

@@ -52,6 +52,7 @@ void entityManagerClose();
 void cellManagerClose();
 void addToCell(Entity* thing);
 void removeFromCell(Entity* thing);
+void removeAllFromCells();
 static int _touchChecks(int c, int d, int e);
 
 void entityManagerInit(Uint32 max)
@@ -298,6 +299,8 @@ void entityThink(Entity* self)
 	if (!self)
 		return;
 
+
+
 	if (self->delayTimer < self->delay)
 	{
 		//slog("Entity %s is on a delay!: ", self->name);
@@ -310,6 +313,7 @@ void entityThink(Entity* self)
 		slog("Making %s Think!", self->name);
 	}*/
 		
+	
 
 	//Tricking rocks into thinking!
 	//slog("Inside thinking. %s is thinking!",self->name);
@@ -421,7 +425,7 @@ void entityTouchAll()
 	if (!cellManager.cellMax)
 		return;
 	
-
+	//addToCell(self);
 
 	for (c = 0; c < cellManager.cellMax; c++)
 	{
@@ -884,6 +888,8 @@ int getRole(const char* role)
 		return ROLE_DODGE;
 	else if (strcmp(role,"ROLE_RUSH") == 0)
 		return ROLE_RUSH;
+	else if (strcmp(role, "ROLE_EXPLODE") == 0)
+		return ROLE_EXPLODE;
 	else
 	{
 		slog("Get Role returning Error Role");
@@ -951,6 +957,8 @@ const char* getRoleFromInt(int role)
 		case ROLE_RUSH:
 			return "ROLE_RUSH";
 			
+		case ROLE_EXPLODE:
+			return "ROLE_EXPLODE";
 
 		case ROLE_BOSS1:
 			return "ROLE_BOSS1";
@@ -1174,6 +1182,27 @@ void addToCell(Entity* thing)
 
 }
 
+void addAllToCell()
+{
+	int c;
+
+	if (!entityManager.entityList)
+	{
+		//slog("Failed to allocate %i entities", max);
+		return;
+	}
+
+	removeAllFromCells();
+	
+	for (c = 0; c < entityManager.entityMax; c++)
+	{
+		if (!entityManager.entityList[c]._inUse)
+			continue;
+
+		addToCell(&entityManager.entityList[c]);
+	}
+}
+
 void removeFromCell(Entity* thing)
 {
 	int index, c;
@@ -1197,6 +1226,19 @@ void removeFromCell(Entity* thing)
 		}
 	}
 	slog("Failed to find the entity to remove in a cell!");
+}
+
+void removeAllFromCells()
+{
+	int c,d;
+
+	if (!cellManager.cellList)
+		return;
+
+	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		memset(cellManager.cellList[c].entityList, 0, sizeof(Entity*) * cellManager.cellList[c].entityMax);
+	}
 }
 
 void displayAllCells()

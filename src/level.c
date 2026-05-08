@@ -838,6 +838,18 @@ Level* dataLoadLevel(const char* levelName)
 				enemiesToKill++;
 				break;
 
+			case ROLE_EXPLODE:
+				temp = monsterEntityNew(*position, role);
+
+				if (!temp)
+					goto fail;
+
+				if (name)
+					strcpy(temp->name, name);
+
+				enemiesToKill++;
+				break;
+
 			case ROLE_PROJECTILE:
 				
 				teamEnum=getTeam(sj_object_get_string(entity, "team"));
@@ -1235,6 +1247,9 @@ void saveLevel()
 				break;
 
 			case ROLE_RUSH:
+				break;
+
+			case ROLE_EXPLODE:
 				break;
 
 			case ROLE_BOSS1:

@@ -77,6 +77,19 @@
         "text": "Rusher: ",
         "onClick": "spawn",
         "spawn": "ROLE_RUSH"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 800,
+        "positionY": 100,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Exploder: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_EXPLODE"
       }
 
     ]

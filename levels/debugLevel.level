@@ -24,6 +24,13 @@
 				"name": "",
 				"role": "ROLE_RUSH",
 				"delay": 0
+			},
+			{
+				"positionX": 644,
+				"positionY": 388,
+				"name": "",
+				"role": "ROLE_EXPLODE",
+				"delay": 0
 			}
 		]
 	}

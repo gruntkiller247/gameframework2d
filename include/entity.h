@@ -149,6 +149,7 @@ typedef enum RN
 
 	ROLE_DODGE,
 	ROLE_RUSH,
+	ROLE_EXPLODE,
 
 	ROLE_BOSS1,
 	ROLE_BOSS2,
@@ -381,6 +382,13 @@ void moveTowardsSpot(Entity* mover, Entity* spot);
 	Testing function, displays all data within all cells!
 */
 void displayAllCells();
+
+/*
+	Runs through the entityManager and places each entity into a cell!
+*/
+void addAllToCell();
+
+void removeAllFromCells();
 
 /*
 	Used for Level management. Every entity that needs to die for a level(Enemies not powerups, crates, etc...) MUST CALL on death

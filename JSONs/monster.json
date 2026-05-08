@@ -185,11 +185,29 @@
         "hitTimer": 0,
         "primaryCooldown": 90,
         "timerPrimary": 0,
-        "topSpeedX": 10,
-        "topSpeedY": 10,
+        "topSpeedX": 1,
+        "topSpeedY": 1,
         "moveMaxTime": 200,
 
         "state": "MS_RUSH",
+        "layer": "EL_MONSTER",
+        "timeToLive": 800,
+        "points": 10
+      },
+      {
+        "role": "ROLE_EXPLODE",
+        "hp": 3,
+        "sprite": "images/space_bug.png",
+        "damage": 0,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 1,
+        "topSpeedY": 1,
+        "moveMaxTime": 200,
+
+        "state": "MS_EXPLODE",
         "layer": "EL_MONSTER",
         "timeToLive": 800,
         "points": 10

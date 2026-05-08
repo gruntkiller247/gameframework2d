@@ -351,6 +351,8 @@ void playerUpdate(Entity* self)
 	if (!self)
 		return;
 
+	addToCell(self);
+
 	//slog("Updateing Player!");
 	PlayerData* data = (PlayerData*)self->data;
 
@@ -361,7 +363,7 @@ void playerUpdate(Entity* self)
 		return;
 	}
 
-	addToCell(self);
+	
 
 	self->frame += 0.1;
 
