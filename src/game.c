@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
     entityManagerInit(16384);//16384);//2^14
     uiManagerInit(256); //2^8
     //levelManagerInit(32);
-    initializeCells(viewWidth, viewHeight, 80); //Currently Level's size are hardcoded. In the future solve this bug where the cells are required to spawn a level, but need a level's size prior to being spawned
+    initializeCells(viewWidth, viewHeight, 100); //Currently Level's size are hardcoded. In the future solve this bug where the cells are required to spawn a level, but need a level's size prior to being spawned
     
 
     gfc_input_init("config/input.gfc");
@@ -250,54 +250,25 @@ int main(int argc, char * argv[])
             }
             
             
-
-            //update Thinking Here
             entityThinkAll();
-            //slog("Thunk");
-
 
             gf2d_graphics_clear_screen();// clears drawing buffers
-            // all drawing should happen betweem clear_screen and next_frame
-                //backgrounds drawn first
-            //gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
-
             levelDraw(currentLevel);
 
-            //slog("Drawn");
-
-
-            //UI elements last
-            gf2d_sprite_draw(
-                mouse,
-                gfc_vector2d(mx, my),
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                &mouseGFC_Color,
-                (int)mf);
-
+            entityUpdateAll();
+            uiUpdateAll();
+            entityBoundsCheckAll();
+            
+            removeAllFromCells();
+            addAllToCell();
 
             entityTouchAll();
-            //slog("Touched");  
             uiTouchAll();
-            
-
-            entityUpdateAll();
-            //slog("Updated");
-            uiUpdateAll();
-            
-
-            entityBoundsCheckAll();
 
             entityManagerDrawAll();
             uiDrawAll();
+            gf2d_sprite_draw(mouse, gfc_vector2d(mx, my), NULL, NULL, NULL, NULL, &mouseGFC_Color, (int)mf);
             
-            
-            //slog("Bounds checked!");
-
-            
-
             entityFreeAll();
             uiFreeAll();
             

@@ -250,17 +250,23 @@ void monsterTouch(Entity* self, Entity* toucher)
 				if (num < data->dodgeChance)
 				{
 					slog("Dodged!");
-					break;
+					if (self->hp < 0)
+						self->isInvul = 1;
 				}
-					
+				else
+					self->hp -= toucher->damage;
+				break;
 			case ROLE_EXPLODE:
 
 				if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
 				{
 					temp = bombEntityNew(self->position,self->team,0);
 					explode(temp);
+					
 					self->hp -= toucher->damage;
-					self->isInvul = 1;
+
+					if (self->hp < 0)
+						self->isInvul = 1;
 					slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 				}
 
@@ -269,7 +275,11 @@ void monsterTouch(Entity* self, Entity* toucher)
 				if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
 				{
 					self->hp -= toucher->damage;
-					self->isInvul = 1;
+					slog("Toucher's damage: %i", toucher->damage);
+
+					if(self->hp < 0)
+						self->isInvul = 1;
+					
 					slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
 				}
 		}
@@ -296,7 +306,7 @@ void monsterUpdate(Entity* self)
 		self->_inUse = 0;
 		return;
 	}
-	addToCell(self);
+	//addTo(self);
 
 	
 

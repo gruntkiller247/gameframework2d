@@ -188,7 +188,7 @@ void bombUpdate(Entity* self)
 	if (!self)
 		return;
 
-	addToCell(self);
+	//addToCell(self);
 
 	//I hate writing code like this but debugging the wall of text made my migraine worse
 	float x = self->position.x + self->bounds.x;

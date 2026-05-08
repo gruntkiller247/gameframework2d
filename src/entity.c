@@ -53,7 +53,7 @@ void cellManagerClose();
 void addToCell(Entity* thing);
 void removeFromCell(Entity* thing);
 void removeAllFromCells();
-static int _touchChecks(int c, int d, int e);
+static int _touchChecks(Entity* self, Entity* toucher);
 
 void entityManagerInit(Uint32 max)
 {
@@ -114,6 +114,8 @@ Entity* entityNew()
 		entityManager.entityList[c].scale.x = 1;
 		entityManager.entityList[c].scale.y = 1;
 		entityManager.entityList[c].points = DEFAULT_POINTS;
+		entityManager.entityList[c].currentIndex = -1;
+		entityManager.entityList[c].previousIndex = -1;
 
 		addToCell(&entityManager.entityList[c]);
 
@@ -418,8 +420,9 @@ void entityTouch(Entity* self, Entity* toucher)
 
 void entityTouchAll()
 {
-	int c, d, e;
+	int c, d, e, f, g, h;
 	int posX,posY, index;
+	int index2;
 	//int touchDistance = 50;
 
 	if (!cellManager.cellMax)
@@ -427,7 +430,66 @@ void entityTouchAll()
 	
 	//addToCell(self);
 
+
+
 	for (c = 0; c < cellManager.cellMax; c++)
+	{
+		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
+		{
+			if (!cellManager.cellList[c].entityList[d])
+				continue;
+
+			if (cellManager.cellList[c].entityList[d]->team == TEAM_IGNORE)
+				continue;
+
+			if (cellManager.cellList[c].entityList[d]->delay > cellManager.cellList[c].entityList[d]->delayTimer)
+				continue;
+
+			if (cellManager.cellList[c].entityList[d]->layer == EL_INVISIBLE)
+				continue;
+
+			index = cellManager.cellList[c].entityList[d]->currentIndex;
+
+			posX = index % cellManager.width;
+			posY = index / cellManager.width;
+
+			for (f = posY - 1; f <= posY+1; f++)
+			{
+				for (g = posX - 1; g <= posX+1; g++)
+				{
+					if (f < 0 || f >= cellManager.height)
+						continue;
+
+					if (g < 0 || g >= cellManager.width)
+						continue;
+
+					index2 = f * cellManager.width + g;
+
+					if (index2 < 0 || index2 >= cellManager.cellMax)
+						continue;
+
+					for (h = 0; h < cellManager.cellList[index2].entityMax; h++)
+					{
+						if (!cellManager.cellList[index2].entityList[h])
+							continue;
+
+						if (cellManager.cellList[c].entityList[d] == cellManager.cellList[index2].entityList[h])
+							continue;
+
+
+						if (!_touchChecks(cellManager.cellList[c].entityList[d], cellManager.cellList[index2].entityList[h])) 
+							continue;
+
+						entityTouch(cellManager.cellList[c].entityList[d], cellManager.cellList[index2].entityList[h]);
+					}
+				}
+			}
+		}
+	}
+
+
+
+	/*for (c = 0; c < cellManager.cellMax; c++)
 	{
 		for (d = 0; d < cellManager.cellList[c].entityMax; d++)
 		{
@@ -458,7 +520,7 @@ void entityTouchAll()
 				1,2,3
 				4,5,6
 				7,8,9
-			*/
+			
 			//Current entity is 5, need to look at all 9
 			//Compare with other entities in same spot first (5)
 
@@ -548,30 +610,51 @@ void entityTouchAll()
 	Immediate false cases, invis, error layer, etc should be caught earlier!
 	returns 0 if no touch. 1 if touching
 */
-static int _touchChecks(int c, int d, int e)
+static int _touchChecks(Entity* self, Entity* toucher)
 {
-	if (!cellManager.cellList[c].entityList[e])
+	if (!self || !toucher)
 		return 0;
 
-	if (!cellManager.cellList[c].entityList[d])
+	if (!self->_inUse || !toucher->_inUse)
 		return 0;
 
-	if (cellManager.cellList[c].entityList[e]->_inUse == 0)
+	if (self->team == TEAM_IGNORE || toucher->team == TEAM_IGNORE)
 		return 0;
 
-	if (!cellManager.cellList[c].entityList[d]->_inUse)
+	if (self->team == toucher->team)
 		return 0;
 
-	if (cellManager.cellList[c].entityList[d]->team == cellManager.cellList[c].entityList[e]->team)
+	if (self->layer == EL_INVISIBLE || toucher->layer == EL_INVISIBLE)
 		return 0;
 
-	if (cellManager.cellList[c].entityList[d]->layer == cellManager.cellList[c].entityList[e]->layer)
+	if (self->layer == toucher->layer)
 		return 0;
 
-	if ((cellManager.cellList[c].entityList[d]->layer == EL_ITEM || cellManager.cellList[c].entityList[e]->layer == EL_ITEM) && (cellManager.cellList[c].entityList[d]->layer != EL_PLAYER || cellManager.cellList[c].entityList[e]->layer == EL_PLAYER))
+	if (self->layer == EL_ITEM && toucher->layer != EL_PLAYER)
 		return 0;
 
-	return 1;
+	if (toucher->layer == EL_ITEM && self->layer != EL_PLAYER)
+		return 0;
+
+	if (SDL_HasIntersection(self, toucher) == SDL_TRUE)
+		return 1;
+
+	float selfLeft = self->position.x + self->bounds.x;
+	float selfRight = selfLeft + self->bounds.w;
+	float selfTop = self->position.y + self->bounds.y;
+	float selfBottom = selfTop + self->bounds.h;
+
+	float toucherLeft = toucher->position.x + toucher->bounds.x;
+	float toucherRight = toucherLeft + toucher->bounds.w;
+	float toucherTop = toucher->position.y + toucher->bounds.y;
+	float toucherBottom = toucherTop + toucher->bounds.h;
+
+	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
+		return 1;
+
+
+
+	return 0;
 }
 
 void outOfBounds(Entity* self)
@@ -1174,7 +1257,7 @@ void addToCell(Entity* thing)
 			cellManager.cellList[index].entityList[c] = thing;
 			thing->previousIndex = thing->currentIndex;
 			thing->currentIndex = index;
-			//slog("Found the space in cell structure to Add!");
+			//slog("Found the space in cell structure to Add!\nX: %i\nY: %i\n",posX,posY);
 			return;
 		}
 	}
@@ -1213,19 +1296,28 @@ void removeFromCell(Entity* thing)
 		return;
 	}
 
-	index = thing->currentIndex;
+	if (thing->currentIndex < 0) 
+		return;
+	
+	if (thing->currentIndex >= cellManager.cellMax) 
+		return;
 
-	for (c = 0; c < cellManager.cellList[index].entityMax; c++)
+	for (c = 0; c < cellManager.cellList[thing->currentIndex].entityMax; c++)
 	{
-		if (cellManager.cellList[index].entityList[c] == thing)
+		if (cellManager.cellList[thing->currentIndex].entityList[c] == thing)
 		{
-			cellManager.cellList[index].entityList[c] = NULL;
-			thing->previousIndex = -1;
-			//slog("Found the entity in cell structure to remove!");
+			cellManager.cellList[thing->currentIndex].entityList[c] = NULL;
+			thing->previousIndex = thing->currentIndex;
+			thing->currentIndex = -1;
 			return;
 		}
 	}
+
+	
+
 	slog("Failed to find the entity to remove in a cell!");
+	if (thing->name)
+		slog("Name: %s", thing->name);
 }
 
 void removeAllFromCells()
@@ -1237,7 +1329,19 @@ void removeAllFromCells()
 
 	for (c = 0; c < cellManager.cellMax; c++)
 	{
-		memset(cellManager.cellList[c].entityList, 0, sizeof(Entity*) * cellManager.cellList[c].entityMax);
+		for (d = 0; d < cellManager.cellList[c].entityMax;d++)
+		{
+			if (!cellManager.cellList[c].entityList[d])
+				continue;
+
+			cellManager.cellList[c].entityList[d]->currentIndex = -1;
+			cellManager.cellList[c].entityList[d]->previousIndex = -1;
+			
+			cellManager.cellList[c].entityList[d] = NULL;
+
+			
+		}
+
 	}
 }
 

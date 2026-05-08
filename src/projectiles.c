@@ -53,7 +53,7 @@ Entity* projectileEntityNew(GFC_Vector2D position, Uint8 team, int timeToLive,in
 	self->team = team;
 
 	self->velocity = gfc_vector2d(0, 0);
-	self->topSpeed = gfc_vector2d(10, 10);
+	self->topSpeed = gfc_vector2d(1, 1);
 
 	self->frame = 0;
 	self->think = projectileThink;
@@ -313,7 +313,7 @@ void projectileUpdate(Entity* self)
 	if (!self)
 		return;
 
-	addToCell(self);
+	//addToCell(self);
 
 	//I hate writing code like this but debugging the wall of text made my migraine worse
 	float x = self->position.x + self->bounds.x;
@@ -499,6 +499,8 @@ void loadProjectile(Entity* self)
 		slog("Error finding Projectile Damage");
 		goto fail;
 	}
+
+	self->damage = damage;
 
 	color = sj_object_get_string(pjson, "color");
 	
