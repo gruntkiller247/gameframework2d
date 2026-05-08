@@ -41,7 +41,9 @@
         "state": "MS_TRASH",
         "layer": "EL_MONSTER",
         "timeToLive": 800,
-        "points": 10
+        "points": 10,
+
+        "dodgeChance": 5
 
       },
       {
@@ -173,6 +175,24 @@
         "layer": "EL_MONSTER",
 
         "color": "GFC_COLOR_DARKBLUE"
+      },
+      {
+        "role": "ROLE_RUSH",
+        "hp": 3,
+        "sprite": "images/space_bug.png",
+        "damage": 1,
+        "hitDelay": 300,
+        "hitTimer": 0,
+        "primaryCooldown": 90,
+        "timerPrimary": 0,
+        "topSpeedX": 10,
+        "topSpeedY": 10,
+        "moveMaxTime": 200,
+
+        "state": "MS_RUSH",
+        "layer": "EL_MONSTER",
+        "timeToLive": 800,
+        "points": 10
       }
     ]
   }

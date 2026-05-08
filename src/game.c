@@ -368,23 +368,16 @@ int main(int argc, char * argv[])
                    //I have clicked another spot, thus spawn the thing here!
                    switch (roleToSpawn())
                    {
-                   case ROLE_TRASHMOB:
-
-
-                   case ROLE_BOSS1:
-
-
-                   case ROLE_BOSS2:
-
-
-                   case ROLE_BOSS3:
-
-                       monsterEntityNew(gfc_vector2d(mx, my), roleToSpawn());
+                   case ROLE_ERROR:
+                       slog("Nothing to spawn!");
                        clearSpawning();
+
+                      
                        break;
 
                    default:
-                       slog("Nothing to spawn!");
+
+                       monsterEntityNew(gfc_vector2d(mx, my), roleToSpawn());
                        clearSpawning();
                       
 
@@ -438,6 +431,8 @@ int main(int argc, char * argv[])
 
 
         }
+
+        //displayAllCells();
 
         if (player->hp <= 0)
         {

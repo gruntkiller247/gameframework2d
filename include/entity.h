@@ -148,6 +148,7 @@ typedef enum RN
 	ROLE_TRASHMOB,
 
 	ROLE_DODGE,
+	ROLE_RUSH,
 
 	ROLE_BOSS1,
 	ROLE_BOSS2,
@@ -370,5 +371,15 @@ void addToCell(Entity* thing);
 	Removes an entity from its current cell.
 */
 void removeFromCell(Entity* thing);
+
+/*
+	Set's the mover's velocity to be +/- X +/- Y their velocity towards the spot of the player!
+*/
+void moveTowardsSpot(Entity* mover, Entity* spot);
+
+/*
+	Testing function, displays all data within all cells!
+*/
+void displayAllCells();
 
 #endif

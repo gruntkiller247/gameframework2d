@@ -345,31 +345,7 @@ void setUISpawning(Uint32 in)
 
 	slog("SetUISpawning In: %i", in);
 
-	switch(in)
-	{
-		case ROLE_BOSS1:
-			
-		case ROLE_BOSS2:
-
-		case ROLE_BOSS3:
-
-			
-			if (getBoss() == NULL)
-			{
-				uiManager.roleToSpawn = in;
-				slog("No Boss!");
-			}
-			else
-			{
-				slog("A Boss is already in the level! Cannot have more than 1!");
-				uiManager.roleToSpawn = ROLE_ERROR;
-			}
-
-			break;
-		default:
-			uiManager.roleToSpawn = in;
-			break;
-	}
+	uiManager.roleToSpawn = in;
 	
 }
 

@@ -12,8 +12,7 @@
         "positionY": 300
       }
     ],
-    "UI": 
-    [
+    "UI": [
       {
         "type": "UI_BUTTON",
         "positionX": 0,
@@ -52,7 +51,34 @@
         "text": "Boss2: ",
         "onClick": "spawn",
         "spawn": "ROLE_BOSS2"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 0,
+        "positionY": 100,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Dodger: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_DODGE"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 400,
+        "positionY": 100,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Rusher: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_RUSH"
       }
+
     ]
   }
 }

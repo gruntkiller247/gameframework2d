@@ -388,6 +388,10 @@ void entityTouch(Entity* self, Entity* toucher)
 
 	if (self->touch)
 	{
+		if (self->name && toucher->name)
+			slog("%s name is trying to touch %s", self->name, toucher->name);
+		else
+			slog("Self is trying to touch toucher!");
 		self->touch(self, toucher);
 		//slog("Self has an touch!");
 	}
@@ -398,6 +402,10 @@ void entityTouch(Entity* self, Entity* toucher)
 
 	if (toucher->touch)
 	{
+		if (self->name && toucher->name)
+			slog("%s name is trying to touch %s", self->name, toucher->name);
+		else
+			slog("Toucher is trying to touch self!");
 		toucher->touch(toucher,self);
 	}
 	else
@@ -458,11 +466,12 @@ void entityTouchAll()
 
 
 			//Slot 5
-			for (e = 0; e < cellManager.cellList[c].entityMax; e++)
+			for (e = d+1; e < cellManager.cellList[c].entityMax; e++)
 			{
 				if (!_touchChecks(c, d, e))
 					continue;
 
+				slog("entities trying to touch!");
 				entityTouch(cellManager.cellList[c].entityList[d], cellManager.cellList[c].entityList[e]);	
 			}
 
@@ -549,10 +558,10 @@ static int _touchChecks(int c, int d, int e)
 	if (!cellManager.cellList[c].entityList[d])
 		return 0;
 
-	if (!cellManager.cellList[c].entityList[e]->_inUse == 0)
+	if (cellManager.cellList[c].entityList[e]->_inUse == 0)
 		return 0;
 
-	if (!cellManager.cellList[c].entityList[d]->_inUse == 0)
+	if (!cellManager.cellList[c].entityList[d]->_inUse)
 		return 0;
 
 	if (cellManager.cellList[c].entityList[d]->team == cellManager.cellList[c].entityList[e]->team)
@@ -563,6 +572,8 @@ static int _touchChecks(int c, int d, int e)
 
 	if ((cellManager.cellList[c].entityList[d]->layer == EL_ITEM || cellManager.cellList[c].entityList[e]->layer == EL_ITEM) && (cellManager.cellList[c].entityList[d]->layer != EL_PLAYER || cellManager.cellList[c].entityList[e]->layer == EL_PLAYER))
 		return 0;
+
+	return 1;
 }
 
 void outOfBounds(Entity* self)
@@ -875,6 +886,10 @@ int getRole(const char* role)
 		return ROLE_PU_SPEED;
 	else if (strcmp(role, "ROLE_PU_RANDOM") == 0)
 		return ROLE_PU_RANDOM;
+	else if (strcmp(role, "ROLE_DODGE") == 0)
+		return ROLE_DODGE;
+	else if (strcmp(role,"ROLE_RUSH") == 0)
+		return ROLE_RUSH;
 	else
 	{
 		slog("Get Role returning Error Role");
@@ -935,6 +950,12 @@ const char* getRoleFromInt(int role)
 	{			
 		case ROLE_TRASHMOB:
 			return "ROLE_TRASHMOB";
+
+		case ROLE_DODGE:
+			return "ROLE_DODGE";
+
+		case ROLE_RUSH:
+			return "ROLE_RUSH";
 			
 
 		case ROLE_BOSS1:
@@ -1057,14 +1078,14 @@ int initializeCells(int width, int height, int cellSize)
 
 	slog("Cellmanager width: %i Height: %i CellMax: %i", cellManager.width, cellManager.height, cellManager.cellMax);
 
-	cellManager.cellList = gfc_allocate_array(sizeof(Entity*), cellManager.cellMax);
+	cellManager.cellList = gfc_allocate_array(sizeof(Cell), cellManager.cellMax);
 
 	slog("CellManager Size: %i ", cellManager.cellMax);
 
 	for (c = 0; c < cellManager.cellMax; c++)
 	{
 		cellManager.cellList[c].entityMax = entityManager.entityMax;
-		cellManager.cellList[c].entityList = gfc_allocate_array(sizeof(Entity), entityManager.entityMax);
+		cellManager.cellList[c].entityList = gfc_allocate_array(sizeof(Entity*), entityManager.entityMax);
 
 		if (!cellManager.cellList[c].entityList)
 		{
@@ -1184,11 +1205,6 @@ void removeFromCell(Entity* thing)
 	slog("Failed to find the entity to remove in a cell!");
 }
 
-/*
-	Converts a position int into a hashed position based on the cell system
-	Initialize the cells first!
-*/
-
 void displayAllCells()
 {
 	int c, d;
@@ -1216,5 +1232,22 @@ void displayAllCells()
 	}
 }
 
+
+void moveTowardsSpot(Entity* mover, Entity* spot)
+{
+	if (!mover || !spot)
+		return;
+
+	if (mover->position.x < spot->position.x)
+		mover->velocity.x += mover->topSpeed.x;
+	else
+		mover->velocity.x -= mover->topSpeed.x;
+
+	if (mover->position.y < spot->position.y)
+		mover->velocity.y += mover->topSpeed.y;
+	else
+		mover->velocity.y -= mover->topSpeed.y;
+		
+}
 
 //endLine

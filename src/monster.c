@@ -15,6 +15,20 @@ const char* monsterFile = "JSONs/monster.json";
 const char* defaultShootingNoise = "audio/soundreality-laser-gun-280344.mp3";
 const char* defaultDeathNoise = "audio/freesound_community-videogame-death-sound-43894.mp3";
 
+typedef enum jsonArrayNum_S
+{
+	AN_TRASH = 0,
+	AN_DODGE = 1,
+	AN_BOSS1,
+	AN_BOSS2,
+	AN_BOSS3,
+	AN_SYM1,
+	AN_SYM2,
+	AN_SYM3,
+	AN_RUSH
+
+}jsonArrayNum;
+
 
 void loadMonster(Entity* self);
 
@@ -45,6 +59,7 @@ typedef enum
 	MS_PUZZLE_WAIT2,
 	MS_PUZZLE1,		//Every Boss has 2 puzzles
 	MS_PUZZLE2,
+	MS_RUSH,
 	MS_MAX
 }MonsterStates;
 
@@ -94,6 +109,9 @@ typedef struct MD
 	Uint16 bossSnipeCount;
 	Uint16 bossNukeMax;
 	Uint16 bossNukeCount;
+
+	Uint8 dodgeChance;
+	Uint8 rush;
 }MonsterData;
 
 
@@ -181,6 +199,7 @@ Entity* monsterEntityNew(GFC_Vector2D position,int role)
 		;
 	}
 	
+
 	return self;
 }
 
@@ -196,8 +215,15 @@ void setMonsterBossID(Entity* self,int inID)
 
 void monsterTouch(Entity* self, Entity* toucher)
 {
+	int num;
+
 	if (!self || !toucher)
 		return;
+
+	if (!self->data)
+		return;
+
+	MonsterData* data = (MonsterData*)self->data;
 
 	float selfLeft = self->position.x + self->bounds.x;
 	float selfRight = selfLeft + self->bounds.w;
@@ -212,13 +238,32 @@ void monsterTouch(Entity* self, Entity* toucher)
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
 	{
 		//slog("Monster is touching something!");
-
-		if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
+		switch (self->role)
 		{
-			self->hp -= toucher->damage;
-			self->isInvul = 1;
-			//slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
+			case ROLE_DODGE:
+
+				num = rand() % (10 + 1);
+
+				if (num < data->dodgeChance)
+				{
+					slog("Dodged!");
+					break;
+				}
+					
+				
+
+			default:
+				if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
+				{
+					self->hp -= toucher->damage;
+					self->isInvul = 1;
+					//slog("Player aligned thing touched me %s. HP is now %i",self->name,self->hp);
+				}
 		}
+
+
+
+
 	}
 }
 
@@ -349,6 +394,9 @@ void monsterUpdate(Entity* self)
 			data->puzzle2(self);
 			data->state = MS_PUZZLE_WAIT2;
 
+			break;
+
+		case MS_RUSH:
 			break;
 
 		default:
@@ -490,11 +538,20 @@ void monsterThink(Entity* self)
 
 	//Movement Think
 	
-	switch(data->lastDirection)
+	switch (self->role)
 	{
+	case ROLE_RUSH:
+
+		moveTowardsSpot(self, getPlayer());
+
+		break;
+
+	default: 
+		switch (data->lastDirection)
+		{
 		case D_NORTH:
 
-			moveRandom(self,D_NORTH);
+			moveRandom(self, D_NORTH);
 
 			break;
 
@@ -528,7 +585,10 @@ void monsterThink(Entity* self)
 
 		default:
 			slog("Monster does not have Last Direction!");
+		}
 	}
+
+	
 
 	if (self->velocity.y)
 	{
@@ -1623,6 +1683,10 @@ void getMonsterState(Entity* self, const char* state)
 	{
 		((MonsterData*)self->data)->state = MS_TRASH;
 	}
+	else if (strcmp(state, "MS_RUSH") == 0)
+	{
+		((MonsterData*)self->data)->state = MS_RUSH;
+	}
 	else if (strcmp(state, "MS_IDLE") == 0)
 	{
 		((MonsterData*)self->data)->state = MS_IDLE;
@@ -1796,7 +1860,7 @@ void loadMonster(Entity* self)
 	int bossNukeMax = 0;
 
 	int points = -1;
-
+	int dodgeChance =-1;
 
 	json = sj_load(monsterFile);
 
@@ -1864,7 +1928,7 @@ void loadMonster(Entity* self)
 		switch (self->role)
 		{
 			case ROLE_TRASHMOB:
-				monster = sj_array_get_nth(roles, 0);
+				monster = sj_array_get_nth(roles, AN_TRASH);
 
 				if (!monster)
 				{
@@ -1973,12 +2037,230 @@ void loadMonster(Entity* self)
 
 				break;
 
+			case ROLE_RUSH:
+
+				monster = sj_array_get_nth(roles, AN_RUSH);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+				self->hp = hp;
+
+				spriteString = sj_object_get_string(monster, "sprite");
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitTimer = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->primaryCooldown = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->topSpeed = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				break;
+
 			case ROLE_DODGE:
+				monster = sj_array_get_nth(roles, AN_DODGE);
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+				self->hp = hp;
+
+				spriteString = sj_object_get_string(monster, "sprite");
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitTimer = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->primaryCooldown = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->topSpeed = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				if (sj_object_get_int(monster, "dodgeChance", &dodgeChance) == 0)
+				{
+					slog("Failed to get Monster's dodge chance!");
+				}
+
+				data->dodgeChance = dodgeChance;
 
 				break;
 
 			case ROLE_BOSS1:
-				monster = sj_array_get_nth(roles, 1);
+				monster = sj_array_get_nth(roles, AN_BOSS1);
 
 				if (!monster)
 				{
@@ -2122,7 +2404,7 @@ void loadMonster(Entity* self)
 				break;
 
 			case ROLE_BOSS2:
-				monster = sj_array_get_nth(roles, 2);
+				monster = sj_array_get_nth(roles, AN_BOSS2);
 
 				if (!monster)
 				{
@@ -2265,7 +2547,7 @@ void loadMonster(Entity* self)
 				break;
 
 			case ROLE_BOSS3:
-				monster = sj_array_get_nth(roles, 3);
+				monster = sj_array_get_nth(roles, AN_BOSS3);
 
 				if (!monster)
 				{
@@ -2467,7 +2749,7 @@ void loadMonster(Entity* self)
 				break;
 
 			case ROLE_SYMBOL_ENEMY1:
-				monster = sj_array_get_nth(roles, 4);
+				monster = sj_array_get_nth(roles, AN_SYM1);
 
 				if (!monster)
 				{
@@ -2580,7 +2862,7 @@ void loadMonster(Entity* self)
 				break;
 
 			case ROLE_SYMBOL_ENEMY2:
-				monster = sj_array_get_nth(roles, 5);
+				monster = sj_array_get_nth(roles, AN_SYM2);
 
 				if (!monster)
 				{
@@ -2693,7 +2975,7 @@ void loadMonster(Entity* self)
 				break;
 
 			case ROLE_SYMBOL_ENEMY3:
-				monster = sj_array_get_nth(roles, 6);
+				monster = sj_array_get_nth(roles, AN_SYM3);
 
 				if (!monster)
 				{
@@ -2840,5 +3122,7 @@ void loadMonster(Entity* self)
 		sj_free(json);
 
 }
+
+
 
 
