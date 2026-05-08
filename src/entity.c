@@ -8,7 +8,7 @@
 
 
 const double healthStates[HS_COUNT] = { 0.80, 0.40, 0.20 };
-
+static int numDead = 0;
 
 //Spacial Hash Stuff
 
@@ -388,10 +388,7 @@ void entityTouch(Entity* self, Entity* toucher)
 
 	if (self->touch)
 	{
-		if (self->name && toucher->name)
-			slog("%s name is trying to touch %s", self->name, toucher->name);
-		else
-			slog("Self is trying to touch toucher!");
+		
 		self->touch(self, toucher);
 		//slog("Self has an touch!");
 	}
@@ -402,10 +399,7 @@ void entityTouch(Entity* self, Entity* toucher)
 
 	if (toucher->touch)
 	{
-		if (self->name && toucher->name)
-			slog("%s name is trying to touch %s", self->name, toucher->name);
-		else
-			slog("Toucher is trying to touch self!");
+		
 		toucher->touch(toucher,self);
 	}
 	else
@@ -471,7 +465,7 @@ void entityTouchAll()
 				if (!_touchChecks(c, d, e))
 					continue;
 
-				slog("entities trying to touch!");
+				//slog("entities trying to touch!");
 				entityTouch(cellManager.cellList[c].entityList[d], cellManager.cellList[c].entityList[e]);	
 			}
 
@@ -1248,6 +1242,21 @@ void moveTowardsSpot(Entity* mover, Entity* spot)
 	else
 		mover->velocity.y -= mover->topSpeed.y;
 		
+}
+
+void reportDeath()
+{
+	numDead++;
+}
+
+void resetNumDead()
+{
+	numDead = 0;
+}
+
+int returnKilled()
+{
+	return numDead;
 }
 
 //endLine

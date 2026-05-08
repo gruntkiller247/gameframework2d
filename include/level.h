@@ -16,6 +16,7 @@ typedef struct Level_L
 	const char* name;	//Name of the level
 	//GFC_List* levelUI;	//List of all UI's in the level!
 	Uint8 _inUse;
+	int enemiesToKill;
 } Level;
 
 typedef enum
@@ -86,7 +87,6 @@ Level* getCurrentLevel();
 
 const char* getNextLevel();
 
-void setNextLevel(const char* name);
 
 #endif
 

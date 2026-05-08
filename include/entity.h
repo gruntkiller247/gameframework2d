@@ -382,4 +382,13 @@ void moveTowardsSpot(Entity* mover, Entity* spot);
 */
 void displayAllCells();
 
+/*
+	Used for Level management. Every entity that needs to die for a level(Enemies not powerups, crates, etc...) MUST CALL on death
+*/
+void reportDeath();
+
+void resetNumDead();
+
+int returnKilled();
+
 #endif

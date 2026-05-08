@@ -303,6 +303,7 @@ void monsterUpdate(Entity* self)
 			slog("Player Points: %i", getPlayerPoints());
 
 			Mix_PlayChannel(3, self->deathChunk, 0);
+			reportDeath();
 
 			self->_inUse = 0;
 			return;

@@ -81,6 +81,8 @@ int main(int argc, char * argv[])
     int functionSlogs = 1;
     int click = 0;
 
+    //int enemiesKilled = 0;
+
 
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -195,14 +197,14 @@ int main(int argc, char * argv[])
             //Kill everything - ONLY THE UI AND ENTITIES
             entityKillAll();
             uiKillAll();
-            slog("Next level is: %s", getNextLevel());
+            slog("\n\nMAIN GAME LOOP! Next level is: %s\n\n", getNextLevel());
             currentLevel = dataLoadLevel(getNextLevel());
-
+            resetNumDead();
             slog_sync();
 
 
 
-            setNextLevel(NULL);
+            //setNextLevel(NULL);
 
             //currentLevel = getCurrentLevel();
             setLevelStatus(LS_NORMAL);
@@ -211,6 +213,10 @@ int main(int argc, char * argv[])
         else if (!currentLevel)
         {
             //slog("CURRENT LEVEL IS NULL!");
+        }
+        else if (currentLevel->enemiesToKill != -1 && currentLevel->enemiesToKill == returnKilled())
+        {
+            setLevelStatus(LS_NEW_LEVEL);
         }
         else if (player && isPaused() == NOT_PAUSED && strcmp(currentLevel->name, "Custom Template") != 0)
         {

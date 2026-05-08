@@ -27,7 +27,7 @@ static TTF_Font* font;
 static int levelStatus = LS_NORMAL;
 
 static Level* currentLevel = NULL;
-static const char* nextLevel = "";
+static char* nextLevel = NULL;
 
 
 void initalizeLevel()
@@ -147,6 +147,7 @@ Level* levelNew(Uint64 height, Uint64 width)
 
 	level->background = NULL;
 	level->spawnPowerUps = 1;
+	level->enemiesToKill = 0;
 
 	return level;
 }
@@ -337,6 +338,8 @@ Level* dataLoadLevel(const char* levelName)
 	const char* spawn = NULL;
 	int spawnRole = -1;
 
+	int enemiesToKill = 0;
+
 
 	
 
@@ -373,7 +376,14 @@ Level* dataLoadLevel(const char* levelName)
 		nextLevel = "levels/mainMenu.level";
 	}
 	else
-		strcpy(nextLevel, nextLevelRead);
+	{
+		levelUpdate(nextLevelRead);
+		//slog("\n\nNext Level is: %s\n\n", nextLevel);
+	}
+		
+		
+
+	
 
 	//UI Reading!
 	ui = sj_object_get_value(ljson, "UI");
@@ -728,6 +738,7 @@ Level* dataLoadLevel(const char* levelName)
 		slog("Entities list could not be made!");
 		//sj_free(ljson);
 		//return NULL;
+		enemiesToKill = -1;
 		goto levelLoaded;	
 	}
 
@@ -737,6 +748,7 @@ Level* dataLoadLevel(const char* levelName)
 		//sj_free(ljson);
 		//sj_free(entities);
 		//return NULL;
+		enemiesToKill = -1;
 		goto levelLoaded;
 			
 	}
@@ -798,7 +810,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (name)
 					strcpy(temp->name, name);	
 					
-
+				enemiesToKill++;
 				break;
 
 			case ROLE_DODGE:
@@ -811,6 +823,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (name)
 					strcpy(temp->name, name);
 
+				enemiesToKill++;
 				break;
 
 			case ROLE_RUSH:
@@ -822,6 +835,7 @@ Level* dataLoadLevel(const char* levelName)
 				if (name)
 					strcpy(temp->name, name);
 
+				enemiesToKill++;
 				break;
 
 			case ROLE_PROJECTILE:
@@ -876,6 +890,8 @@ Level* dataLoadLevel(const char* levelName)
 
 				if (name)
 					strcpy(temp->name, name);
+
+				enemiesToKill++;
 				break;
 
 			case ROLE_BOSS2:
@@ -889,6 +905,8 @@ Level* dataLoadLevel(const char* levelName)
 
 				if (name)
 					strcpy(temp->name, name);
+
+				enemiesToKill++;
 				break;
 
 			case ROLE_BOSS3:
@@ -902,6 +920,8 @@ Level* dataLoadLevel(const char* levelName)
 
 				if (name)
 					strcpy(temp->name, name);
+
+				enemiesToKill++;
 				break;
 
 			case ROLE_PLAYER_GAMBLER:
@@ -995,9 +1015,12 @@ Level* dataLoadLevel(const char* levelName)
 			temp->delayTimer = 0;
 		}
 	}
-
-	levelLoaded:
+	if (enemiesToKill == 0)
+		enemiesToKill--;
 	
+	levelLoaded:
+	level->enemiesToKill = enemiesToKill;
+
 	currentLevel = level;
 	//gfc_list_prepend(levelManager.levelList, level);
 	//levelManager.currentLevel = gfc_list_get_item_index(levelManager.levelList, level);
@@ -1308,9 +1331,18 @@ void levelUpdate(const char* levelName)
 
 	if (nextLevel)
 	{
+		//free(nextLevel);
 		nextLevel = NULL;
 	}
-	nextLevel = levelName;
+
+	nextLevel = _strdup(levelName);
+
+	if (!nextLevel)
+	{
+		slog("Failed to allocate nextLevel");
+		return;
+	}
+
 	levelStatus = LS_NEW_LEVEL;
 }
 
@@ -1327,18 +1359,6 @@ void setLevelStatus(int status)
 Level* getCurrentLevel()
 {
 	return currentLevel;//&levelManager.levelList[levelManager.currentLevel];
-}
-
-void setNextLevel(const char* name)
-{
-	if (!name)
-	{
-		nextLevel = NULL;
-		return;
-	}
-
-	
-	strcpy(nextLevel, name);
 }
 
 const char* getNextLevel()

@@ -1,37 +1,30 @@
 {
-	"level": 
-	{
-		"name": "Debug Level",
-		"powerUps": 1,
-		"background": "images/backgrounds/cat.jpg",
-		"entities": 
-		[
+	"level": {
+		"background": "images/backgrounds/bg_flat.png",
+		"name": "New Custom Level!",
+		"nextLevel": "levels/debugLevelProjectiles.level",
+		"entities": [
 			{
-				"name": "test_monster",
-				"role": "ROLE_TRASHMOB", 
-				"positionX": 100,
-				"positionY":  100
-
-			},
-			{
-				"name": "test_monster2",
-				"role": "ROLE_TRASHMOB",
-				"positionX": 200,
-				"positionY": 200
-			},
-			{
+				"positionX": 300,
+				"positionY": 300,
 				"name": "player",
 				"role": "ROLE_PLAYER_GUNNER",
-				"positionX": 300,
-				"positionY": 300
+				"delay": -1
 			},
 			{
-				"name": "Boss1",
-				"role": "ROLE_BOSS1",
-				"positionX": 500,
-				"positionY": 500
+				"positionX": 112,
+				"positionY": 384,
+				"name": "",
+				"role": "ROLE_DODGE",
+				"delay": 0
+			},
+			{
+				"positionX": 644,
+				"positionY": 388,
+				"name": "",
+				"role": "ROLE_RUSH",
+				"delay": 0
 			}
-
 		]
 	}
 }

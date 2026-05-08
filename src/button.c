@@ -253,12 +253,13 @@ void exitGame(UI* self)
 	setLevelStatus(LS_END_GAME);
 
 }
+
 void level1(UI* self)
 {
 	if (!self)
 		return;
 
-	levelUpdate("levels/debugLevelProjectiles.level");
+	levelUpdate("levels/debugLevel.level");
 
 }
 
