@@ -8,7 +8,7 @@
 		[
 			{
 				"name": "player",
-				"role": "ROLE_PLAYER_GUNNER",
+				"role": "ROLE_PLAYER_BAKER",
 				"positionX": 300,
 				"positionY": 300
 			}

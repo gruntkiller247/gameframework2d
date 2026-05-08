@@ -501,6 +501,7 @@ void loadBomb(Entity* self)
 		goto fail;
 	}
 
+	self->sprite = gf2d_sprite_load_all(spriteFile, 128, 128, 16, 0);
 
 	if (sj_object_get_int(bjson, "damage", &damage) == 0)
 	{

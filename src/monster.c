@@ -275,7 +275,7 @@ void monsterTouch(Entity* self, Entity* toucher)
 				if (toucher->team == TEAM_PLAYER && self->isInvul == 0)
 				{
 					self->hp -= toucher->damage;
-					slog("Toucher's damage: %i", toucher->damage);
+					//slog("Toucher's damage: %i", toucher->damage);
 
 					if(self->hp < 0)
 						self->isInvul = 1;
@@ -284,6 +284,10 @@ void monsterTouch(Entity* self, Entity* toucher)
 				}
 		}
 
+		if (toucher->team == TEAM_PLAYER && toucher != getPlayer())//(toucher->role != ROLE_PLAYER_BAKER || toucher->role != ROLE_PLAYER_GAMBLER || toucher->role != ROLE_PLAYER_GUNNER))
+		{
+			toucher->_inUse = 0;
+		}
 
 
 

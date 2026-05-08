@@ -8,7 +8,7 @@
 				"positionX": 300,
 				"positionY": 300,
 				"name": "player",
-				"role": "ROLE_PLAYER_GUNNER",
+				"role": "ROLE_PLAYER_BAKER",
 				"delay": -1
 			},
 			{
