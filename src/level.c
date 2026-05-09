@@ -761,10 +761,17 @@ Level* dataLoadLevel(const char* levelName)
 		//Manually give that entity their name and position
 		//slog("Loop %i!", c);
 		entity = sj_array_get_nth(entities, c);
-		
+
+		slog("Entity Max: %i\n C: %i", entityMax, c);
+
+		if (!entity)
+		{
+			slog("\n\nENTITY NOT REAL LEVEL LOADING!\n\n");
+			goto fail;
+		}
 		
 		role = getRole(sj_object_get_string(entity, "role"));
-		//slog("JSON: Entity role: %i", role);
+		slog("\n\n\n\n\nJSON: Entity role: %i\n\n\n\n\n", role);
 
 		if (sj_object_get_int(entity, "positionY", &tempY) == 0)
 		{
@@ -798,6 +805,7 @@ Level* dataLoadLevel(const char* levelName)
 
 		switch (role)
 		{
+			
 			case ROLE_TRASHMOB:
 				temp=monsterEntityNew(*position,role);
 
@@ -839,6 +847,18 @@ Level* dataLoadLevel(const char* levelName)
 				break;
 
 			case ROLE_EXPLODE:
+				temp = monsterEntityNew(*position, role);
+
+				if (!temp)
+					goto fail;
+
+				if (name)
+					strcpy(temp->name, name);
+
+				enemiesToKill++;
+				break;
+
+			case ROLE_MOTHER:
 				temp = monsterEntityNew(*position, role);
 
 				if (!temp)
@@ -1250,6 +1270,9 @@ void saveLevel()
 				break;
 
 			case ROLE_EXPLODE:
+				break;
+
+			case ROLE_MOTHER:
 				break;
 
 			case ROLE_BOSS1:

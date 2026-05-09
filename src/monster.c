@@ -26,7 +26,8 @@ typedef enum jsonArrayNum_S
 	AN_SYM2,
 	AN_SYM3,
 	AN_RUSH,
-	AN_EXPLODE
+	AN_EXPLODE,
+	AN_MOTHER
 
 }jsonArrayNum;
 
@@ -62,6 +63,7 @@ typedef enum
 	MS_PUZZLE2,
 	MS_RUSH,
 	MS_EXPLODE,
+	MS_MOTHER,
 	MS_MAX
 }MonsterStates;
 
@@ -114,6 +116,7 @@ typedef struct MD
 
 	Uint8 dodgeChance;
 	Uint8 rush;
+	int motherSpawn;
 }MonsterData;
 
 
@@ -430,6 +433,12 @@ void monsterUpdate(Entity* self)
 		case MS_EXPLODE:
 			break;
 
+		case MS_MOTHER:
+			//ROLE_PU_MIN+1 + rand() % (ROLE_PU_MAX-1-ROLE_PU_MIN);
+			data->motherSpawn = ROLE_TRASHMOB;//ROLE_MOTHER_MIN + rand() % (ROLE_MOTHER_CAP-1-ROLE_MOTHER_MIN);
+			slog("Mother's Role to spawn is: %i");
+			break;
+
 		default:
 			slog("Boss Update State does not exist! Current state: %i",data->state);
 	}
@@ -565,6 +574,11 @@ void monsterThink(Entity* self)
 	else
 	{
 		//Trash Mob/Random mobs spawned in Behavior
+		if (self->role == MS_MOTHER && data->motherSpawn && ((rand() % 1000 + 1) == 1))
+		{
+			//slog("TRYING TO SPAWN OFFSPRING FROM MOTHER!\n Mother spawn is role: %i",data->motherSpawn);
+			monsterEntityNew(self->position,data->motherSpawn);
+		}
 	}
 
 	//Movement Think
@@ -1722,6 +1736,10 @@ void getMonsterState(Entity* self, const char* state)
 	else if (strcmp(state, "MS_EXPLODE") == 0)
 	{
 		((MonsterData*)self->data)->state = MS_EXPLODE;
+	}
+	else if (strcmp(state, "MS_MOTHER") == 0)
+	{
+		((MonsterData*)self->data)->state = MS_MOTHER;
 	}
 	else if (strcmp(state, "MS_IDLE") == 0)
 	{
@@ -3233,20 +3251,129 @@ void loadMonster(Entity* self)
 
 				break;
 
+			case ROLE_MOTHER:
+				monster = sj_array_get_nth(roles, AN_MOTHER);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+				self->hp = hp;
+
+				spriteString = sj_object_get_string(monster, "sprite");
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitTimer = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->primaryCooldown = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->topSpeed = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				
+				break;
+
 			default:
-				;
+				slog("MONSTER LOADING: Cannot find that role!");
+				slog("Role not found is name: %s Role: %i",self->name, self->role);
+				
 
 
 		
 	}
-	//I COULD HAVE SAVED TIME! INSTEAD OF COPYING AND PASTING I COULD HAVE JUST PUT ALL THE GENERIC VALUES HERE!!!!!!!!!!!!!!!!!!Q
-	//Me when my code is so bad an AI clearly could not have made it!
-
-
 
 	if (sj_object_get_int(monster, "points", &points) == 0)
 	{
-		slog("Could not find points! Defaulting! Name: %s", self->name);
+		//slog("Could not find points! Defaulting! Name: %s", self->name);
 	}
 	else
 		self->points = points;

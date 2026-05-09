@@ -199,8 +199,9 @@ int main(int argc, char * argv[])
             uiKillAll();
             slog("\n\nMAIN GAME LOOP! Next level is: %s\n\n", getNextLevel());
             currentLevel = dataLoadLevel(getNextLevel());
+            slog("MAIN GAME LOOP LEVEL LOADED!");
             resetNumDead();
-            slog_sync();
+           
 
 
 
@@ -208,6 +209,8 @@ int main(int argc, char * argv[])
 
             //currentLevel = getCurrentLevel();
             setLevelStatus(LS_NORMAL);
+            slog("Level Status is: %i", getLevelStatus());
+            slog_sync();
             
         }
         else if (!currentLevel)

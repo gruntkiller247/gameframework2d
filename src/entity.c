@@ -636,7 +636,7 @@ static int _touchChecks(Entity* self, Entity* toucher)
 	if (toucher->layer == EL_ITEM && self->layer != EL_PLAYER)
 		return 0;
 
-	if (SDL_HasIntersection(self, toucher) == SDL_TRUE)
+	/*if (SDL_HasIntersection(self, toucher) == SDL_TRUE)
 		return 1;
 
 	float selfLeft = self->position.x + self->bounds.x;
@@ -650,11 +650,11 @@ static int _touchChecks(Entity* self, Entity* toucher)
 	float toucherBottom = toucherTop + toucher->bounds.h;
 
 	if (selfLeft < toucherRight && selfRight > toucherLeft && selfTop  < toucherBottom && selfBottom > toucherTop)
-		return 1;
+		return 1;*/
 
 
 
-	return 0;
+	return 1;
 }
 
 void outOfBounds(Entity* self)
@@ -973,6 +973,8 @@ int getRole(const char* role)
 		return ROLE_RUSH;
 	else if (strcmp(role, "ROLE_EXPLODE") == 0)
 		return ROLE_EXPLODE;
+	else if (strcmp(role, "ROLE_MOTHER") == 0)
+		return ROLE_MOTHER;
 	else
 	{
 		slog("Get Role returning Error Role");
@@ -1043,6 +1045,9 @@ const char* getRoleFromInt(int role)
 		case ROLE_EXPLODE:
 			return "ROLE_EXPLODE";
 
+		case ROLE_MOTHER:
+			return "ROLE_MOTHER";
+
 		case ROLE_BOSS1:
 			return "ROLE_BOSS1";
 			
@@ -1092,6 +1097,8 @@ const char* getRoleFromInt(int role)
 
 		case ROLE_PLAYER_GUNNER:
 			return "ROLE_PLAYER_GUNNER";
+
+
 
 		default:
 			slog("Failed to find the role!");

@@ -27,6 +27,7 @@ void levelEditor(UI* self);
 void customLevel(UI* self);
 void level1(UI* self);
 void exitGame(UI* self);
+void saveLevelButton();
 
 UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
@@ -237,6 +238,10 @@ void getOnClick(UI* ui, const char* onClick)
 	{
 		ui->onClick = exitGame;
 	}
+	else if (strcmp(onClick,"save") == 0)
+	{
+		ui->onClick = saveLevelButton;
+	}
 	else
 	{
 		slog("Null");
@@ -353,5 +358,10 @@ SDL_Texture* getButtonTexture(UI* self)
 		return NULL;
 	//slog("UI has texture!");
 	return data->uiTexture;
+}
+
+void saveLevelButton()
+{
+	saveLevel();
 }
 

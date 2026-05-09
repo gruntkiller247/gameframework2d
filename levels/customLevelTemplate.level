@@ -90,7 +90,33 @@
         "text": "Exploder: ",
         "onClick": "spawn",
         "spawn": "ROLE_EXPLODE"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 0,
+        "positionY": 200,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Mother: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_MOTHER"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 0,
+        "positionY": 600,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Save Level: ",
+        "onClick": "save"
       }
+
 
     ]
   }
