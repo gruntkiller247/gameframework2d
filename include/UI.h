@@ -8,6 +8,12 @@
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
 
+typedef enum
+{
+	priceHP = 50,
+	pricePower = 100
+}ShopPrices;
+
 
 typedef struct UI_S
 {

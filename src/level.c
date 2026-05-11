@@ -11,8 +11,6 @@
 #include "powerup.h"
 #include "button.h"
 #include "gf2d_graphics.h"
-#include "gfc_list.h"
-
 
 
 
@@ -29,6 +27,8 @@ static int levelStatus = LS_NORMAL;
 static Level* currentLevel = NULL;
 static char* nextLevel = NULL;
 
+static int levelsPlayed = 0;
+static char* tempLevel = NULL; //Temp holder to store the next level to go to when a shop shows up!
 
 void initalizeLevel()
 {
@@ -305,6 +305,7 @@ Level* dataLoadLevel(const char* levelName)
 	const char* team = NULL;
 	const char* levelObjName = NULL;
 	const char* uiTypeString = NULL;
+	const char* jsonLevelName = NULL;
 
 	const char* uiSprite = NULL;
 	const char* uiHoverSprite = NULL;
@@ -341,6 +342,18 @@ Level* dataLoadLevel(const char* levelName)
 	int enemiesToKill = 0;
 
 
+	if (levelsPlayed != 0 && levelsPlayed % LEVELS_UNTILL_SHOP == 0)
+	{
+		//Time to load the shop!
+		//Save the current level being loaded, then end early and load the shop!
+
+		tempLevel = _strdup(levelName);
+		levelsPlayed++;
+		//slog("Loading the shop instead of the normal level!");
+		dataLoadLevel("levels/shop.level");
+		
+		return;
+	}
 	
 
 	if (!levelName)
@@ -349,7 +362,10 @@ Level* dataLoadLevel(const char* levelName)
 		return NULL;
 	}
 
+	slog("Name of level being loaded! %s", levelName);
+
 	level = levelNew(viewHeight, viewWidth);
+	
 
 	json = sj_load(levelName);
 
@@ -368,12 +384,33 @@ Level* dataLoadLevel(const char* levelName)
 		return NULL;
 	}
 
+	jsonLevelName = sj_object_get_string(ljson, "name");
+
+	if (!jsonLevelName)
+	{
+		slog("Failed to get the name of level from JSON!");
+		goto fail;
+	}
+
+	level->name = _strdup(jsonLevelName);
+
 	nextLevelRead = sj_object_get_string(ljson, "nextLevel");
 
 	if (!nextLevelRead)
 	{
-		slog("Level has no next level! Defaulting to Main Menu!");
-		nextLevel = "levels/mainMenu.level";
+		if (currentLevel != NULL && strcmp(currentLevel->name, "shop") == 0)
+		{
+			//Shop always has no next level!
+			slog("Shop replacing next level!");
+			nextLevel = tempLevel;
+			tempLevel = NULL;
+		}
+		else
+		{
+			slog("Level has no next level! Defaulting to Main Menu!");
+			nextLevel = "levels/mainMenu.level";
+		}
+
 	}
 	else
 	{
@@ -762,16 +799,16 @@ Level* dataLoadLevel(const char* levelName)
 		//slog("Loop %i!", c);
 		entity = sj_array_get_nth(entities, c);
 
-		slog("Entity Max: %i\n C: %i", entityMax, c);
+		//slog("Entity Max: %i\n C: %i", entityMax, c);
 
 		if (!entity)
 		{
-			slog("\n\nENTITY NOT REAL LEVEL LOADING!\n\n");
+			//slog("\n\nENTITY NOT REAL LEVEL LOADING!\n\n");
 			goto fail;
 		}
 		
 		role = getRole(sj_object_get_string(entity, "role"));
-		slog("\n\n\n\n\nJSON: Entity role: %i\n\n\n\n\n", role);
+		//slog("\n\n\n\n\nJSON: Entity role: %i\n\n\n\n\n", role);
 
 		if (sj_object_get_int(entity, "positionY", &tempY) == 0)
 		{
@@ -863,6 +900,22 @@ Level* dataLoadLevel(const char* levelName)
 
 				if (!temp)
 					goto fail;
+
+				if (name)
+					strcpy(temp->name, name);
+
+				enemiesToKill++;
+				break;
+
+			case ROLE_CIRCLE:
+
+				temp = monsterEntityNew(*position, role);
+
+				if (!temp)
+				{
+					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
+				}
 
 				if (name)
 					strcpy(temp->name, name);
@@ -1059,6 +1112,7 @@ Level* dataLoadLevel(const char* levelName)
 	//slog("Level Manger current level: %i", levelManager.currentLevel);
 
 	slog("Loaded Level JSON!");
+	levelsPlayed++;
 
 
 	
@@ -1275,6 +1329,9 @@ void saveLevel()
 			case ROLE_MOTHER:
 				break;
 
+			case ROLE_CIRCLE:
+				break;
+
 			case ROLE_BOSS1:
 				break;
 
@@ -1402,4 +1459,9 @@ Level* getCurrentLevel()
 const char* getNextLevel()
 {
 	return nextLevel;
+}
+
+void setLevelsPlayed(int in)
+{
+	levelsPlayed = in;
 }

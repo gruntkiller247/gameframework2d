@@ -27,12 +27,14 @@ typedef enum jsonArrayNum_S
 	AN_SYM3,
 	AN_RUSH,
 	AN_EXPLODE,
-	AN_MOTHER
+	AN_MOTHER,
+	AN_CIRCLE
 
 }jsonArrayNum;
 
 
 void loadMonster(Entity* self);
+void shootLine(Entity* self);
 
 typedef enum
 {
@@ -64,6 +66,7 @@ typedef enum
 	MS_RUSH,
 	MS_EXPLODE,
 	MS_MOTHER,
+	MS_CIRCLE,
 	MS_MAX
 }MonsterStates;
 
@@ -328,8 +331,12 @@ void monsterUpdate(Entity* self)
 
 		case MS_DEAD:
 			
-			
-			addPlayerPoints(self->points);
+			if (returnKilled() % 10 == 0)
+			{
+				addPlayerPoints((self->points + killedPoints + rngPoints()) * getScoreMult());
+			}
+			else
+				addPlayerPoints((self->points + rngPoints())* getScoreMult());
 			slog("Player Points: %i", getPlayerPoints());
 
 			Mix_PlayChannel(3, self->deathChunk, 0);
@@ -436,7 +443,13 @@ void monsterUpdate(Entity* self)
 		case MS_MOTHER:
 			//ROLE_PU_MIN+1 + rand() % (ROLE_PU_MAX-1-ROLE_PU_MIN);
 			data->motherSpawn = ROLE_TRASHMOB;//ROLE_MOTHER_MIN + rand() % (ROLE_MOTHER_CAP-1-ROLE_MOTHER_MIN);
-			slog("Mother's Role to spawn is: %i");
+			//slog("Mother's Role to spawn is: %i");
+			break;
+
+		case MS_CIRCLE:
+			//Spawn projectile circle
+			//circleRing(self);
+
 			break;
 
 		default:
@@ -478,8 +491,22 @@ void monsterThink(Entity* self)
 		return;
 	}
 
-	if (self->hp < self->maxHP)
+	if (self->hp <= 0)
+	{
+		if (self->role == ROLE_SYMBOL_ENEMY1 || self->role == ROLE_SYMBOL_ENEMY2 || self->role == ROLE_SYMBOL_ENEMY3)
+		{
+
+			if (!getBoss())
+			{
+				slog("Symbol failed to find boss pointer!");
+				//data->state = MS_DEAD;
+			}
+			symbolPatternAlert(getBoss(), self->color);
+			
+		}
 		data->state = MS_DEAD;
+	}
+		
 
 	if (self->layer != EL_INVISIBLE && (self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3))
 	{
@@ -573,12 +600,24 @@ void monsterThink(Entity* self)
 	}
 	else
 	{
-		//Trash Mob/Random mobs spawned in Behavior
-		if (self->role == MS_MOTHER && data->motherSpawn && ((rand() % 1000 + 1) == 1))
+		//slog("Timer Primary %i\PrimaryCooldown: %i",self->timerPrimary,self->primaryCooldown);
+		if (self->timerPrimary >= self->primaryCooldown)
 		{
-			//slog("TRYING TO SPAWN OFFSPRING FROM MOTHER!\n Mother spawn is role: %i",data->motherSpawn);
-			monsterEntityNew(self->position,data->motherSpawn);
+			if (self->role == MS_MOTHER && data->motherSpawn && ((rand() % 10 + 1) == 1))
+			{
+				//slog("TRYING TO SPAWN OFFSPRING FROM MOTHER!\n Mother spawn is role: %i",data->motherSpawn);
+				monsterEntityNew(self->position, data->motherSpawn);
+			}
+			else if (self->role == ROLE_CIRCLE)
+			{
+				shootLine(self);
+			}
+			self->timerPrimary = 0;
 		}
+		else
+			self->timerPrimary++;
+		//Trash Mob/Random mobs spawned in Behavior
+
 	}
 
 	//Movement Think
@@ -653,22 +692,7 @@ void monsterThink(Entity* self)
 	
 
 	
-	if (self->hp <= 0)
-	{
-		if (self->role == ROLE_SYMBOL_ENEMY1 || self->role == ROLE_SYMBOL_ENEMY2 || self->role == ROLE_SYMBOL_ENEMY3)
-		{
-			if (self->hp <= 0)
-			{
-				if (!getBoss())
-				{
-					slog("Symbol failed to find boss pointer!");
-					data->state = MS_DEAD;
-				}
-				symbolPatternAlert(getBoss(), self->color);
-			}
-		}
-		data->state = MS_DEAD;
-	}
+
 
 	if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
 	{
@@ -1740,6 +1764,10 @@ void getMonsterState(Entity* self, const char* state)
 	else if (strcmp(state, "MS_MOTHER") == 0)
 	{
 		((MonsterData*)self->data)->state = MS_MOTHER;
+	}
+	else if (strcmp(state, "MS_CIRCLE") == 0)
+	{
+		((MonsterData*)self->data)->state = MS_CIRCLE;
 	}
 	else if (strcmp(state, "MS_IDLE") == 0)
 	{
@@ -3362,6 +3390,116 @@ void loadMonster(Entity* self)
 				
 				break;
 
+			case ROLE_CIRCLE:
+				monster = sj_array_get_nth(roles, AN_CIRCLE);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+				self->hp = hp;
+
+				spriteString = sj_object_get_string(monster, "sprite");
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitTimer = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->primaryCooldown = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->topSpeed = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				break;
+
 			default:
 				slog("MONSTER LOADING: Cannot find that role!");
 				slog("Role not found is name: %s Role: %i",self->name, self->role);
@@ -3394,6 +3532,25 @@ void loadMonster(Entity* self)
 	if (json)
 		sj_free(json);
 
+}
+
+
+/*
+	Shoots a line of projectiles
+*/
+void shootLine(Entity* self)
+{
+	Entity* proj = NULL;
+
+	if (!self)
+		return;
+
+	proj = projectileEntityNew(self->position,TEAM_ENEMY,self->timeToLive,ROLE_PROJECTILE);
+
+	if (!proj)
+		return;
+
+	moveTowardsSpot(proj, getPlayer());
 }
 
 

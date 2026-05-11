@@ -24,7 +24,8 @@ typedef enum
 	LS_ERROR = 0,
 	LS_NORMAL,
 	LS_NEW_LEVEL,
-	LS_END_GAME
+	LS_END_GAME,
+	LEVELS_UNTILL_SHOP = 4
 }Level_Status;
 
 //void levelManagerInit(Uint32 max);
@@ -87,6 +88,10 @@ Level* getCurrentLevel();
 
 const char* getNextLevel();
 
+/*
+	Testing function to test auto inserting the shop level
+*/
+void setLevelsPlayed(int in);
 
 #endif
 

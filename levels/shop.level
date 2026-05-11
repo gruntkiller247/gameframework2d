@@ -1,0 +1,55 @@
+{
+  "level":
+  {
+    "name":  "shop",
+    "background": "images/backgrounds/cat.jpg",
+    "entities":
+    [
+      {
+        "name": "player",
+        "role": "ROLE_PLAYER_GUNNER",
+        "positionX": 300,
+        "positionY": 300
+      }
+    ],
+    "UI": [
+      {
+        "type": "UI_BUTTON",
+        "positionX": 0,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Buy Max HP: ",
+        "onClick": "buyMaxHp"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 400,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Buy Random Powerup: ",
+        "onClick": "buyPower"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 900,
+        "positionY": 0,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Leave Shop! ",
+        "onClick": "leaveShop"
+      }
+
+    ]
+  }
+}

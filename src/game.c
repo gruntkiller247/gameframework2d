@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
     const Uint8 * keys;
     Sprite *sprite;
     
-    int mx,my;
+    int mx ,my ;
     int mx2, my2;
     float mf = 0;
     Sprite *mouse;
@@ -164,7 +164,7 @@ int main(int argc, char * argv[])
     }
 
     
-    
+    setLevelsPlayed(2);
 
     player = getPlayer();
     bossGame = getBoss();
@@ -192,30 +192,39 @@ int main(int argc, char * argv[])
         }
         else if (getLevelStatus() == LS_NEW_LEVEL)
         {
-            slog("MAIN GAME LOOP! NEW LEVEL NEEDS TO BE LOADED!");
-            
-            //Kill everything - ONLY THE UI AND ENTITIES
+            // slog("MAIN GAME LOOP! NEW LEVEL NEEDS TO BE LOADED!");
+
             entityKillAll();
             uiKillAll();
-            slog("\n\nMAIN GAME LOOP! Next level is: %s\n\n", getNextLevel());
+
+            if (strcmp(currentLevel->name, "shop") == 0)
+            {
+                spawnStorePowerUps();
+            }
+            //Kill everything - ONLY THE UI AND ENTITIES
+
+            //slog("\n\nMAIN GAME LOOP! Next level is: %s\n\n", getNextLevel());
             currentLevel = dataLoadLevel(getNextLevel());
-            slog("MAIN GAME LOOP LEVEL LOADED!");
+            //slog("MAIN GAME LOOP LEVEL LOADED!");
             resetNumDead();
            
-
+            if (currentLevel->spawnPowerUps)
+                powerUpSpawning = 1;
+            else
+                powerUpSpawning = 0;
 
 
             //setNextLevel(NULL);
 
             //currentLevel = getCurrentLevel();
             setLevelStatus(LS_NORMAL);
-            slog("Level Status is: %i", getLevelStatus());
+            //slog("Level Status is: %i", getLevelStatus());
             slog_sync();
             
         }
         else if (!currentLevel)
         {
-            //slog("CURRENT LEVEL IS NULL!");
+            slog("CURRENT LEVEL IS NULL!");
         }
         else if (currentLevel->enemiesToKill != -1 && currentLevel->enemiesToKill == returnKilled())
         {
@@ -231,7 +240,7 @@ int main(int argc, char * argv[])
 
             if (gfc_input_key_pressed("g"))
             {
-                slog("Pausing?");
+                //slog("Pausing?");
                 setPausedUI();
                 //setPausedEntity();
             }
@@ -289,7 +298,7 @@ int main(int argc, char * argv[])
             
             if (gfc_input_key_pressed("g"))
             {
-                slog("Unpausing?");
+                //slog("Unpausing?");
                 setPausedUI();
             } 
 
@@ -301,6 +310,17 @@ int main(int argc, char * argv[])
             if (gfc_input_key_pressed("2"))
             {
                 slog("Player Points: %i", getPlayerPoints());
+            }
+
+            if (gfc_input_key_pressed("3"))
+            {
+                slog("Adding Points!");
+                addPlayerPoints(100);
+            }
+
+            if (gfc_input_key_pressed("4"))
+            {
+                slog("Player's current HP: %i\nPlayer's max HP: %i", player->hp, player->maxHP);
             }
 
             gf2d_graphics_clear_screen();
@@ -344,11 +364,11 @@ int main(int argc, char * argv[])
                    mx2 = mx;
                    my2 = my;
                     //I have clicked a button, thus I have something I want to spawn elsewhere!
-                   slog("Click = 1");
+                   //slog("Click = 1");
                }
                else if ((mx2 != mx && my!= my2) && SDL_GetMouseState(&mx, &my) & SDL_BUTTON_LMASK && click == 1)
                {
-                   slog("Clicked elsewhere!");
+                   //slog("Clicked elsewhere!");
                    //I have clicked another spot, thus spawn the thing here!
                    switch (roleToSpawn())
                    {
@@ -429,6 +449,7 @@ int main(int argc, char * argv[])
             setPlayer(getPlayer());
             player = getPlayer();
             setPlayerPoints(0);
+            setBonusHp(0);
         }
 
         

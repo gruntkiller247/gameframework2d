@@ -4,11 +4,11 @@
 #include "gfc_shape.h"
 #include "gf2d_draw.h"
 #include "gf2d_graphics.h"
-
-
+#include "powerup.h"
 
 const double healthStates[HS_COUNT] = { 0.80, 0.40, 0.20 };
 static int numDead = 0;
+
 
 //Spacial Hash Stuff
 
@@ -39,6 +39,9 @@ typedef struct EntityManager_S
 	//Uint8 drawBounds;
 	Uint8 paused;
 	int playerPoints;
+	Entity* shopEntityManager;
+	Uint8 shopEntityMax;
+	Uint8 shopPowerBought;	//Number representing the max number of powerups able to be bought at once. Hard set at 5
 }EntityManager;
 
 static EntityManager entityManager = { 0 };
@@ -73,6 +76,17 @@ void entityManagerInit(Uint32 max)
 
 	entityManager.entityMax = max;
 	entityManager.playerPoints = 0;
+
+	entityManager.shopEntityManager = gfc_allocate_array(sizeof(Entity), max);
+
+	if (!entityManager.shopEntityManager)
+	{
+		slog("Failed to allocate shop array with entity manager!");
+		return;
+	}
+
+	entityManager.shopEntityMax = 5;
+	entityManager.shopPowerBought = 0;
 	
 	atexit(entityManagerClose);
 	slog("Initalized Entity System");
@@ -90,6 +104,8 @@ void entityManagerClose()
 		entityFree(&entityManager.entityList[c]);
 	}
 
+	
+	memset(&entityManager.shopEntityManager, 0, sizeof(EntityManager));
 	memset(&entityManager, 0, sizeof(EntityManager));
 	slog("Closed Entity System");
 }
@@ -969,12 +985,14 @@ int getRole(const char* role)
 		return ROLE_PU_RANDOM;
 	else if (strcmp(role, "ROLE_DODGE") == 0)
 		return ROLE_DODGE;
-	else if (strcmp(role,"ROLE_RUSH") == 0)
+	else if (strcmp(role, "ROLE_RUSH") == 0)
 		return ROLE_RUSH;
 	else if (strcmp(role, "ROLE_EXPLODE") == 0)
 		return ROLE_EXPLODE;
 	else if (strcmp(role, "ROLE_MOTHER") == 0)
 		return ROLE_MOTHER;
+	else if (strcmp(role, "ROLE_CIRCLE") == 0)
+		return ROLE_CIRCLE;
 	else
 	{
 		slog("Get Role returning Error Role");
@@ -1006,7 +1024,7 @@ void setPlayerPoints(int newPoints)
 
 void addPlayerPoints(int add)
 {
-	entityManager.playerPoints += add;
+	entityManager.playerPoints += add * scoreMult;
 }
 
 void subtractPlayerPoints(int sub)
@@ -1047,6 +1065,9 @@ const char* getRoleFromInt(int role)
 
 		case ROLE_MOTHER:
 			return "ROLE_MOTHER";
+
+		case ROLE_CIRCLE:
+			return "ROLE_CIRCLE";
 
 		case ROLE_BOSS1:
 			return "ROLE_BOSS1";
@@ -1097,8 +1118,6 @@ const char* getRoleFromInt(int role)
 
 		case ROLE_PLAYER_GUNNER:
 			return "ROLE_PLAYER_GUNNER";
-
-
 
 		default:
 			slog("Failed to find the role!");
@@ -1410,6 +1429,112 @@ void resetNumDead()
 int returnKilled()
 {
 	return numDead;
+}
+
+void addScoreMult(float num)
+{
+	scoreMult += num;
+}
+
+void setScoreMult(float num)
+{
+	scoreMult = num;
+}
+
+float getScoreMult()
+{
+	return scoreMult;
+}
+
+void setTimeLastHit(int num)
+{
+	timeLastHit = num;
+}
+
+void getTimeLastHit()
+{
+	return timeLastHit;
+}
+
+int rngPoints()
+{
+	int num;
+
+	num = rand() % 10 + 1;
+
+	switch (num)
+	{
+		case(1):
+
+		case(2):
+
+		case(3):
+
+			return rand() % rngPointsMax - rngPointsMin;
+
+		case(4):
+
+		case(5):
+
+		case(6):
+			return rand() % rngPointsMax + rngPointsMin;
+
+		default:
+			return rngPointsMax;
+	}
+}
+
+void addBonusHp(int in)
+{
+	bonusHp += in;
+}
+
+void setBonusHp(int in)
+{
+	bonusHp = in;
+}
+
+int getBonusHp()
+{
+	return bonusHp;
+}
+
+void buyPowerUp()
+{
+	Entity power;
+
+	if (!entityManager.entityMax)
+		return;
+
+	if (entityManager.shopPowerBought >= entityManager.shopEntityMax - 1)
+	{
+		slog("Player has bought the max amount of powerups for this shop!");
+		return;
+	}
+
+	entityManager.shopPowerBought++;
+}
+
+void spawnStorePowerUps()
+{
+	int c;
+	Entity* power;
+	if (!entityManager.entityMax)
+		return;
+
+	if (!getPlayer())
+		return;
+
+	for (c = 0; c < entityManager.shopPowerBought; c++)
+	{
+		power = powerUpEntityNew(getPlayer()->position, ROLE_PU_RANDOM);
+
+		if (!power)
+		{
+			slog("Failed to spawn power up from shop!");
+			return;
+		}
+	}
 }
 
 //endLine

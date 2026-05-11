@@ -303,14 +303,14 @@ void uiFreeAll()
 
 void setPausedUI()
 {
-	slog("Before: %i", isPaused());
+	//slog("Before: %i", isPaused());
 
 	if (uiManager.paused == PAUSED)
 		uiManager.paused = NOT_PAUSED;
 	else
 		uiManager.paused = PAUSED;
 	
-	slog("After: %i", isPaused());
+	//slog("After: %i", isPaused());
 }
 
 void uiKillAll()

@@ -99,15 +99,17 @@ Entity* playerEntityNew(GFC_Vector2D position, int role)
 	}
 
 	
-
+	if (getBonusHp)
+	{
+		self->maxHP += getBonusHp();
+		self->hp = self->maxHP;
+	}
 
 	setPlayer(self);
 
 	return self;
 
 }
-
-
 
 void playerThink(Entity* self)
 {
@@ -332,7 +334,8 @@ void playerTouch(Entity* self, Entity* toucher)
 			self->hp -= 1;
 			self->isInvul = 1;
 			slog("Player being touched %s. \nHP is now %i \nToucher team is: %i\n Toucher's role is %i", toucher->name, self->hp,toucher->team,toucher->role);
-
+			setScoreMult(1.0);
+			setTimeLastHit(0);
 		}
 
 		if (toucher->team == TEAM_ITEM && self->currentPowerUp == ROLE_PU_NONE)

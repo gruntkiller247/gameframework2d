@@ -28,6 +28,9 @@ void customLevel(UI* self);
 void level1(UI* self);
 void exitGame(UI* self);
 void saveLevelButton();
+void buyMaxHp();
+void buyPower();
+void leaveShop();
 
 UI* newButton(GFC_Vector2D position, GFC_Rect bounds, int type, const char* onClick)
 {
@@ -242,6 +245,18 @@ void getOnClick(UI* ui, const char* onClick)
 	{
 		ui->onClick = saveLevelButton;
 	}
+	else if (strcmp(onClick, "buyMaxHp") == 0)
+	{
+		ui->onClick = buyMaxHp;
+	}
+	else if (strcmp(onClick, "buyPower") == 0)
+	{
+		ui->onClick = buyPower;
+	}
+	else if (strcmp(onClick, "leaveShop") == 0)
+	{
+		ui->onClick = leaveShop;
+	}
 	else
 	{
 		slog("Null");
@@ -264,8 +279,9 @@ void level1(UI* self)
 	if (!self)
 		return;
 
+	setLevelsPlayed(0);
 	levelUpdate("levels/debugLevel.level");
-
+	//levelUpdate("levels/shop.level");
 }
 
 void customLevel(UI* self)
@@ -365,3 +381,52 @@ void saveLevelButton()
 	saveLevel();
 }
 
+void buyMaxHp()
+{
+	Entity* player;
+
+	player = getPlayer();
+
+	if (!getPlayer)
+		return;
+
+	if (getPlayerPoints() >= priceHP)
+	{
+		addBonusHp(1);
+		subtractPlayerPoints(priceHP);
+		slog("Player bought bonus HP!");
+		player->hp++;
+		player->maxHP++;
+	}
+	else
+	{
+		slog("Player does not have enough points to buy this upgrade!");
+	}
+}
+
+void buyPower()
+{
+	Entity* player;
+
+	player = getPlayer();
+
+	if (!getPlayer)
+		return;
+
+	if (getPlayerPoints() >= pricePower)
+	{
+		buyPowerUp();
+		subtractPlayerPoints(pricePower);
+		slog("Player bought a power up!");
+		
+	}
+	else
+	{
+		slog("Player does not have enough points to buy a powerup!");
+	}
+}
+
+void leaveShop()
+{
+	levelUpdate(getNextLevel());
+}

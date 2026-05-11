@@ -10,7 +10,13 @@
 
 #define showSlog if (functionSlogs == 1)
 static const functionSlogs = 1;
+static float scoreMult = 1.0;
+static int timeLastHit = 0;
+static int killedPoints = 10;
+static int rngPointsMin = 0;
+static int rngPointsMax = 20;
 
+static int bonusHp = 0;
 
 
 typedef struct Entity_S
@@ -153,6 +159,7 @@ typedef enum RN
 	ROLE_RUSH,
 	ROLE_EXPLODE,
 	ROLE_MOTHER,
+	ROLE_CIRCLE,
 
 	ROLE_MOTHER_CAP,
 
@@ -322,6 +329,11 @@ void addPlayerPoints(int add);
 void setPlayerPoints(int newPoints);
 
 /*
+	Subtracts value from player points
+*/
+void subtractPlayerPoints(int sub);
+
+/*
 	Recieves a BossID and returns a pointer to that boss.
 	NULL if that ID is not found!
 */
@@ -400,8 +412,39 @@ void removeAllFromCells();
 */
 void reportDeath();
 
+/*
+	Resets the number of enemies killed to 1
+*/
 void resetNumDead();
 
+/*
+	Returns the number of enemies killed in the current level
+*/
 int returnKilled();
+
+void getTimeLastHit();
+
+void setTimeLastHit(int num);
+
+void setScoreMult(float num);
+
+void addScoreMult(float num);
+
+float getScoreMult();
+
+/*
+	Returns a random number between rngPointsMin and rngPointsMax
+*/
+int rngPoints();
+
+void addBonusHp(int in);
+
+int getBonusHp();
+
+void setBonusHp(int in);
+
+void buyPowerUp();
+
+void spawnStorePowerUps();
 
 #endif

@@ -115,6 +115,19 @@
         "activeOnPause": 0,
         "text": "Save Level: ",
         "onClick": "save"
+      },
+      {
+        "type": "UI_BUTTON",
+        "positionX": 400,
+        "positionY": 200,
+        "boundsX": 230,
+        "boundsY": 230,
+        "boundsW": 272,
+        "boundsH": 72,
+        "activeOnPause": 0,
+        "text": "Circle: ",
+        "onClick": "spawn",
+        "spawn": "ROLE_CIRCLE"
       }
 
 
