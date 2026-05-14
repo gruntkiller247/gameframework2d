@@ -2,7 +2,7 @@
 	"level": {
 		"background": "images/backgrounds/bg_flat.png",
 		"name": "New Custom Level!",
-		"nextLevel": "levels/debugLevelProjectiles.level",
+		"nextLevel": "levels/shop.level",
 		"entities": [
 			{
 				"positionX": 300,
