@@ -69,21 +69,8 @@
 				"onHoverSprite": "images/space_bug.png",
 				"activeOnPause": 0,
 				"text": "Exit Game"
-			},
-			{
-				"type": "UI_BUTTON",
-				"positionX": 100,
-				"positionY": 100,
-				"boundsX": 30,
-				"boundsY": 30,
-				"boundsW": 172,
-				"boundsH": 72,
-				"onClick": "exitGame",
-				"onClickSprite": "NULL",
-				"onHoverSprite": "images/space_bug.png",
-				"activeOnPause": 0,
-				"text": "Exit Game"
 			}
+			
 
 		]
 	}
