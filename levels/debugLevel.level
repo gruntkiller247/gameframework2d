@@ -1,6 +1,6 @@
 {
 	"level": {
-		"background": "images/backgrounds/bg_flat.png",
+		"background": "images/backgrounds/Untitled.png",
 		"name": "New Custom Level!",
 		"nextLevel": "levels/shop.level",
 		"entities": [

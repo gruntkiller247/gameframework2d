@@ -17,14 +17,16 @@ typedef struct Level_L
 	//GFC_List* levelUI;	//List of all UI's in the level!
 	Uint8 _inUse;
 	int enemiesToKill;
+
 	Uint8 move; //Bool Used to determine if the background of the level moves downward
 	Uint8 moveSpeed; //amount of movement the level does downwards per frame
-	Uint8 moveCounter; //Counter starts at 0 moves counts up to 16 Hard capped height
+	Sint64 moveCounter; //Counter starts at 0 moves counts up to Max Frame
 } Level;
 
 typedef enum
 {
-	L_MOVE_MAX_FRAME = 128
+	L_MOVE_MIN_FRAME = -720,
+	L_MOVE_MAX_FRAME = 0  //(L_MOVE_MIN_FRAME * -1)
 }Level_Move;
 
 typedef enum

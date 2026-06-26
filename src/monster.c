@@ -28,7 +28,10 @@ typedef enum jsonArrayNum_S
 	AN_RUSH,
 	AN_EXPLODE,
 	AN_MOTHER,
-	AN_CIRCLE
+	AN_CIRCLE,
+	//All Monsters from Spring 2026 Class above
+
+	AN_DEFAULT
 
 }jsonArrayNum;
 

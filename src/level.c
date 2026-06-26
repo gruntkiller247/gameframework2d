@@ -209,8 +209,13 @@ void levelKillAll()
 	}*/
 }
 
+/*
+	Effectivly Level Think
+*/
 void levelDraw(Level* level)
 {
+	Uint64 temp;
+
 	if (!level)
 	{
 		slog("Level was NULL! Cannot draw a NULL level!");
@@ -226,12 +231,46 @@ void levelDraw(Level* level)
 
 	if (level->move)
 	{
-		if (level->moveCounter < L_MOVE_MAX_FRAME)
+		slog("Level moveCounter: %i ", level->moveCounter);
+		//slog("Level moveSpeed: %i", level->moveSpeed);
+		
+
+		
+
+		if (level->move < 0)
 		{
-			level->moveCounter++;
+			//Signed int is negative
+			slog("Counter is negative, using temp!");
+
+
+			temp = (Uint64)level->moveCounter;
+
+			if (temp < L_MOVE_MAX_FRAME)
+			{
+				//slog("APKFNOKANSGKNASKNG0");
+				level->moveCounter += level->moveSpeed;
+
+			}
+			else
+				level->moveCounter = L_MOVE_MIN_FRAME;
+
 		}
 		else
-			level->moveCounter = 0;
+		{
+			//Signed in is positive, safe to do math
+			slog("Counter is positive!");
+
+			if (level->moveCounter < L_MOVE_MAX_FRAME)
+			{
+				//slog("APKFNOKANSGKNASKNG0");
+				level->moveCounter += level->moveSpeed;
+
+			}
+			else
+				level->moveCounter = L_MOVE_MIN_FRAME;
+		}
+
+		slog("\n\n");
 
 		gf2d_sprite_draw_image(level->background, gfc_vector2d(0, level->moveCounter));
 	}
@@ -443,16 +482,23 @@ Level* dataLoadLevel(const char* levelName)
 		slog("Level has no Move Parameter!");
 		level->move = 0;
 		level->moveSpeed = 0;
+		level->moveCounter = -720;
+		
 	}
 	else
 	{
 		if ((sj_object_get_int(ljson, "moveSpeed", &moveSpeed) == 0))
 		{
 			slog("Level has no Move Speed! Giving default of 1!");
-			level->move = 1;
+			level->moveSpeed = 1;
+		}
+		else
+		{
 			level->moveSpeed = moveSpeed;
 		}
-		
+
+		level->move = 1;
+		level->moveCounter = -720;
 	}
 
 

@@ -1,13 +1,11 @@
 {
-	"level": 
-	{
-		"name":  "Main Menu",
-		"background": "images/backgrounds/Untitled.png",
+	"level": {
+		"name": "Main Menu",
+		"background": "images/backgrounds/BackgroundTall.png",
 		"powerUps": 0,
-		"move": 0,
-		"moveSpeed": 10,
-		"entities": 
-		[
+		"move": 1,
+		"moveSpeed": 1,
+		"entities": [
 			{
 				"name": "player",
 				"role": "ROLE_PLAYER_BAKER",
@@ -72,7 +70,7 @@
 				"activeOnPause": 0,
 				"text": "Exit Game"
 			}
-			
+
 
 		]
 	}
