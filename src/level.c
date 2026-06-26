@@ -224,7 +224,23 @@ void levelDraw(Level* level)
 		return;
 	}
 
-	gf2d_sprite_draw_image(level->background, gfc_vector2d(0, 0));
+	if (level->move)
+	{
+		if (level->moveCounter < L_MOVE_MAX_FRAME)
+		{
+			level->moveCounter++;
+		}
+		else
+			level->moveCounter = 0;
+
+		gf2d_sprite_draw_image(level->background, gfc_vector2d(0, level->moveCounter));
+	}
+	else
+		gf2d_sprite_draw_image(level->background, gfc_vector2d(0, 0));
+
+
+
+	
 }
 
 void levelSetBackground(Level* level,Sprite* background)
@@ -341,6 +357,9 @@ Level* dataLoadLevel(const char* levelName)
 
 	int enemiesToKill = 0;
 
+	int move = 0;
+	int moveSpeed = 0;
+
 
 	if (levelsPlayed != 0 && levelsPlayed % LEVELS_UNTILL_SHOP == 0)
 	{
@@ -419,8 +438,23 @@ Level* dataLoadLevel(const char* levelName)
 	}
 		
 		
+	if (sj_object_get_int(ljson,"move",&move) == 0)
+	{
+		slog("Level has no Move Parameter!");
+		level->move = 0;
+		level->moveSpeed = 0;
+	}
+	else
+	{
+		if ((sj_object_get_int(ljson, "moveSpeed", &moveSpeed) == 0))
+		{
+			slog("Level has no Move Speed! Giving default of 1!");
+			level->move = 1;
+			level->moveSpeed = moveSpeed;
+		}
+		
+	}
 
-	
 
 	//UI Reading!
 	ui = sj_object_get_value(ljson, "UI");
