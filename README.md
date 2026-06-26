@@ -1,4 +1,1 @@
-#Final Project for 2D Game Design at NJIT Spring 2026
-A really poor 2d engine for bullet hells.
-
-Code is wack. Feel free to browse through it and witness absolute jank.
+#Personal 2D Project derived from my 2D project made in School during Spring 2026. 
