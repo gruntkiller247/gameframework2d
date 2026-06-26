@@ -234,41 +234,18 @@ void levelDraw(Level* level)
 		slog("Level moveCounter: %i ", level->moveCounter);
 		//slog("Level moveSpeed: %i", level->moveSpeed);
 		
-
 		
+		slog("Counter is positive!");
 
-		if (level->move < 0)
+		if (level->moveCounter < L_MOVE_MAX_FRAME)
 		{
-			//Signed int is negative
-			slog("Counter is negative, using temp!");
-
-
-			temp = (Uint64)level->moveCounter;
-
-			if (temp < L_MOVE_MAX_FRAME)
-			{
-				//slog("APKFNOKANSGKNASKNG0");
-				level->moveCounter += level->moveSpeed;
-
-			}
-			else
-				level->moveCounter = L_MOVE_MIN_FRAME;
+			//slog("APKFNOKANSGKNASKNG0");
+			level->moveCounter += level->moveSpeed;
 
 		}
 		else
-		{
-			//Signed in is positive, safe to do math
-			slog("Counter is positive!");
-
-			if (level->moveCounter < L_MOVE_MAX_FRAME)
-			{
-				//slog("APKFNOKANSGKNASKNG0");
-				level->moveCounter += level->moveSpeed;
-
-			}
-			else
-				level->moveCounter = L_MOVE_MIN_FRAME;
-		}
+			level->moveCounter = L_MOVE_MIN_FRAME;
+		
 
 		slog("\n\n");
 
