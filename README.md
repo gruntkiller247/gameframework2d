@@ -1,3 +1,8 @@
+#The main branch as forked from @engineeroflies
+#Kept intact to derive branches from
+
+
+
 # gameframework2d (GF2D)
 a collection of utlitity functions designed to facilitate creating 2D games with SDL2
 This project is specifically intended to function as an educational tool for my students taking 2D Game Programming.
