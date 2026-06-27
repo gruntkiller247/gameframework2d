@@ -190,7 +190,7 @@ typedef enum RN
 	ROLE_PU_MAX,			//Cap for rng to get a random powerup
 
 	//All Roles from Spring 2026 Class Above
-	ROLE_DEFAULT,
+	ROLE_DOWN,
 
 	ROLE_COUNT
 

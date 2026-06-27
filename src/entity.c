@@ -993,6 +993,8 @@ int getRole(const char* role)
 		return ROLE_MOTHER;
 	else if (strcmp(role, "ROLE_CIRCLE") == 0)
 		return ROLE_CIRCLE;
+	else if (strcmp(role, "ROLE_DOWN") == 0)
+		return ROLE_DOWN;
 	else
 	{
 		slog("Get Role returning Error Role");
@@ -1118,6 +1120,9 @@ const char* getRoleFromInt(int role)
 
 		case ROLE_PLAYER_GUNNER:
 			return "ROLE_PLAYER_GUNNER";
+
+		case ROLE_DOWN:
+			return "ROLE_DOWN";
 
 		default:
 			slog("Failed to find the role!");

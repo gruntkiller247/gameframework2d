@@ -249,7 +249,7 @@
         "points": 10
       },
       {
-        "role": "ROLE_DEFAULT",
+        "role": "ROLE_DOWN",
         "hp": 3,
         "sprite": "images/space_bug.png",
         "damage": 1,
@@ -261,7 +261,7 @@
         "topSpeedY": 10,
         "moveMaxTime": 200,
 
-        "state": "MS_TRASH",
+        "state": "MS_DOWN",
         "layer": "EL_MONSTER",
         "timeToLive": 800,
         "points": 10

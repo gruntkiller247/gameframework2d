@@ -29,7 +29,9 @@ typedef enum jsonArrayNum_S
 	AN_EXPLODE,
 	AN_MOTHER,
 	AN_CIRCLE,
+	
 	//All Monsters from Spring 2026 Class above
+	AN_DOWN,
 
 	AN_DEFAULT
 
@@ -70,6 +72,7 @@ typedef enum
 	MS_EXPLODE,
 	MS_MOTHER,
 	MS_CIRCLE,
+	MS_DOWN,
 	MS_MAX
 }MonsterStates;
 
@@ -455,11 +458,20 @@ void monsterUpdate(Entity* self)
 
 			break;
 
+		case MS_DOWN:
+
+			//slog("I AM A NEW MOB UPDATING!");
+			slog("Current X: %f Current Y: %f",self->position.x,self->position.y);
+			slog("Velocity X: %f Veolicty Y: %f", self->velocity.x, self->velocity.y);
+			break;
+
 		default:
 			slog("Boss Update State does not exist! Current state: %i",data->state);
 	}
 
-	if (data->canMove && data->moveTimer >= data->moveMaxTime)
+
+	
+	if (self->role != ROLE_DOWN && data->canMove && data->moveTimer >= data->moveMaxTime)
 	{
 		data->moveTimer = 0;
 		//slog("Boss is moving!");
@@ -509,7 +521,50 @@ void monsterThink(Entity* self)
 		}
 		data->state = MS_DEAD;
 	}
+	
+
+	//I do not want to touch my old code for now, hard checking for my new roles prior to rewriting Monster as a whole
+	switch (self->role)
+	{
+		case ROLE_DOWN:
+			
+			if (self->velocity.y != -1)
+				self->velocity.y = 1;
+
+			if (self->velocity.y)
+			{
+				self->position.y += self->velocity.y;
+			}
+
+			if (self->velocity.x)
+			{
+				self->position.x += self->velocity.x;
+			}
+
+			if (self->velocity.y || self->velocity.x)
+			{
+				gfc_vector2d_normalize(&self->velocity);
+			}
+
+			if (self->isInvul == 1 && self->hitTimer <= self->hitDelay)
+			{
+				self->hitTimer += 1;
+				//slog("Monster is immune, has been for %i", self->hitTimer);
+			}
+			else
+			{
+				self->isInvul = 0;
+				self->hitTimer = 0;
+				//slog("Monster is no longer immune!");
+			}
+			
+
+			break;
 		
+		default:
+			;
+	}
+
 
 	if (self->layer != EL_INVISIBLE && (self->role == ROLE_BOSS1 || self->role == ROLE_BOSS2 || self->role == ROLE_BOSS3))
 	{
@@ -601,7 +656,8 @@ void monsterThink(Entity* self)
 		}
 
 	}
-	else
+	//Dirty else if to avoid rewriting atm
+	else if(self->role != ROLE_DOWN)
 	{
 		//slog("Timer Primary %i\PrimaryCooldown: %i",self->timerPrimary,self->primaryCooldown);
 		if (self->timerPrimary >= self->primaryCooldown)
@@ -622,11 +678,18 @@ void monsterThink(Entity* self)
 		//Trash Mob/Random mobs spawned in Behavior
 
 	}
+	else
+	{
+		//Role here should be ROLE_DOWN
+	}
 
 	//Movement Think
 	
 	switch (self->role)
 	{
+		case ROLE_DOWN:
+			break;
+
 		case ROLE_RUSH:
 		
 
@@ -676,22 +739,24 @@ void monsterThink(Entity* self)
 		}
 	}
 
-	
-
-	if (self->velocity.y)
+	if (self->role != ROLE_DOWN)
 	{
-		self->position.y += self->velocity.y;
+		if (self->velocity.y)
+		{
+			self->position.y += self->velocity.y;
+		}
+
+		if (self->velocity.x)
+		{
+			self->position.x += self->velocity.x;
+		}
+
+		if (self->velocity.y || self->velocity.x)
+		{
+			gfc_vector2d_normalize(&self->velocity);
+		}
 	}
 
-	if (self->velocity.x)
-	{
-		self->position.x += self->velocity.x;
-	}
-
-	if (self->velocity.y || self->velocity.x)
-	{
-		gfc_vector2d_normalize(&self->velocity);
-	}
 	
 
 	
@@ -1820,9 +1885,13 @@ void getMonsterState(Entity* self, const char* state)
 	{
 		((MonsterData*)self->data)->state = MS_PUZZLE2;
 	}
+	else if (strcmp(state, "MS_DOWN") == 0)
+	{
+		((MonsterData*)self->data)->state = MS_DOWN;
+	}
 	else
 	{
-		slog("Error reading Monster State from JSON!");
+		slog("\nError reading Monster State from JSON!\n");
 		((MonsterData*)self->data)->state = MS_ERROR;
 	}
 }
@@ -3395,6 +3464,119 @@ void loadMonster(Entity* self)
 
 			case ROLE_CIRCLE:
 				monster = sj_array_get_nth(roles, AN_CIRCLE);
+
+				if (!monster)
+				{
+					slog("Failed to find monster in array!");
+					goto fail;
+				}
+
+				if (sj_object_get_int(monster, "hp", &hp) == 0)
+				{
+					slog("Error getting Monster's HP value!");
+					goto fail;
+				}
+
+				self->hp = hp;
+
+				spriteString = sj_object_get_string(monster, "sprite");
+
+				if (!spriteString)
+				{
+					slog("Error getting Monster's sprite!");
+					goto fail;
+				}
+
+				self->sprite = gf2d_sprite_load_all(spriteString, 128, 128, 16, 0);
+
+
+				if (sj_object_get_int(monster, "damage", &damage) == 0)
+				{
+					slog("Error getting Monster's damage value!");
+					goto fail;
+				}
+
+				self->damage = damage;
+
+
+				if (sj_object_get_int(monster, "hitDelay", &hitDelay) == 0)
+				{
+					slog("Error getting Monster's hitDelay value!");
+					goto fail;
+				}
+
+				self->hitDelay = hitDelay;
+
+				if (sj_object_get_int(monster, "hitTimer", &hitTimer) == 0)
+				{
+					slog("Error getting Monster's hitTimer value!");
+					goto fail;
+				}
+
+				self->hitTimer = hitTimer;
+
+				if (sj_object_get_int(monster, "primaryCooldown", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's primaryCooldown value!");
+					goto fail;
+				}
+
+				self->primaryCooldown = primaryCooldown;
+
+				if (sj_object_get_int(monster, "timerPrimary", &primaryCooldown) == 0)
+				{
+					slog("Error getting Monster's timerPrimary value!");
+					goto fail;
+				}
+
+				self->timerPrimary = timerPrimary;
+
+
+				if (sj_object_get_int(monster, "topSpeedX", &topSpeedX) == 0)
+				{
+					slog("Error getting Monster's topSpeedX value!");
+					goto fail;
+				}
+
+
+				if (sj_object_get_int(monster, "topSpeedY", &topSpeedY) == 0)
+				{
+					slog("Error getting Monster's topSpeedY value!");
+					goto fail;
+				}
+
+
+				self->topSpeed = gfc_vector2d(topSpeedX, topSpeedY);
+
+				if (sj_object_get_int(monster, "moveMaxTime", &moveMaxTime) == 0)
+				{
+					slog("Error getting Monster's moveMaxTime value!");
+					goto fail;
+				}
+
+				data->moveMaxTime = moveMaxTime;
+
+
+				getMonsterState(self, sj_object_get_string(monster, "state"));
+
+
+				if (sj_object_get_int(monster, "timeToLive", &timeToLive) == 0)
+				{
+					slog("Error getting Monster's timeToLive value!");
+					goto fail;
+				}
+
+				self->timeToLive = timeToLive;
+
+				getMonsterLayer(self, sj_object_get_string(monster, "layer"));
+
+				break;
+
+			case ROLE_DOWN:
+				slog("\n\n\nTrying to make a ROLE_DOWN!\n\n\n");
+				monster = sj_array_get_nth(roles, AN_DOWN);
+
+				
 
 				if (!monster)
 				{

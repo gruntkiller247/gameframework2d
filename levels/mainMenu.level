@@ -11,6 +11,13 @@
 				"role": "ROLE_PLAYER_BAKER",
 				"positionX": 300,
 				"positionY": 300
+			},
+			{
+				"positionX": 112,
+				"positionY": 384,
+				"name": "Bozo",
+				"role": "ROLE_DOWN",
+				"delay": 0
 			}
 		],
 		"UI": [

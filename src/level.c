@@ -231,11 +231,14 @@ void levelDraw(Level* level)
 
 	if (level->move)
 	{
-		slog("Level moveCounter: %i ", level->moveCounter);
+		//slog("Level moveCounter: %i ", level->moveCounter);
 		//slog("Level moveSpeed: %i", level->moveSpeed);
 		
 		
-		slog("Counter is positive!");
+		//slog("Counter is positive!");
+
+		if (!isPaused())
+			goto draw;
 
 		if (level->moveCounter < L_MOVE_MAX_FRAME)
 		{
@@ -247,7 +250,7 @@ void levelDraw(Level* level)
 			level->moveCounter = L_MOVE_MIN_FRAME;
 		
 
-		slog("\n\n");
+		draw:
 
 		gf2d_sprite_draw_image(level->background, gfc_vector2d(0, level->moveCounter));
 	}
@@ -1021,6 +1024,21 @@ Level* dataLoadLevel(const char* levelName)
 
 				break;
 
+			case ROLE_DOWN:
+				temp = monsterEntityNew(*position, role);
+
+				if (!temp)
+				{
+					slog("Failed to create entity in loading level switch statement!");
+					goto fail;
+				}
+
+				if (name)
+					strcpy(temp->name, name);
+
+				enemiesToKill++;
+				break;
+
 			case ROLE_BOSS1:
 				temp = monsterEntityNew(*position, role);
 
@@ -1159,6 +1177,9 @@ Level* dataLoadLevel(const char* levelName)
 	}
 	if (enemiesToKill == 0)
 		enemiesToKill--;
+
+	if (strcmp(level->name, "Main Menu") == 0)
+		enemiesToKill = -1;
 	
 	levelLoaded:
 	level->enemiesToKill = enemiesToKill;
